@@ -1,0 +1,74 @@
+name: Build and push release
+
+on:
+  push:
+    tags:
+      - 'release/v*'
+
+env:
+  GO_VERSION_FILE: 'go.mod'  
+
+jobs:
+  run-lint:
+    name: Run Linter
+    runs-on: [dev]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ env.GO_VERSION_FILE }}
+          cache: false
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+  run-tests:
+    name: Run Tests
+    needs: [run-lint]
+    runs-on: [dev]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ env.GO_VERSION_FILE }}
+          cache: false
+      - name: Set up gotestfmt
+        uses: gotesttools/gotestfmt-action@v2
+      - name: Run tests
+        run: |
+          set -euo pipefail
+          go test -json -v ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+  tag-and-push:
+    name: Build and Push Tagged Image to ECR
+    needs: [run-tests]
+    runs-on: [dev]
+    steps:
+      - name: Configure AWS credentials
+        id: config-aws
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'true'
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Parse tag
+        id: parse-tag
+        run: echo "tag=${GITHUB_REF#refs/tags/release/*}" >> $GITHUB_OUTPUT
+      - name: Build, tag, and push docker image to Amazon ECR
+        id: aws-ecr-build-push
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ github.event.repository.name }}
+          IMAGE_TAG: ${{ steps.parse-tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

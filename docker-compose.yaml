@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  go-app:
+    build:
+      context: .  # Use the current directory to build the Docker image
+      dockerfile: Dockerfile  # Specify the Dockerfile (optional if it's named 'Dockerfile')
+    ports:
+      - "8080:8080"  # Expose port 8080 on the host to port 8080 in the container
+    environment:
+      - GO_ENV=production  # Example environment variable
+    networks:
+      - go-network
+
+networks:
+  go-network:
+    driver: bridge
