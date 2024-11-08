@@ -19,27 +19,45 @@ type FeeByClass struct {
 }
 
 func updateFeeStructureByClass(req []FeeByClass, db *sql.DB) error {
-	// Wrap the logic in a transaction
+	// Return early if no data is provided
+	if len(req) == 0 {
+		helper.SugarObj.Warn("No fee structure data provided. Skipping update.")
+		return nil
+	}
+
+	// Estimate the size for the params slice
+	totalParams := 0
+	for _, classData := range req {
+		totalParams += len(classData.Fee) * 3 // Each fee has 3 parameters: amount, class_id, and head
+	}
+
+	// Pre-allocate the slice to avoid repeated allocations
+	params := make([]interface{}, 0, totalParams)
+
+	// Collect parameters in a single loop
+	for _, classData := range req {
+		for _, fee := range classData.Fee {
+			params = append(params, fee.Amount, classData.ClassID, fee.Head)
+		}
+	}
+
+	// If no updates are found, log and return early
+	if len(params) == 0 {
+		helper.SugarObj.Warn("No fee updates found. Skipping update.")
+		return nil
+	}
+
+	// Wrap logic in a transaction
 	return helper.Transaction(db, func(tx *sql.Tx) error {
 		sqlQuery := `UPDATE fees SET amount = $1 WHERE class_id = $2 AND head = $3`
-		var params []interface{}
 
-		// Collect fee updates into the params slice
-		for _, classData := range req {
-			for _, fee := range classData.Fee {
-				params = append(params, fee.Amount, classData.ClassID, fee.Head)
-			}
+		// Execute the update
+		if _, err := tx.Exec(sqlQuery, params...); err != nil {
+			helper.SugarObj.Error("Failed to update fee structure: %v", err)
+			return fmt.Errorf("failed to update fee structure: %v", err)
 		}
 
-		// If there are updates, execute the query
-		if len(params) > 0 {
-			if _, err := tx.Exec(sqlQuery, params...); err != nil {
-				helper.SugarObj.Error("Failed to update fee structure: %v", err)
-				return fmt.Errorf("failed to update fee structure: %v", err)
-			}
-		} else {
-			helper.SugarObj.Warn("No fee updates found")
-		}
+		helper.SugarObj.Info("Fee structure updated successfully.")
 		return nil
 	})
 }
@@ -66,12 +84,17 @@ func getFeeStructures(classID string, db *sql.DB) ([]FeeByClass, error) {
 
 	// If no valid class IDs are found, return nil
 	if len(classIDs) == 0 {
+		helper.SugarObj.Error("no valid class IDs are found")
+
 		return nil, nil
 	}
 
 	// Prepare SQL queries
 	sqlClassName := fmt.Sprintf("SELECT class_name FROM class WHERE class_id IN (%s)", strings.Join(placeholders, ","))
 	sqlFees := fmt.Sprintf("SELECT head, amount FROM fees WHERE class_id IN (%s)", strings.Join(placeholders, ","))
+
+	helper.SugarObj.Info("sqlClassName: ", sqlClassName)
+	helper.SugarObj.Info("sqlFees: ", sqlFees)
 
 	// Create channels to collect results
 	classNamesChan := make(chan string, len(classIDs))
@@ -88,6 +111,8 @@ func getFeeStructures(classID string, db *sql.DB) ([]FeeByClass, error) {
 		rows, queryErr := helper.Query(db, sqlClassName, helper.ToInterfaceSlice(classIDs)...)
 		if queryErr != nil {
 			errChan <- fmt.Errorf("failed to fetch class names: %v", queryErr)
+			helper.SugarObj.Error("failed to fetch class names: %v", queryErr)
+
 			return
 		}
 		defer rows.Close()
@@ -96,12 +121,16 @@ func getFeeStructures(classID string, db *sql.DB) ([]FeeByClass, error) {
 			var className string
 			if scanErr := rows.Scan(&className); scanErr != nil {
 				errChan <- fmt.Errorf("failed to scan class name: %v", scanErr)
+				helper.SugarObj.Error("failed to scan class name: %v", scanErr)
+
 				return
 			}
 			classNamesChan <- className
 		}
 		if rows.Err() != nil {
 			errChan <- fmt.Errorf("error during class name iteration: %v", rows.Err())
+			helper.SugarObj.Error("error during class name iteration: %v", rows.Err())
+
 		}
 		close(classNamesChan)
 	}()
@@ -113,6 +142,8 @@ func getFeeStructures(classID string, db *sql.DB) ([]FeeByClass, error) {
 		rows, queryErr := helper.Query(db, sqlFees, helper.ToInterfaceSlice(classIDs)...)
 		if queryErr != nil {
 			errChan <- fmt.Errorf("failed to query fee structure: %v", queryErr)
+			helper.SugarObj.Error("failed to query fee structure: %v", queryErr)
+
 			return
 		}
 		defer rows.Close()
@@ -121,6 +152,7 @@ func getFeeStructures(classID string, db *sql.DB) ([]FeeByClass, error) {
 			var fee Fee
 			if scanErr := rows.Scan(&fee.Head, &fee.Amount); scanErr != nil {
 				errChan <- fmt.Errorf("failed to scan fee row: %v", scanErr)
+				helper.SugarObj.Error("failed to scan fee row: %v", scanErr)
 				return
 			}
 			feesChan <- fee
@@ -137,6 +169,7 @@ func getFeeStructures(classID string, db *sql.DB) ([]FeeByClass, error) {
 	// Check for errors in the error channel
 	select {
 	case err := <-errChan:
+		helper.SugarObj.Error("Error : %v", err)
 		return nil, err
 	default:
 	}
@@ -152,6 +185,7 @@ func getFeeStructures(classID string, db *sql.DB) ([]FeeByClass, error) {
 		})
 	}
 
+	helper.SugarObj.Info("feeStructures: ", feeStructures)
 	// Return the combined result
 	return feeStructures, nil
 }

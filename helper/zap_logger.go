@@ -45,11 +45,12 @@ func init() {
 	atom.SetLevel(level)
 
 	// Create the logger object with the core, adding caller information for debugging
+	// AddCallerSkip(1) skips over the first frame to avoid capturing the file where logger is created
 	LoggerObj = zap.New(zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderConfig),
 		zapcore.Lock(writerSyncer),
 		atom,
-	), zap.AddCaller())
+	), zap.AddCaller(), zap.AddCallerSkip(1)) // Skip 1 stack frame
 
 	// Create the sugared logger for easier logging
 	SugarObj = &SugaredLogger{

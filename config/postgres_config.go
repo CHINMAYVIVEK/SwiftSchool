@@ -28,7 +28,6 @@ func (c *Config) NewDBConnection() (*sql.DB, error) {
 		c.Postgres.Database,
 		c.Postgres.SSLMode,
 	)
-	fmt.Println("======>", connStr, "<====")
 	// Open the database connection
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
