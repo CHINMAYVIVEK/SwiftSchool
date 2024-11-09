@@ -9,15 +9,6 @@ import (
 	"github.com/chinmayvivek/SwiftSchool/helper"
 )
 
-type FeeStructureByClass struct {
-	Data []FeeByClass `json:"data"`
-}
-type FeeByClass struct {
-	ClassID   string `json:"class_id"`
-	ClassName string `json:"class_name"`
-	Fee       []Fee  `json:"fee"`
-}
-
 func updateFeeStructureByClass(req []FeeByClass, db *sql.DB) error {
 	// Return early if no data is provided
 	if len(req) == 0 {

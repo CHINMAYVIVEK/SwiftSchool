@@ -11,6 +11,15 @@ import (
 	"github.com/chinmayvivek/SwiftSchool/helper"
 )
 
+type FeeStructureByClass struct {
+	Data []FeeByClass `json:"data"`
+}
+type FeeByClass struct {
+	ClassID   string `json:"class_id"`
+	ClassName string `json:"class_name"`
+	Fee       []Fee  `json:"fee"`
+}
+
 // Fee represents the fee data structure with enrollment and class information
 type Fee struct {
 	Head   string `json:"head"`
@@ -70,5 +79,9 @@ func (fs *FeeService) UpdateFeeStructureByClass(w http.ResponseWriter, r *http.R
 		// If all updates are successful, send a success response
 		response.RespondWithJSON(w, http.StatusOK, response.NewSuccessResponse(nil, "Fee structure updated successfully", http.StatusOK))
 	}
+
+}
+
+func (fs *FeeService) CreateNewFeeStructures(w http.ResponseWriter, r *http.Request) {
 
 }
