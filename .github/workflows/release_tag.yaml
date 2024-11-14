@@ -11,7 +11,7 @@ env:
 jobs:
   run-lint:
     name: Run Linter
-    runs-on: [dev]
+    runs-on: [main]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
   run-tests:
     name: Run Tests
     needs: [run-lint]
-    runs-on: [dev]
+    runs-on: [main]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
   tag-and-push:
     name: Build and Push Tagged Image to ECR
     needs: [run-tests]
-    runs-on: [dev]
+    runs-on: [main]
     steps:
       - name: Configure AWS credentials
         id: config-aws
