@@ -82,6 +82,17 @@ func (fs *FeeService) UpdateFeeStructureByClass(w http.ResponseWriter, r *http.R
 
 }
 
-func (fs *FeeService) CreateNewFeeStructures(w http.ResponseWriter, r *http.Request) {
+func (fs *FeeService) FeeCollection(w http.ResponseWriter, r *http.Request) {
+//  Fee Collection step
+// student enrollment number, class, month -> paramaters received
+// 1. search student fee record by enrollment number and class
+// 2. calculate total fee amount
 
+	if res, err := feeCollection(); err != nil {
+		// On error, return 500 Internal Server Error
+		response.RespondWithJSON(w, http.StatusInternalServerError, response.NewErrorResponse(err.Error(), http.StatusInternalServerError, err))
+	} else {
+		// On success, return 200 OK with the result
+		response.RespondWithJSON(w, http.StatusOK, response.NewSuccessResponse(res, "Fee collection retrieved successfully", http.StatusOK))
+	}
 }

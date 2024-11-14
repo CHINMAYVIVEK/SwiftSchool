@@ -18,7 +18,7 @@ type PostgresConfig struct {
 }
 
 // NewDBConnection returns a PostgreSQL database connection using the PostgresConfig.
-func (c *Config) NewDBConnection() (*sql.DB, error) {
+func (c *Config) NewPSQLDBConnection() (*sql.DB, error) {
 	connStr := fmt.Sprintf(
 		"postgres://%s:%s@%s:%d/%s?sslmode=%s",
 		c.Postgres.Username,
@@ -29,15 +29,15 @@ func (c *Config) NewDBConnection() (*sql.DB, error) {
 		c.Postgres.SSLMode,
 	)
 	// Open the database connection
-	db, err := sql.Open("postgres", connStr)
+	pSQLDB, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open PostgreSQL database: %v", err)
 	}
 
 	// Check if the database is reachable
-	if err := db.Ping(); err != nil {
+	if err := pSQLDB.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping the database: %v", err)
 	}
 
-	return db, nil
+	return pSQLDB, nil
 }

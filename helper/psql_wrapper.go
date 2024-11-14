@@ -12,35 +12,35 @@ import (
 // OpenDB initializes and returns a PostgreSQL database connection using the PostgresConfig.
 func OpenDB(cfg *config.Config) (*sql.DB, error) {
 	// Get a database connection using config's NewDBConnection method
-	db, err := cfg.NewDBConnection()
+	pSQLDB, err := cfg.NewPSQLDBConnection()
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
 		return nil, err
 	}
 
 	log.Println("Successfully connected to the database.")
-	return db, nil
+	return pSQLDB, nil
 }
 
 // QueryRow executes a query that is expected to return a single row.
-func QueryRow(db *sql.DB, query string, args ...interface{}) *sql.Row {
-	return db.QueryRow(query, args...)
+func QueryRow(pSQLDB *sql.DB, query string, args ...interface{}) *sql.Row {
+	return pSQLDB.QueryRow(query, args...)
 }
 
 // Query executes a query that is expected to return multiple rows.
-func Query(db *sql.DB, query string, args ...interface{}) (*sql.Rows, error) {
-	return db.Query(query, args...)
+func Query(pSQLDB *sql.DB, query string, args ...interface{}) (*sql.Rows, error) {
+	return pSQLDB.Query(query, args...)
 }
 
 // Exec executes an SQL statement that doesn't return rows (INSERT, UPDATE, DELETE, etc.)
-func Exec(db *sql.DB, query string, args ...interface{}) (sql.Result, error) {
-	return db.Exec(query, args...)
+func Exec(pSQLDB *sql.DB, query string, args ...interface{}) (sql.Result, error) {
+	return pSQLDB.Exec(query, args...)
 }
 
 // TransactionWrapper wraps a function with a database transaction.
-func Transaction(db *sql.DB, fn func(tx *sql.Tx) error) error {
+func Transaction(pSQLDB *sql.DB, fn func(tx *sql.Tx) error) error {
 	// Begin the transaction
-	tx, err := db.Begin()
+	tx, err := pSQLDB.Begin()
 	if err != nil {
 		return fmt.Errorf("error beginning transaction: %v", err)
 	}
