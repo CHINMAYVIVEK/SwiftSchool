@@ -50,7 +50,7 @@ type StudentService struct {
 
 // NewFeeService creates and initializes a FeeService
 func NewStudentService(cfg *config.Config) (*StudentService, error) {
-	db, err := helper.OpenDB(cfg)
+	db, err := helper.OpenPSQLDB(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize fee service: %v", err)
 	}

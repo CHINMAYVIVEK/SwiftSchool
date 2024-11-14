@@ -33,7 +33,7 @@ type FeeService struct {
 
 // NewFeeService creates and initializes a FeeService
 func NewFeeService(cfg *config.Config) (*FeeService, error) {
-	db, err := helper.OpenDB(cfg)
+	db, err := helper.OpenPSQLDB(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize fee service: %v", err)
 	}
@@ -83,10 +83,10 @@ func (fs *FeeService) UpdateFeeStructureByClass(w http.ResponseWriter, r *http.R
 }
 
 func (fs *FeeService) FeeCollection(w http.ResponseWriter, r *http.Request) {
-//  Fee Collection step
-// student enrollment number, class, month -> paramaters received
-// 1. search student fee record by enrollment number and class
-// 2. calculate total fee amount
+	//  Fee Collection step
+	// student enrollment number, class, month -> paramaters received
+	// 1. search student fee record by enrollment number and class
+	// 2. calculate total fee amount
 
 	if res, err := feeCollection(); err != nil {
 		// On error, return 500 Internal Server Error

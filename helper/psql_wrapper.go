@@ -10,15 +10,14 @@ import (
 )
 
 // OpenDB initializes and returns a PostgreSQL database connection using the PostgresConfig.
-func OpenDB(cfg *config.Config) (*sql.DB, error) {
+func OpenPSQLDB(cfg *config.Config) (*sql.DB, error) {
 	// Get a database connection using config's NewDBConnection method
 	pSQLDB, err := cfg.NewPSQLDBConnection()
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
 		return nil, err
 	}
-
-	log.Println("Successfully connected to the database.")
+	SugarObj.Info("Successfully connected to the database.")
 	return pSQLDB, nil
 }
 
