@@ -1,0 +1,106 @@
+{
+	"info": {
+		"_postman_id": "56db9cf8-e4e8-4192-b678-63d27dde3ee5",
+		"name": "Swift-School",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28466571"
+	},
+	"item": [
+		{
+			"name": "fee-structure-by-class",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/fees/fee-structure-by-class?class_id=1|~|2|~|3|~|4|~|5",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"fees",
+						"fee-structure-by-class"
+					],
+					"query": [
+						{
+							"key": "class_id",
+							"value": "1|~|2|~|3|~|4|~|5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fee-structure-by-class",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"class_id\": \"1\",\n        \"fee\": [\n            {\n                \"head\": \"tution_fee\",\n                \"amount\": \"200\"\n            },\n            {\n                \"head\": \"sicence_fee\",\n                \"amount\": \"20\"\n            }\n        ]\n    },\n    {\n        \"class_id\": \"2\",\n        \"fee\": [\n            {\n                \"head\": \"tution_fee\",\n                \"amount\": \"200\"\n            },\n            {\n                \"head\": \"sicence_fee\",\n                \"amount\": \"20\"\n            }\n        ]\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/fees/fee-structure-by-class",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"fees",
+						"fee-structure-by-class"
+					],
+					"query": [
+						{
+							"key": "class_id",
+							"value": "hello",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/api/health",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "HOST",
+			"value": "https://localhost:8080"
+		}
+	]
+}

@@ -65,8 +65,8 @@ This list highlights the primary features Swift School offers to help educationa
      docker run -p 8080:8080 swift-school
      ```
 
+### [Postman Collection](Swift-School.postman_collection.json)
 
 ---
-
 Swift School is designed to simplify school management and enhance productivity across various functions. With the ability to manage students, teachers, attendance, fees, exams, and more in one platform, it is a powerful tool for modern educational institutions.
 
