@@ -3,12 +3,9 @@ package fees
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/chinmayvivek/SwiftSchool/app/response"
-	"github.com/chinmayvivek/SwiftSchool/config"
-	"github.com/chinmayvivek/SwiftSchool/helper"
 )
 
 type FeeStructureByClass struct {
@@ -32,12 +29,8 @@ type FeeService struct {
 }
 
 // NewFeeService creates and initializes a FeeService
-func NewFeeService(cfg *config.Config) (*FeeService, error) {
-	db, err := helper.OpenPSQLDB(cfg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize fee service: %v", err)
-	}
-	return &FeeService{DB: db}, nil
+func NewFeeService(db *sql.DB) *FeeService {
+	return &FeeService{DB: db}
 
 }
 

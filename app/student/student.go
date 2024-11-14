@@ -3,12 +3,9 @@ package student
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/chinmayvivek/SwiftSchool/app/response"
-	"github.com/chinmayvivek/SwiftSchool/config"
-	"github.com/chinmayvivek/SwiftSchool/helper"
 )
 
 type Student struct {
@@ -49,12 +46,8 @@ type StudentService struct {
 }
 
 // NewFeeService creates and initializes a FeeService
-func NewStudentService(cfg *config.Config) (*StudentService, error) {
-	db, err := helper.OpenPSQLDB(cfg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize fee service: %v", err)
-	}
-	return &StudentService{DB: db}, nil
+func NewStudentService(db *sql.DB) *StudentService {
+	return &StudentService{DB: db}
 
 }
 
