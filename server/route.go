@@ -1,7 +1,6 @@
 package server
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -10,20 +9,10 @@ import (
 	"github.com/chinmayvivek/SwiftSchool/helper"
 )
 
-// LoadRoutes sets up the routes for the server
+// LoadRoutes sets up the server's routes
 func (s *Server) LoadRoutes(mux *http.ServeMux) {
-
-	// Initialize shared DB connection once and reuse it for services
-	dbConnection, err := s.initializeDBConnection()
-	if err != nil {
-		helper.SugarObj.Error("Failed to initialize database connection: %v", err)
-		return
-	}
-
-	// Initialize services with the shared DB connection
-	feeService := fees.NewFeeService(dbConnection)
-
-	studentService := student.NewStudentService(dbConnection)
+	feeService := fees.NewFeeService(s.DB)
+	studentService := student.NewStudentService(s.DB)
 
 	// Health check route
 	mux.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
@@ -54,15 +43,4 @@ func (s *Server) LoadRoutes(mux *http.ServeMux) {
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		}
 	})
-}
-
-// initializeDBConnection initializes and returns the shared database connection
-func (s *Server) initializeDBConnection() (*sql.DB, error) {
-	// Logic to initialize and return a single DB connection
-	// This can be a connection pool or a single DB connection depending on your architecture
-	dbConnection, err := helper.OpenPSQLDB(s.Config)
-	if err != nil {
-		return nil, err
-	}
-	return dbConnection, nil
 }

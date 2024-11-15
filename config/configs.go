@@ -12,25 +12,23 @@ type Config struct {
 	Postgres *PostgresConfig
 }
 
-// NewConfig initializes the config and loads environment variables.
+// NewConfig initializes and loads the config
 func NewConfig() *Config {
-	c := &Config{}
+	c := &Config{
+		App:      &AppConfig{},
+		Postgres: &PostgresConfig{},
+	}
 	c.Load()
 	return c
 }
 
 // Load loads environment variables and configures the structs
 func (c *Config) Load() {
-	// Load environment variables from the .env file (if it exists)
-	err := godotenv.Load(".env")
-	if err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Println("Error loading .env file")
 	}
 
-	c.App = &AppConfig{}
-	c.Postgres = &PostgresConfig{}
-
-	// Parse the environment variables into the Config struct
+	// Parse environment variables into the Config struct
 	if err := env.Parse(c); err != nil {
 		panic(err)
 	}

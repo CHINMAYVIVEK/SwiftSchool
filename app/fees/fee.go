@@ -11,81 +11,62 @@ import (
 type FeeStructureByClass struct {
 	Data []FeeByClass `json:"data"`
 }
+
 type FeeByClass struct {
 	ClassID   string `json:"class_id"`
 	ClassName string `json:"class_name"`
 	Fee       []Fee  `json:"fee"`
 }
 
-// Fee represents the fee data structure with enrollment and class information
 type Fee struct {
 	Head   string `json:"head"`
 	Amount string `json:"amount"`
 }
 
-// FeeService manages the fee-related logic and database connection
 type FeeService struct {
 	DB *sql.DB // Database connection
 }
 
-// NewFeeService creates and initializes a FeeService
+// NewFeeService creates a new FeeService instance
 func NewFeeService(db *sql.DB) *FeeService {
 	return &FeeService{DB: db}
-
 }
 
-// GetAllFees returns all the fees in the system
+// GetFeeStructureByClass returns the fee structure for a given class
 func (fs *FeeService) GetFeeStructureByClass(w http.ResponseWriter, r *http.Request) {
-	// Extract the "class_id" query parameter
 	classID := r.URL.Query().Get("class_id")
-
 	if classID == "" {
-		// Missing class parameter, return 400 Bad Request
 		response.RespondWithJSON(w, http.StatusBadRequest, response.NewErrorResponse("Class parameter is required", http.StatusBadRequest, nil))
 		return
 	}
 
-	// Get the fee structure by class
 	if res, err := getFeeStructures(classID, fs.DB); err != nil {
-		// On error, return 500 Internal Server Error
 		response.RespondWithJSON(w, http.StatusInternalServerError, response.NewErrorResponse(err.Error(), http.StatusInternalServerError, err))
 	} else {
-		// On success, return 200 OK with the result
 		response.RespondWithJSON(w, http.StatusOK, response.NewSuccessResponse(res, "Fee structure retrieved successfully", http.StatusOK))
 	}
 }
 
+// UpdateFeeStructureByClass updates the fee structure for a given class
 func (fs *FeeService) UpdateFeeStructureByClass(w http.ResponseWriter, r *http.Request) {
-	// Define the request structure with class_id and fee details
 	var req []FeeByClass
-	// Parse the request body and ensure it's valid
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || len(req) == 0 {
 		response.RespondWithJSON(w, http.StatusBadRequest, response.NewErrorResponse("Invalid or missing payload", http.StatusBadRequest, err))
 		return
 	}
 
-	// Pass the parsed data to updateFeeStructureByClass for processing
 	if err := updateFeeStructureByClass(req, fs.DB); err != nil {
 		response.RespondWithJSON(w, http.StatusInternalServerError, response.NewErrorResponse(err.Error(), http.StatusInternalServerError, err))
-		return
 	} else {
-		// If all updates are successful, send a success response
 		response.RespondWithJSON(w, http.StatusOK, response.NewSuccessResponse(nil, "Fee structure updated successfully", http.StatusOK))
 	}
-
 }
 
+// FeeCollection handles fee collection based on student enrollment and class
 func (fs *FeeService) FeeCollection(w http.ResponseWriter, r *http.Request) {
-	//  Fee Collection step
-	// student enrollment number, class, month -> paramaters received
-	// 1. search student fee record by enrollment number and class
-	// 2. calculate total fee amount
-
 	if res, err := feeCollection(); err != nil {
-		// On error, return 500 Internal Server Error
 		response.RespondWithJSON(w, http.StatusInternalServerError, response.NewErrorResponse(err.Error(), http.StatusInternalServerError, err))
 	} else {
-		// On success, return 200 OK with the result
 		response.RespondWithJSON(w, http.StatusOK, response.NewSuccessResponse(res, "Fee collection retrieved successfully", http.StatusOK))
 	}
 }

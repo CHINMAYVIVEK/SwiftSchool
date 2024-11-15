@@ -7,17 +7,17 @@ import (
 	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
-// PostgresConfig contains the configuration for PostgreSQL database connection
+// PostgresConfig holds PostgreSQL connection configuration
 type PostgresConfig struct {
 	Host     string `env:"POSTGRES_HOST" env-default:"localhost"`
 	Port     int    `env:"POSTGRES_PORT" env-default:"5432"`
-	Username string `env:"POSTGRES_USER" env-default:""`
-	Password string `env:"POSTGRES_PASSWORD" env-default:""`
+	Username string `env:"POSTGRES_USER"`
+	Password string `env:"POSTGRES_PASSWORD"`
 	Database string `env:"POSTGRES_DB" env-default:"postgres"`
 	SSLMode  string `env:"POSTGRES_SSL_MODE" env-default:"disable"`
 }
 
-// NewDBConnection returns a PostgreSQL database connection using the PostgresConfig.
+// NewPSQLDBConnection creates a PostgreSQL DB connection using the config
 func (c *Config) NewPSQLDBConnection() (*sql.DB, error) {
 	connStr := fmt.Sprintf(
 		"postgres://%s:%s@%s:%d/%s?sslmode=%s",
@@ -28,16 +28,13 @@ func (c *Config) NewPSQLDBConnection() (*sql.DB, error) {
 		c.Postgres.Database,
 		c.Postgres.SSLMode,
 	)
-	// Open the database connection
-	pSQLDB, err := sql.Open("postgres", connStr)
+
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open PostgreSQL database: %v", err)
+		return nil, fmt.Errorf("failed to open DB: %v", err)
 	}
-
-	// Check if the database is reachable
-	if err := pSQLDB.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to ping the database: %v", err)
+	if err := db.Ping(); err != nil {
+		return nil, fmt.Errorf("failed to ping DB: %v", err)
 	}
-
-	return pSQLDB, nil
+	return db, nil
 }

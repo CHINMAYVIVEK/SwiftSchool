@@ -8,8 +8,7 @@ import (
 
 func main() {
 	cfg := config.NewConfig()
-
-	// Initialize and start the server (no need to capture the return value)
 	helper.SugarObj.Info("Starting the server...")
+
 	server.Run(cfg)
 }
