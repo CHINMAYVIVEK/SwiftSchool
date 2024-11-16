@@ -1,18 +1,19 @@
 # Application Settings
-LOG_LEVEL=info                         # Log level for the application (e.g., info, debug, warn, error)
-SERVER_PORT=8080                       # Port the application server listens on
-TIMEOUTS_IN_SECONDS=10                 # Timeout value for requests in seconds
+LOG_LEVEL=info
+SERVER_PORT=8080
+SERVER_TIMEOUT=30s
+READ_HEADER_TIMEOUT=30s
 
 # PostgreSQL Database Configuration
-POSTGRES_HOST=localhost                # Hostname or IP address of the PostgreSQL database
-POSTGRES_PORT=5432                     # Port of the PostgreSQL database
-POSTGRES_USER=your-username            # Username for PostgreSQL (leave empty for security reasons)
-POSTGRES_PASSWORD=your-password        # Password for PostgreSQL (leave empty for security reasons)
-POSTGRES_DB=postgres                   # Database name
-POSTGRES_SSL_MODE=disable              # Disable SSL (use 'require' for production with SSL)
-POSTGRES_CONN_MAX_LIFETIME=3600        # Maximum lifetime of a connection in seconds (default 1 hour)
-POSTGRES_MAX_OPEN=10                   # Maximum number of open database connections in the pool
-POSTGRES_MAX_IDLE=5                    # Maximum number of idle connections in the pool
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=your_user
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=your_database
+POSTGRES_SSL_MODE=disable  # Can be 'disable', 'require', 'verify-ca', 'verify-full'
+POSTGRES_CONN_MAX_LIFETIME=3600
+POSTGRES_MAX_OPEN=10
+POSTGRES_MAX_IDLE=5
 
-# Authentication Settings
-AUTH_SOURCE=local                      # Authentication source (e.g., local, ldap, etc.)
+# Authentication Settings (if needed)
+AUTH_SOURCE=local

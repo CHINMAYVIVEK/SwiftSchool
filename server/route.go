@@ -11,6 +11,10 @@ import (
 
 // LoadRoutes sets up the server's routes
 func (s *Server) LoadRoutes(mux *http.ServeMux) {
+
+	// getData route
+	http.HandleFunc("/api/data", getData)
+
 	feeService := fees.NewFeeService(s.DB)
 	studentService := student.NewStudentService(s.DB)
 

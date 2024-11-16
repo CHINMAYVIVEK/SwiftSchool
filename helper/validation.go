@@ -5,35 +5,37 @@ import (
 	"math/big"
 	"regexp"
 	"unicode"
+
+	"github.com/google/uuid"
 )
 
 const (
-	patternTypeMobile = "Mobile"
-	patternTypeEmail  = "Email"
-
-	emailPattern  = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	mobilePattern = `^\+\d{1,3}\d{10}$`
-
 	passwordLength = 12
 	passwordChars  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+,.?/:;{}[]~"
 )
 
 var (
-	patterns = map[string]*regexp.Regexp{
-		patternTypeMobile: regexp.MustCompile(mobilePattern),
-		patternTypeEmail:  regexp.MustCompile(emailPattern),
-	}
+	emailPattern  = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	mobilePattern = regexp.MustCompile(`^\+\d{1,3}\d{10}$`)
+	nanoIDPattern = regexp.MustCompile(`^[a-z0-9_-]{21,}$`)
 )
 
+// PatternValidation validates a string value against a predefined pattern (Email or Mobile)
 func PatternValidation(patternType, value string) bool {
-	if pattern, ok := patterns[patternType]; ok {
-		return pattern.MatchString(value)
+	switch patternType {
+	case "Mobile":
+		return mobilePattern.MatchString(value)
+	case "Email":
+		return emailPattern.MatchString(value)
+	case "NanoID":
+		return nanoIDPattern.MatchString(value)
+	default:
+		return false
 	}
-	return false
 }
 
+// IsValidID checks if the class ID contains only alphanumeric characters
 func IsValidID(classID string) bool {
-	// Check if the class ID contains only alphanumeric characters
 	for _, r := range classID {
 		if !unicode.IsLetter(r) && !unicode.IsDigit(r) {
 			return false
@@ -42,38 +44,35 @@ func IsValidID(classID string) bool {
 	return true
 }
 
+// IsPasswordStrong checks if the password meets strength criteria
 func IsPasswordStrong(password string) bool {
 	if len(password) < 8 {
 		return false
 	}
 
-	// Bitwise flags to track the presence of uppercase letters, lowercase letters, digits, and special characters.
-	hasUpperCase := false
-	hasLowerCase := false
-	hasDigit := false
-	hasSpecialChar := false
-
+	var hasUpperCase, hasLowerCase, hasDigit, hasSpecialChar bool
 	for _, char := range password {
 		switch {
-		case 'A' <= char && char <= 'Z':
+		case unicode.IsUpper(char):
 			hasUpperCase = true
-		case 'a' <= char && char <= 'z':
+		case unicode.IsLower(char):
 			hasLowerCase = true
-		case '0' <= char && char <= '9':
+		case unicode.IsDigit(char):
 			hasDigit = true
 		default:
 			hasSpecialChar = true
 		}
 
-		// If all the flags are set, we can break the loop early.
+		// If all conditions are met, we can return early
 		if hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar {
-			break
+			return true
 		}
 	}
 
 	return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar
 }
 
+// GenerateRandomPassword generates a random strong password of length 12
 func GenerateRandomPassword() string {
 	password := make([]byte, passwordLength)
 	for i := 0; i < passwordLength; i++ {
@@ -81,4 +80,10 @@ func GenerateRandomPassword() string {
 		password[i] = passwordChars[index.Int64()]
 	}
 	return string(password)
+}
+
+// IsValidUUID checks if the provided string is a valid UUID
+func IsValidUUID(id string) bool {
+	_, err := uuid.Parse(id)
+	return err == nil
 }

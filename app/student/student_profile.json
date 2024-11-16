@@ -1,0 +1,103 @@
+{
+  "enrollment_id": "1",
+  "enrollment_start_date": "01-01-2022",
+  "enrollment_end_date": "31-12-2023",
+  "enrollment_status": "active",
+  "enrollment_fee": 1000,
+  "enrollment_class": "1",
+  "personal_details": {
+    "name": "John Doe",
+    "date_of_birth": "01-01-1990",
+    "gender": "male",
+    "blood_group": "A+",
+    "religion": "Hindu",
+    "caste": "General",
+    "phone": "123-456-7890",
+    "email": "eX3vI@example.com",
+    "father_name": "John Doe",
+    "mother_name": "Jane Doe",
+    "address": {
+      "current": {
+        "street": "123 Main St",
+        "city": "New York",
+        "state": "NY",
+        "zip": "10001"
+      },
+      "permanent": {
+        "street": "456 Elm St",
+        "city": "New York",
+        "state": "NY",
+        "zip": "10002"
+      }
+    }
+  },
+  "academic_years": [
+    {
+      "year": "2022-23",
+      "class_id": "1",
+      "marks": {
+        "quarterly": {
+          "english": 90,
+          "maths": 85,
+          "science": 92,
+          "social": 78,
+          "hindi": 80,
+          "sanskrit": 75
+        },
+        "half_yearly": {
+          "english": 90,
+          "maths": 85,
+          "science": 92,
+          "social": 78,
+          "hindi": 80,
+          "sanskrit": 75
+        },
+        "yearly": {
+          "english": 90,
+          "maths": 85,
+          "science": 92,
+          "social": 78,
+          "hindi": 80,
+          "sanskrit": 75
+        }
+      },
+      "total_marks": 500,
+      "maximum_marks": 500,
+      "percentage": 90,
+      "grade": "A",
+      "remarks": "Excellent",
+      "status": "pass",
+      "fees": [
+        {
+          "month": "April",
+          "fee_amount": 200,
+          "fee_paid": 100,
+          "remaining": 100,
+          "status": "partially paid",
+          "payment_method": "online",
+          "payment_date": "01-04-2023",
+          "receipt_url": "https://example.com/receipt.pdf"
+        },
+        {
+          "month": "May",
+          "fee_amount": 200,
+          "fee_paid": 200,
+          "remaining": 0,
+          "status": "fully paid",
+          "payment_method": "online",
+          "payment_date": "01-05-2023",
+          "receipt_url": "https://example.com/receipt.pdf"
+        }
+      ],
+      "fnf_status": {
+        "status": "active",
+        "date": "01-06-2023",
+        "total_fee_amount": 1000,
+        "paid_fee_amount": 500,
+        "remaining_fee_amount": 500
+
+      }
+    }
+
+  ]
+}

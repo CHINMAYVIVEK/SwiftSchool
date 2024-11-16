@@ -1,10 +1,10 @@
 package config
 
 import (
-	"log"
-
 	"github.com/caarlos0/env"
+	"github.com/chinmayvivek/SwiftSchool/helper"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 type Config struct {
@@ -12,7 +12,7 @@ type Config struct {
 	Postgres *PostgresConfig
 }
 
-// NewConfig initializes and loads the config
+// NewConfig initializes the configuration by loading environment variables
 func NewConfig() *Config {
 	c := &Config{
 		App:      &AppConfig{},
@@ -22,14 +22,13 @@ func NewConfig() *Config {
 	return c
 }
 
-// Load loads environment variables and configures the structs
+// Load loads environment variables from the .env file and parses them into the config struct
 func (c *Config) Load() {
 	if err := godotenv.Load(".env"); err != nil {
-		log.Println("Error loading .env file")
+		helper.SugarObj.Error("Error loading .env file: ", err)
 	}
 
-	// Parse environment variables into the Config struct
 	if err := env.Parse(c); err != nil {
-		panic(err)
+		helper.SugarObj.Error("Error parsing environment variables: ", err)
 	}
 }

@@ -12,6 +12,7 @@ import (
 
 	"github.com/chinmayvivek/SwiftSchool/config"
 	"github.com/chinmayvivek/SwiftSchool/helper"
+	"github.com/rs/cors"
 )
 
 type Server struct {
@@ -20,9 +21,9 @@ type Server struct {
 }
 
 func Run(cfg *config.Config) {
-	db, err := config.NewConfig().NewPSQLDBConnection()
+	db, err := cfg.NewPSQLDBConnection()
 	if err != nil {
-		helper.SugarObj.Error("Failed to connect to database: %v", err)
+		helper.SugarObj.Error("Failed to connect to database: ", err)
 		return
 	}
 	helper.SugarObj.Info("Connected to database.")
@@ -34,10 +35,11 @@ func Run(cfg *config.Config) {
 func (s *Server) Start() {
 	mux := http.NewServeMux()
 	s.LoadRoutes(mux)
-
+	// Enable CORS
+	handler := cors.Default().Handler(mux)
 	server := &http.Server{
 		Addr:              fmt.Sprintf(":%d", s.Config.App.ServerPort),
-		Handler:           mux,
+		Handler:           handler,
 		ReadHeaderTimeout: s.Config.App.ReadHeaderTimeout,
 		WriteTimeout:      s.Config.App.ServerTimeout,
 		IdleTimeout:       s.Config.App.ServerTimeout,

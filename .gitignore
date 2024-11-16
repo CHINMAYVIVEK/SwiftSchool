@@ -80,3 +80,4 @@ Temporary Items
 .env
 cover.html
 logs/
+*.sh

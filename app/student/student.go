@@ -11,7 +11,7 @@ import (
 type Student struct {
 	EnrollmentID string  `json:"enrollment_id"`
 	Name         string  `json:"name"`
-	ClassID      int     `json:"class_id"`
+	ClassID      string  `json:"class_id"`
 	Address      Address `json:"address"`
 }
 
@@ -65,6 +65,21 @@ func (s *StudentService) RegisterStudent(w http.ResponseWriter, r *http.Request)
 		response.RespondWithJSON(w, http.StatusInternalServerError, response.NewErrorResponse(err.Error(), http.StatusInternalServerError, err))
 	} else {
 		// On success, return 200 OK with the result
+		response.RespondWithJSON(w, http.StatusOK, response.NewSuccessResponse(res, "Registration successful", http.StatusOK))
+	}
+}
+
+func (s *StudentService) SearchStudentByParams(w http.ResponseWriter, r *http.Request) {
+
+	req := Student{
+		EnrollmentID: r.URL.Query().Get("enrollment_id"),
+		Name:         r.URL.Query().Get("name"),
+		ClassID:      r.URL.Query().Get("class"),
+	}
+
+	if res, err := searchStudentByParams(req, s.DB); err != nil {
+		response.RespondWithJSON(w, http.StatusInternalServerError, response.NewErrorResponse(err.Error(), http.StatusInternalServerError, err))
+	} else {
 		response.RespondWithJSON(w, http.StatusOK, response.NewSuccessResponse(res, "Registration successful", http.StatusOK))
 	}
 }
