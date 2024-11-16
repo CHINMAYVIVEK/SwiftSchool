@@ -1,5 +1,6 @@
 // splash_screen.dart
 import 'package:flutter/material.dart';
+import 'package:swift_school/config/config.dart';
 import 'package:swift_school/screens/data_list_screen.dart';
 import 'dart:async';
 // import 'home_page.dart'; // Import the home page
@@ -59,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'Swift School',
+                      AppConfig.appName,
                       style: TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,

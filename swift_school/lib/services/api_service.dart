@@ -3,14 +3,13 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:swift_school/config/config.dart';
 import '../models/data.dart';
 
 class ApiService {
   final String baseUrl;
 
-  ApiService(
-      {this.baseUrl =
-          'http://127.0.0.1:8080'}); // Use 127.0.0.1 for local machine instead of localhost
+  ApiService({this.baseUrl = ApiConfig.baseUrl});
 
   Future<List<Data>> fetchData() async {
     try {

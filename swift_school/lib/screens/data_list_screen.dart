@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swift_school/config/config.dart';
 import '../models/data.dart';
 import '../services/api_service.dart';
 
@@ -22,7 +23,7 @@ class _DataListScreenState extends State<DataListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter and Go Backend'),
+        title: const Text(AppConfig.appName),
       ),
       body: FutureBuilder<List<Data>>(
         future: futureData,
