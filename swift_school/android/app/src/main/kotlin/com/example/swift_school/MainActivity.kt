@@ -1,5 +1,0 @@
-package com.example.swift_school
-
-import io.flutter.embedding.android.FlutterActivity
-
-class MainActivity: FlutterActivity()

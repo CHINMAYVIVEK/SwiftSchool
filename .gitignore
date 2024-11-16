@@ -1,6 +1,25 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,go
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,macos,go
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,go,flutter
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,macos,go,flutter
+
+### Flutter ###
+# Flutter/Dart/Pub related
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.fvm/flutter_sdk
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+lib/generated_plugin_registrant.dart
+# For library packages, don’t commit the pubspec.lock file.
+# Regenerating the pubspec.lock file lets you test your package against the latest compatible versions of its dependencies.
+# See https://dart.dev/guides/libraries/private-files#pubspeclock
+pubspec.lock
+
 
 ### Go ###
 # If you prefer the allow list template instead of the deny list, see community template:
@@ -20,7 +39,7 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-vendor/
+# vendor/
 
 # Go workspace file
 go.work
@@ -61,7 +80,6 @@ Temporary Items
 ### VisualStudioCode ###
 .vscode/*
 
-
 # Local History for Visual Studio Code
 .history/
 
@@ -73,7 +91,7 @@ Temporary Items
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,go
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,go,flutter
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
@@ -81,3 +99,6 @@ Temporary Items
 cover.html
 logs/
 *.sh
+**/.idea/
+**/.dart_tool/
+**/pubspec.lock
