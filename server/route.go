@@ -13,7 +13,14 @@ import (
 func (s *Server) LoadRoutes(mux *http.ServeMux) {
 
 	// getData route
-	http.HandleFunc("/api/data", getData)
+	// http.HandleFunc("/api/data", getData)
+	mux.HandleFunc("/api/data", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			getData(w, r)
+		} else {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		}
+	})
 
 	feeService := fees.NewFeeService(s.DB)
 	studentService := student.NewStudentService(s.DB)
