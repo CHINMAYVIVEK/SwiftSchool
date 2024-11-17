@@ -102,3 +102,4 @@ logs/
 **/.idea/
 **/.dart_tool/
 **/pubspec.lock
+build/
