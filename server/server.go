@@ -35,31 +35,51 @@ func Run(cfg *config.Config) {
 func (s *Server) Start() {
 	mux := http.NewServeMux()
 	s.LoadRoutes(mux)
-	// Enable CORS
-	handler := cors.Default().Handler(mux)
+
+	// Configure CORS with specific options for Flutter desktop
+	corsOptions := cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+		Debug:           true,
+	}
+
+	// Create a new CORS handler with our options
+	handler := cors.New(corsOptions).Handler(mux)
+
+	// Explicitly use IPv4
+	addr := fmt.Sprintf("127.0.0.1:%d", s.Config.App.ServerPort)
 	server := &http.Server{
-		Addr:              fmt.Sprintf(":%d", s.Config.App.ServerPort),
+		Addr:              addr,
 		Handler:           handler,
 		ReadHeaderTimeout: s.Config.App.ReadHeaderTimeout,
 		WriteTimeout:      s.Config.App.ServerTimeout,
 		IdleTimeout:       s.Config.App.ServerTimeout,
 	}
 
+	// Print server info
+	helper.SugarObj.Info("Server configuration:")
+	helper.SugarObj.Info("- Listening on: %s", addr)
+	helper.SugarObj.Info("- CORS enabled with all origins (*)")
+	helper.SugarObj.Info("- Debug mode: enabled")
+	helper.SugarObj.Info("- IPv4 mode: enabled")
+	helper.SugarObj.Info("- Available endpoints:")
+	helper.SugarObj.Info("  * /api/health")
+	helper.SugarObj.Info("  * /api/data")
+	helper.SugarObj.Info("  * /api/fees/fee-structure-by-class")
+	helper.SugarObj.Info("  * /api/student/student-registration")
+
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
-	go s.runServer(server)
-	s.shutdown(server, stop)
-}
+	go func() {
+		helper.SugarObj.Info("Starting server on %s...", addr)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			helper.SugarObj.Error("Server error: %v", err)
+		}
+	}()
 
-func (s *Server) runServer(server *http.Server) {
-	helper.SugarObj.Info("Starting server on port %d...", s.Config.App.ServerPort)
-	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		helper.SugarObj.Error("Server error: %v", err)
-	}
-}
-
-func (s *Server) shutdown(server *http.Server, stop chan os.Signal) {
 	<-stop
 	helper.SugarObj.Info("Shutting down server...")
 
@@ -69,6 +89,7 @@ func (s *Server) shutdown(server *http.Server, stop chan os.Signal) {
 	if err := server.Shutdown(ctx); err != nil {
 		helper.SugarObj.Error("Shutdown error: %v", err)
 	} else {
-		helper.SugarObj.Info("Server stopped.")
+		helper.SugarObj.Info("Server stopped gracefully")
 	}
 }
+
