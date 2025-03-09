@@ -1,70 +1,48 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
-	"os"
-	"os/exec"
+	"time"
 
-	"github.com/chinmayvivek/SwiftSchool/config"
-	"github.com/chinmayvivek/SwiftSchool/server"
+	"github.com/chinmayvivek/swiftschool/config"
+	"github.com/chinmayvivek/swiftschool/helper"
+	"github.com/chinmayvivek/swiftschool/internal/server"
+
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
+// Initialize logger
+
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
+
 func main() {
-	// Check if '--build' argument is passed
-	if len(os.Args) > 1 && os.Args[1] == "--build" {
-		fmt.Println("Building the project...")
-		runBuild() // Call the build function if '--build' is passed
-		return
+	logger := helper.GetLogger()
+
+	// Load .env file from root directory
+	if err := godotenv.Load(); err != nil {
+		logger.Error("error loading .env file: %v", err)
 	}
 
-	cfg := config.NewConfig()
+	// Create context with cancellation
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
-	fmt.Println("Configuration loaded successfully.")
-	fmt.Println("Starting the server...")
-
-	server.Run(cfg)
-}
-
-// Helper function to execute a command and handle errors
-func executeCommand(cmd *exec.Cmd) {
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	// Run the command and check for errors
-	if err := cmd.Run(); err != nil {
-		log.Fatalf("Command failed: %v\n", err)
+	// Load configurations
+	cfg, err := config.New(ctx)
+	if err != nil {
+		logger.Error("Failed to load configuration: ", err)
 	}
-}
 
-func runBuild() {
-	// --- Go Build for macOS ---
-	fmt.Println("Building Go project for macOS...")
+	// Create and start the server
+	srv := server.NewServer(cfg)
 
-	// Set environment variables for macOS build
-	cmd := exec.Command("go", "build", "-o", "build/swift_school-macos", "-ldflags", "-s -w", "./")
-	cmd.Env = append(os.Environ(), "GOOS=darwin", "GOARCH=amd64")
-	executeCommand(cmd)
-
-	// --- Go Build for Windows ---
-	fmt.Println("Building Go project for Windows...")
-
-	// Set environment variables for Windows build
-	cmd = exec.Command("go", "build", "-o", "build/swift_school-windows.exe", "-ldflags", "-s -w", "./")
-	cmd.Env = append(os.Environ(), "GOOS=windows", "GOARCH=amd64")
-	executeCommand(cmd)
-
-	// --- Flutter Build for macOS ---
-	// Change directory to the Flutter project directory (flutter_project)
-	fmt.Println("Building Flutter project for macOS...")
-	cmd = exec.Command("flutter", "build", "macos", "--release", "--no-dart-define", "-C", "swift_school")
-	executeCommand(cmd)
-
-	// --- Flutter Build for Windows ---
-	fmt.Println("Building Flutter project for Windows...")
-	cmd = exec.Command("flutter", "build", "windows", "--release", "--no-dart-define", "-C", "swift_school")
-	executeCommand(cmd)
-
-	// --- Finished ---
-	fmt.Println("Build completed for macOS and Windows!")
+	// Start the server
+	logger.Info("Server starting...")
+	if err := srv.Start(); err != nil {
+		logger.Error("Server failed to start: ", err)
+	}
 }

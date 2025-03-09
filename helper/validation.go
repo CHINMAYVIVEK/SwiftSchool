@@ -2,77 +2,75 @@ package helper
 
 import (
 	"crypto/rand"
+	"fmt"
 	"math/big"
 	"regexp"
-	"unicode"
-
-	"github.com/google/uuid"
+	"strings"
 )
 
 const (
+	PatternTypeMobile = "Mobile"
+	PatternTypeEmail  = "Email"
+
+	emailPattern  = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	mobilePattern = `^\+\d{1,3}\d{10}$`
+
 	passwordLength = 12
 	passwordChars  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+,.?/:;{}[]~"
 )
 
 var (
-	emailPattern  = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-	mobilePattern = regexp.MustCompile(`^\+\d{1,3}\d{10}$`)
-	nanoIDPattern = regexp.MustCompile(`^[a-z0-9_-]{21,}$`)
+	ErrDuplicateEmail      = fmt.Errorf("email already exists")
+	ErrStudentRoleNotFound = fmt.Errorf("student role not found")
+	ErrInvalidInput        = fmt.Errorf("invalid input")
 )
 
-// PatternValidation validates a string value against a predefined pattern (Email or Mobile)
-func PatternValidation(patternType, value string) bool {
-	switch patternType {
-	case "Mobile":
-		return mobilePattern.MatchString(value)
-	case "Email":
-		return emailPattern.MatchString(value)
-	case "NanoID":
-		return nanoIDPattern.MatchString(value)
-	default:
-		return false
+var (
+	patterns = map[string]*regexp.Regexp{
+		PatternTypeMobile: regexp.MustCompile(mobilePattern),
+		PatternTypeEmail:  regexp.MustCompile(emailPattern),
 	}
+)
+
+func IsValidPattern(patternType, value string) bool {
+	if pattern, ok := patterns[patternType]; ok {
+		return pattern.MatchString(value)
+	}
+	return false
 }
 
-// IsValidID checks if the class ID contains only alphanumeric characters
-func IsValidID(classID string) bool {
-	for _, r := range classID {
-		if !unicode.IsLetter(r) && !unicode.IsDigit(r) {
-			return false
-		}
-	}
-	return true
-}
-
-// IsPasswordStrong checks if the password meets strength criteria
 func IsPasswordStrong(password string) bool {
 	if len(password) < 8 {
 		return false
 	}
 
-	var hasUpperCase, hasLowerCase, hasDigit, hasSpecialChar bool
+	// Bitwise flags to track the presence of uppercase letters, lowercase letters, digits, and special characters.
+	hasUpperCase := false
+	hasLowerCase := false
+	hasDigit := false
+	hasSpecialChar := false
+
 	for _, char := range password {
 		switch {
-		case unicode.IsUpper(char):
+		case 'A' <= char && char <= 'Z':
 			hasUpperCase = true
-		case unicode.IsLower(char):
+		case 'a' <= char && char <= 'z':
 			hasLowerCase = true
-		case unicode.IsDigit(char):
+		case '0' <= char && char <= '9':
 			hasDigit = true
 		default:
 			hasSpecialChar = true
 		}
 
-		// If all conditions are met, we can return early
+		// If all the flags are set, we can break the loop early.
 		if hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar {
-			return true
+			break
 		}
 	}
 
 	return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar
 }
 
-// GenerateRandomPassword generates a random strong password of length 12
 func GenerateRandomPassword() string {
 	password := make([]byte, passwordLength)
 	for i := 0; i < passwordLength; i++ {
@@ -82,8 +80,18 @@ func GenerateRandomPassword() string {
 	return string(password)
 }
 
-// IsValidUUID checks if the provided string is a valid UUID
-func IsValidUUID(id string) bool {
-	_, err := uuid.Parse(id)
-	return err == nil
+func IsValidGender(gender string) bool {
+	validGenders := map[string]bool{
+		"male":        true,
+		"female":      true,
+		"transgender": true,
+	}
+	return validGenders[gender]
+}
+
+func IsPgUniqueViolation(err error) bool {
+	// Implement PostgreSQL unique violation error check
+	// This will depend on your PostgreSQL driver
+	return strings.Contains(err.Error(), "unique constraint") ||
+		strings.Contains(err.Error(), "duplicate key")
 }
