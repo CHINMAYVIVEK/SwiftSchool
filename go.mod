@@ -4,6 +4,7 @@ go 1.25.4
 
 require (
 	github.com/caarlos0/env/v11 v11.3.1
+	github.com/casbin/casbin/v2 v2.134.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault/api v1.22.0
 	github.com/joho/godotenv v1.5.1
@@ -15,6 +16,8 @@ require (
 )
 
 require (
+	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
+	github.com/casbin/govaluate v1.3.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
