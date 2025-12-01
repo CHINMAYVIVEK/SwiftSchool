@@ -1,0 +1,198 @@
+# ================================
+# Go Build Artifacts
+# ================================
+/bin/
+/build/
+/dist/
+/out/
+/target/
+/cmd/*/bin/
+
+/*.exe
+/*.exe~
+*.dll
+*.so
+*.dylib
+
+# Compiled object files
+*.o
+*.a
+*.lo
+*.la
+*.slo
+
+# Go test binaries
+*.test
+
+# Go coverage files
+coverage.out
+*.cov
+*.coverprofile
+
+# Race detector output
+race.out
+
+# ================================
+# Go Modules & Dependencies
+# ================================
+vendor/
+# These are valid to commit if needed:
+# go.mod
+# go.sum
+
+# ================================
+# Logs & Debug
+# ================================
+*.log
+logs/
+debug/
+
+# ================================
+# OS Generated Files
+# ================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Linux
+*.swap
+
+# Windows
+*.lnk
+
+# ================================
+# IDE / Editor Specific
+# ================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains (GoLand)
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+
+# Sublime
+*.sublime-workspace
+*.sublime-project
+
+# ================================
+# Environment & Config Files
+# ================================
+.env
+.env.*
+*.local
+*.secret
+secrets/
+config.local.yaml
+*.key
+*.pem
+
+# Token or credentials risk
+*.p12
+*.crt
+
+# ================================
+# Docker / Container
+# ================================
+/docker/*.env
+docker-compose.override.yml
+docker-compose.*.yml
+/dev.dockerfile
+
+# ================================
+# Database & Migrations
+# ================================
+db/data/
+*.sqlite
+*.db
+*.sql-journal
+
+# If running local Postgres volumes
+pgdata/
+postgres-data/
+
+# Migration tool state
+migrations/.dbmate
+migrations/.atlas*
+migrate.lock
+
+# ================================
+# Code Generators
+# ================================
+
+# sqlc
+sqlc.gen.go
+internal/db/*.sql.go
+*.sql.go
+
+# Protobuf / gRPC
+*.pb.go
+*.pb.gw.go
+*.swagger.json
+
+# GraphQL generated code
+gqlgen.yml
+graph/generated/*
+graph/model/*
+
+# Mock files (gomock / mockery)
+mock_*.go
+mocks/
+
+# Ent generated code
+ent/
+entc.go
+
+# Wire dependency injection
+wire_gen.go
+
+# Swagger / OpenAPI
+docs/swagger/*
+swagger.json
+swagger.yaml
+
+# ================================
+# Testing & Temp Files
+# ================================
+tmp/
+temp/
+testdata/tmp/
+*.tmp
+*.bak
+*.old
+
+# ================================
+# Dev Tools & Artifacts
+# ================================
+node_modules/
+coverage/
+.nyc_output/
+.eslintcache
+
+# ================================
+# Other Common Exclusions
+# ================================
+*.tar
+*.gz
+*.zip
+*.tgz
+*.7z
+
+# Prevent committing these accidentally:
+nohup.out
+*.pid
+*.sock
+
+# ================================
+# Security / Risky Files
+# ================================
+# NEVER commit private keys or secrets
+private.key
+id_rsa
+id_rsa.pub
+*.der
+*.csr
