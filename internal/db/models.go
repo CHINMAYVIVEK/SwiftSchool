@@ -43,10 +43,10 @@ type AcademicsTimetableEntry struct {
 	InstituteID       uuid.UUID
 	AcademicSessionID uuid.UUID
 	ClassID           uuid.NullUUID
+	DayOfWeek         sql.NullString
 	PeriodID          uuid.NullUUID
 	SubjectID         uuid.NullUUID
 	TeacherID         uuid.NullUUID
-	DayOfWeek         sql.NullString
 	CreatedAt         sql.NullTime
 	UpdatedAt         sql.NullTime
 	DeletedAt         sql.NullTime
