@@ -8,48 +8,49 @@ import (
 	"swiftschool/internal/db" // sqlc-generated package
 )
 
-// PostgresWrapper provides convenience methods for db access
+// PostgresWrapper wraps DB operations with timeout + SQLC access
 type PostgresWrapper struct {
-	postgres *config.PostgresDB
-	timeout  time.Duration
+	dbConn  *config.PostgresDB
+	timeout time.Duration
 }
 
-// NewPostgresWrapper creates a wrapper
-func NewPostgresWrapper(postgres *config.PostgresDB) *PostgresWrapper {
+// NewPostgresWrapper initializes the wrapper
+func NewPostgresWrapper(dbConn *config.PostgresDB) *PostgresWrapper {
 	return &PostgresWrapper{
-		postgres: postgres,
-		timeout:  postgres.QueryTimeout(),
+		dbConn:  dbConn,
+		timeout: dbConn.QueryTimeout(),
 	}
 }
 
-// WithTimeout returns a context with default timeout
-func (w *PostgresWrapper) WithTimeout(ctx context.Context) (context.Context, context.CancelFunc) {
-	return context.WithTimeout(ctx, w.timeout)
+// WithTimeout provides a context with default query timeout
+func (w *PostgresWrapper) WithTimeout(parent context.Context) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(parent, w.timeout)
 }
 
-// Queries returns a sqlc Queries object
+// Queries returns a SQLC Queries instance for normal DB operations
 func (w *PostgresWrapper) Queries() (*db.Queries, error) {
-	dbConn, err := w.postgres.GetDB()
+	conn, err := w.dbConn.GetDB()
 	if err != nil {
 		return nil, err
 	}
-	return db.New(dbConn), nil
+	return db.New(conn), nil
 }
 
-// WithTx executes a function within a transaction
+// WithTx runs a SQLC transaction wrapper
 func (w *PostgresWrapper) WithTx(ctx context.Context, fn func(*db.Queries) error) error {
-	dbConn, err := w.postgres.GetDB()
+	conn, err := w.dbConn.GetDB()
 	if err != nil {
 		return err
 	}
 
-	tx, err := dbConn.BeginTx(ctx, nil)
+	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 
-	queries := db.New(tx)
-	if err := fn(queries); err != nil {
+	q := db.New(tx)
+
+	if err := fn(q); err != nil {
 		_ = tx.Rollback()
 		return err
 	}

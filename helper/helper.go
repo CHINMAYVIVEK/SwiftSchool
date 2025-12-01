@@ -36,10 +36,30 @@ func CheckString(statuscreatedat sql.NullString) string {
 	return statuscreatedat_
 }
 
-func UUIDToString(id uuid.UUID) string {
+func UUIDToString(id *uuid.UUID) string {
+	if id == nil {
+		return ""
+	}
 	return id.String()
 }
 
 func StringToUUID(s string) (uuid.UUID, error) {
 	return uuid.Parse(s)
+}
+
+func ToStr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func ToNullUUID(u *uuid.UUID) uuid.NullUUID {
+	if u == nil {
+		return uuid.NullUUID{Valid: false}
+	}
+	return uuid.NullUUID{
+		UUID:  *u,
+		Valid: true,
+	}
 }

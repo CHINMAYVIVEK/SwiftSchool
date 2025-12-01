@@ -25,7 +25,7 @@ func newBaseResponse(statusCode int, message string) Response {
 }
 
 // NewSuccessResponse creates a success response
-func NewSuccessResponse(w http.ResponseWriter, data interface{}, message string, statusCode int) {
+func NewSuccessResponse(w http.ResponseWriter, statusCode int, message string, data interface{}) {
 	resp := newBaseResponse(statusCode, message)
 	resp.Success = true
 	resp.Data = data

@@ -12,10 +12,9 @@ func (s *Server) handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
 	healthData := map[string]string{
 		"status": "healthy",
 	}
-	helper.NewSuccessResponse(w, healthData, "Server is running", http.StatusOK)
+	helper.NewSuccessResponse(w, http.StatusOK, "Server is running", healthData)
 
 }
