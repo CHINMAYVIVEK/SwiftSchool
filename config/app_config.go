@@ -2,6 +2,7 @@ package config
 
 import "time"
 
+// AppConfig holds general application configuration
 type AppConfig struct {
 	LogLevel     string        `env:"LOG_LEVEL" default:"debug"`
 	ServerPort   string        `env:"SERVER_PORT" default:":8080"`

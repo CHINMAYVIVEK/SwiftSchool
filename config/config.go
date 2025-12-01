@@ -7,50 +7,42 @@ import (
 	"github.com/caarlos0/env/v11"
 )
 
+// Config holds the entire application configuration
 type Config struct {
 	App      *AppConfig
 	Postgres *PostgresDB
 }
 
+// New loads environment variables, initializes DB connections, and returns Config
 func New(ctx context.Context) (*Config, error) {
-
-	// Initialize configurations
-	postgresConfig := &PSQLConfig{}
-	appConfig := &AppConfig{}
-
-	opts := env.Options{RequiredIfNoDef: true}
-	if err := env.ParseWithOptions(appConfig, opts); err != nil {
+	// Parse AppConfig
+	appCfg := &AppConfig{}
+	if err := env.Parse(appCfg); err != nil {
 		return nil, fmt.Errorf("error parsing App config: %v", err)
 	}
 
-	if err := env.ParseWithOptions(postgresConfig, opts); err != nil {
+	// Parse Postgres config
+	pgCfg := &PSQLConfig{}
+	if err := env.Parse(pgCfg); err != nil {
 		return nil, fmt.Errorf("error parsing PostgreSQL config: %v", err)
 	}
 
-	postgres := NewPostgresDB(postgresConfig)
-
-	if err := postgres.Connect(ctx); err != nil {
-		// Close MongoDB connection if PostgreSQL connection fails
-		// mongo.Close(ctx)
+	// Initialize PostgresDB
+	pg := NewPostgresDB(pgCfg)
+	if err := pg.Connect(ctx); err != nil {
 		return nil, fmt.Errorf("error connecting to PostgreSQL: %v", err)
 	}
 
-	cfg := &Config{
-		App:      appConfig,
-		Postgres: postgres,
-	}
-
-	return cfg, nil
+	return &Config{
+		App:      appCfg,
+		Postgres: pg,
+	}, nil
 }
 
 // Close safely closes all database connections
 func (c *Config) Close(ctx context.Context) error {
-
-	defer func() {
-		if err := c.Postgres.Close(); err != nil {
-			fmt.Printf("error closing PostgreSQL connection: %v\n", err)
-		}
-	}()
-
+	if err := c.Postgres.Close(); err != nil {
+		return fmt.Errorf("error closing PostgreSQL connection: %v", err)
+	}
 	return nil
 }
