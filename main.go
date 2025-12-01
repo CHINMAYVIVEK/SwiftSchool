@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/chinmayvivek/swiftschool/config"
-	"github.com/chinmayvivek/swiftschool/helper"
-	"github.com/chinmayvivek/swiftschool/internal/server"
+	"swiftschool/config"
+	"swiftschool/helper"
+	"swiftschool/server"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"

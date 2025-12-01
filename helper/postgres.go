@@ -2,114 +2,57 @@ package helper
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	"time"
 
-	"github.com/chinmayvivek/swiftschool/config"
+	"swiftschool/config"
+	"swiftschool/internal/db" // sqlc-generated package
 )
 
+// PostgresWrapper provides convenience methods for db access
 type PostgresWrapper struct {
 	postgres *config.PostgresDB
+	timeout  time.Duration
 }
 
-type Tx interface {
-	QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row
-	Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
-	Commit() error
-	Rollback() error
-}
-
-type txWrapper struct {
-	*sql.Tx
-}
-
+// NewPostgresWrapper creates a wrapper
 func NewPostgresWrapper(postgres *config.PostgresDB) *PostgresWrapper {
-	return &PostgresWrapper{postgres: postgres}
+	return &PostgresWrapper{
+		postgres: postgres,
+		timeout:  postgres.QueryTimeout(),
+	}
 }
 
-func (w *PostgresWrapper) getDB() (*sql.DB, error) {
-	return w.postgres.GetDB()
+// WithTimeout returns a context with default timeout
+func (w *PostgresWrapper) WithTimeout(ctx context.Context) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(ctx, w.timeout)
 }
 
-func (w *PostgresWrapper) withTimeout(ctx context.Context) (context.Context, context.CancelFunc) {
-	return context.WithTimeout(ctx, 10*time.Second)
-}
-
-func (w *PostgresWrapper) BeginTx(ctx context.Context) (Tx, error) {
-	db, err := w.getDB()
+// Queries returns a sqlc Queries object
+func (w *PostgresWrapper) Queries() (*db.Queries, error) {
+	dbConn, err := w.postgres.GetDB()
 	if err != nil {
 		return nil, err
 	}
-	tx, err := db.BeginTx(ctx, nil)
+	return db.New(dbConn), nil
+}
+
+// WithTx executes a function within a transaction
+func (w *PostgresWrapper) WithTx(ctx context.Context, fn func(*db.Queries) error) error {
+	dbConn, err := w.postgres.GetDB()
 	if err != nil {
-		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+		return err
 	}
-	return &txWrapper{tx}, nil
-}
 
-func (t *txWrapper) QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {
-	return t.Tx.QueryRowContext(ctx, query, args...)
-}
-
-func (t *txWrapper) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
-	return t.Tx.ExecContext(ctx, query, args...)
-}
-
-func (w *PostgresWrapper) QueryRow(ctx context.Context, query string, args ...interface{}) (*sql.Row, error) {
-
-	db, err := w.getDB()
+	tx, err := dbConn.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return db.QueryRowContext(ctx, query, args...), nil
-}
 
-func (w *PostgresWrapper) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
-
-	db, err := w.getDB()
-	if err != nil {
-		return nil, err
+	queries := db.New(tx)
+	if err := fn(queries); err != nil {
+		_ = tx.Rollback()
+		return err
 	}
-	return db.QueryContext(ctx, query, args...)
-}
 
-func (w *PostgresWrapper) exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
-
-	db, err := w.getDB()
-	if err != nil {
-		return nil, err
-	}
-	return db.ExecContext(ctx, query, args...)
-}
-
-func (w *PostgresWrapper) execAffected(ctx context.Context, query string, args ...interface{}) (int64, error) {
-	result, err := w.exec(ctx, query, args...)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
-}
-
-// UpsertReturning performs an upsert and returns a row for scanning
-func (w *PostgresWrapper) UpsertReturning(ctx context.Context, query string, args ...interface{}) (*sql.Row, error) {
-	ctx, cancel := w.withTimeout(ctx)
-	defer cancel()
-
-	db, err := w.getDB()
-	if err != nil {
-		return nil, err
-	}
-	return db.QueryRowContext(ctx, query, args...), nil
-}
-
-// Consolidated operations using execAffected
-// Remove Insert and Update methods, keep only these core operations:
-
-func (w *PostgresWrapper) Delete(ctx context.Context, query string, args ...interface{}) (int64, error) {
-	return w.execAffected(ctx, query, args...)
-}
-
-func (w *PostgresWrapper) Upsert(ctx context.Context, query string, args ...interface{}) (int64, error) {
-	return w.execAffected(ctx, query, args...)
+	return tx.Commit()
 }

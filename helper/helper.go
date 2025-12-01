@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
+
+	"github.com/google/uuid"
 )
 
 func JSONMarshal(v map[string]string, safeEncoding bool) ([]byte, error) {
@@ -32,4 +34,12 @@ func CheckString(statuscreatedat sql.NullString) string {
 		statuscreatedat_ = statuscreatedat.String
 	}
 	return statuscreatedat_
+}
+
+func UUIDToString(id uuid.UUID) string {
+	return id.String()
+}
+
+func StringToUUID(s string) (uuid.UUID, error) {
+	return uuid.Parse(s)
 }

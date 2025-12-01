@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// PostgresDB represents a PostgreSQL database connection manager
+// PostgresDB manages the PostgreSQL connection
 type PostgresDB struct {
 	config *PSQLConfig
 	db     *sql.DB
@@ -21,43 +21,49 @@ type PSQLConfig struct {
 	Port               string        `env:"POSTGRES_PORT" default:"5432"`
 	User               string        `env:"POSTGRES_USER" default:"postgres"`
 	Password           string        `env:"POSTGRES_PASSWORD" default:"postgres"`
-	DBName             string        `env:"POSTGRES_DB_NAME" default:"liveclass"`
+	DBName             string        `env:"POSTGRES_DB_NAME" default:"swift_school"`
 	SetMaxOpenConns    int           `env:"POSTGRES_MAX_OPEN_CONNS" default:"25"`
 	SetMaxIdleConns    int           `env:"POSTGRES_MAX_IDLE_CONNS" default:"5"`
 	SetConnMaxLifetime time.Duration `env:"POSTGRES_CONN_MAX_LIFETIME" default:"5m"`
+	QueryTimeout       time.Duration `env:"POSTGRES_QUERY_TIMEOUT" default:"10s"`
 }
 
 // NewPostgresDB creates a new PostgresDB instance
 func NewPostgresDB(config *PSQLConfig) *PostgresDB {
-	return &PostgresDB{
-		config: config,
-	}
+	return &PostgresDB{config: config}
 }
 
-// Connect establishes a connection to PostgreSQL with retry mechanism
+// Connect establishes the connection
 func (p *PostgresDB) Connect(ctx context.Context) error {
+	dsn := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		p.config.Host, p.config.Port, p.config.User, p.config.Password, p.config.DBName,
+	)
 
-	dbInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		p.config.Host, p.config.Port, p.config.User, p.config.Password, p.config.DBName)
-
-	db, err := sql.Open("postgres", dbInfo)
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		return fmt.Errorf("failed to open database connection: %w", err)
+		return fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Configure connection pool
 	db.SetMaxOpenConns(p.config.SetMaxOpenConns)
 	db.SetMaxIdleConns(p.config.SetMaxIdleConns)
 	db.SetConnMaxLifetime(p.config.SetConnMaxLifetime * time.Minute)
+
+	// Test connection
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	if err := db.PingContext(ctx); err != nil {
+		return fmt.Errorf("failed to ping database: %w", err)
+	}
 
 	p.db = db
 	return nil
 }
 
-// GetDB returns the database connection instance
+// GetDB returns the underlying *sql.DB
 func (p *PostgresDB) GetDB() (*sql.DB, error) {
 	if p.db == nil {
-		return nil, fmt.Errorf("database connection not initialized")
+		return nil, fmt.Errorf("database not initialized")
 	}
 	return p.db, nil
 }
@@ -70,4 +76,11 @@ func (p *PostgresDB) Close() error {
 		return err
 	}
 	return nil
+}
+
+func (p *PostgresDB) QueryTimeout() time.Duration {
+	if p.config.QueryTimeout == 0 {
+		return 10 * time.Second
+	}
+	return p.config.QueryTimeout
 }
