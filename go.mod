@@ -10,6 +10,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/sqlc-dev/pqtype v0.3.0
 	go.uber.org/zap v1.27.1
+	gopkg.in/mail.v2 v2.3.1
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
@@ -33,4 +34,5 @@ require (
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 )

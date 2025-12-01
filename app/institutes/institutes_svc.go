@@ -21,5 +21,10 @@ func NewService(db *helper.PostgresWrapper) *InstitutesService {
 // InstitutesRegistration creates a new institute and returns BaseUUIDModel
 func (s *InstitutesService) InstitutesRegistration(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
 	// Business validations or vault logic can be added here
-	return s.repo.InstitutesRegistration(ctx, institute)
+
+	data, err := s.repo.InstitutesRegistration(ctx, institute)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

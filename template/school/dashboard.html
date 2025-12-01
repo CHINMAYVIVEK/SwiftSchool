@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>School ERP Dashboard</title>
+        <script src="https://unpkg.com/htmx.org@1.9.3"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body class="bg-gray-100">
+        <!-- Sidebar -->
+        <div class="flex h-screen">
+            <aside class="w-64 bg-blue-600 text-white flex-shrink-0">
+                <div class="p-6 text-2xl font-bold">School ERP</div>
+                <nav class="mt-10">
+                    <a
+                        href="#dashboard"
+                        class="block py-2 px-6 hover:bg-blue-500"
+                        >Dashboard</a
+                    >
+                    <a
+                        href="#students"
+                        hx-get="/students"
+                        hx-target="#main-content"
+                        hx-swap="innerHTML"
+                        class="block py-2 px-6 hover:bg-blue-500"
+                        >Students</a
+                    >
+                    <a
+                        href="#teachers"
+                        hx-get="/teachers"
+                        hx-target="#main-content"
+                        hx-swap="innerHTML"
+                        class="block py-2 px-6 hover:bg-blue-500"
+                        >Teachers</a
+                    >
+                    <a
+                        href="#classes"
+                        hx-get="/classes"
+                        hx-target="#main-content"
+                        hx-swap="innerHTML"
+                        class="block py-2 px-6 hover:bg-blue-500"
+                        >Classes</a
+                    >
+                    <a
+                        href="#analytics"
+                        hx-get="/analytics"
+                        hx-target="#main-content"
+                        hx-swap="innerHTML"
+                        class="block py-2 px-6 hover:bg-blue-500"
+                        >Analytics</a
+                    >
+                    <a href="#logout" class="block py-2 px-6 hover:bg-blue-500"
+                        >Logout</a
+                    >
+                </nav>
+            </aside>
+
+            <!-- Main content -->
+            <main class="flex-1 p-8 overflow-y-auto" id="main-content">
+                <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div
+                        class="bg-white p-6 rounded shadow hover:shadow-lg transition"
+                    >
+                        <h2 class="text-xl font-semibold">Total Students</h2>
+                        <p
+                            class="mt-2 text-2xl font-bold"
+                            hx-get="/stats/students"
+                            hx-trigger="load"
+                            hx-swap="innerHTML"
+                        >
+                            0
+                        </p>
+                    </div>
+                    <div
+                        class="bg-white p-6 rounded shadow hover:shadow-lg transition"
+                    >
+                        <h2 class="text-xl font-semibold">Total Teachers</h2>
+                        <p
+                            class="mt-2 text-2xl font-bold"
+                            hx-get="/stats/teachers"
+                            hx-trigger="load"
+                            hx-swap="innerHTML"
+                        >
+                            0
+                        </p>
+                    </div>
+                    <div
+                        class="bg-white p-6 rounded shadow hover:shadow-lg transition"
+                    >
+                        <h2 class="text-xl font-semibold">Total Classes</h2>
+                        <p
+                            class="mt-2 text-2xl font-bold"
+                            hx-get="/stats/classes"
+                            hx-trigger="load"
+                            hx-swap="innerHTML"
+                        >
+                            0
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Analytics Charts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded shadow">
+                        <h2 class="text-xl font-semibold mb-4">
+                            Student Enrollment Over Time
+                        </h2>
+                        <canvas id="enrollmentChart"></canvas>
+                    </div>
+                    <div class="bg-white p-6 rounded shadow">
+                        <h2 class="text-xl font-semibold mb-4">
+                            Teacher Distribution by Department
+                        </h2>
+                        <canvas id="teacherChart"></canvas>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Chart.js scripts -->
+        <script>
+            const enrollmentCtx = document
+                .getElementById("enrollmentChart")
+                .getContext("2d");
+            new Chart(enrollmentCtx, {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    datasets: [
+                        {
+                            label: "Students",
+                            data: [120, 135, 150, 160, 180, 200],
+                            borderColor: "rgba(59, 130, 246, 1)",
+                            backgroundColor: "rgba(59, 130, 246, 0.2)",
+                            fill: true,
+                            tension: 0.3,
+                        },
+                    ],
+                },
+                options: { responsive: true },
+            });
+
+            const teacherCtx = document
+                .getElementById("teacherChart")
+                .getContext("2d");
+            new Chart(teacherCtx, {
+                type: "doughnut",
+                data: {
+                    labels: ["Math", "Science", "English", "Arts", "Sports"],
+                    datasets: [
+                        {
+                            label: "Teachers",
+                            data: [5, 8, 6, 4, 3],
+                            backgroundColor: [
+                                "#3B82F6",
+                                "#10B981",
+                                "#F59E0B",
+                                "#EF4444",
+                                "#8B5CF6",
+                            ],
+                        },
+                    ],
+                },
+                options: { responsive: true },
+            });
+        </script>
+    </body>
+</html>
