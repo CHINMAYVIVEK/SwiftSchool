@@ -6,9 +6,13 @@
         <title>School ERP Login</title>
         <script src="https://unpkg.com/htmx.org@1.9.3"></script>
         <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            href="https://cdn.jsdelivr.net/npm/@tailwindcss/forms@0.5.3/dist/forms.min.css"
+            rel="stylesheet"
+        />
     </head>
-    <body class="h-screen flex font-sans">
-        <!-- Left Side: School Image with Gradient Overlay -->
+    <body class="h-screen flex font-sans bg-gray-100">
+        <!-- Left Side: School Image + Gradient -->
         <div
             class="hidden md:flex w-1/2 relative bg-cover bg-center"
             style="
@@ -16,7 +20,7 @@
             "
         >
             <div
-                class="absolute inset-0 bg-gradient-to-tr from-blue-800 via-indigo-800 to-purple-700 opacity-80 flex flex-col justify-center items-center p-8"
+                class="absolute inset-0 bg-gradient-to-tr from-indigo-900 via-purple-900 to-pink-800 opacity-80 flex flex-col justify-center items-center p-8"
             >
                 <h1
                     class="text-white text-5xl font-bold mb-4 text-center drop-shadow-lg"
@@ -26,8 +30,8 @@
                 <p
                     class="text-gray-200 text-lg text-center max-w-md drop-shadow-md"
                 >
-                    Manage students, teachers, classes, and analytics seamlessly
-                    with our intuitive ERP system.
+                    Manage students, teachers, classes, attendance, and
+                    analytics seamlessly.
                 </p>
             </div>
         </div>
@@ -43,7 +47,6 @@
                     Sign in to your account
                 </h2>
 
-                <!-- Login Form -->
                 <form
                     id="login-form"
                     hx-post="/login"
@@ -65,13 +68,26 @@
                     </div>
                     <button
                         type="submit"
-                        class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition shadow-lg transform hover:scale-105"
+                        class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition shadow-lg transform hover:scale-105 flex justify-center items-center gap-2"
                     >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M16 12H8m0 0l4-4m-4 4l4 4"
+                            />
+                        </svg>
                         Send OTP
                     </button>
                 </form>
 
-                <!-- OTP Verification (dynamic via HTMX) -->
                 <div
                     id="otp-section"
                     class="mt-6 text-center text-red-500"

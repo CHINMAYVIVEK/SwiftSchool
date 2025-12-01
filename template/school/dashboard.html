@@ -8,67 +8,88 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
-    <body class="bg-gray-100">
-        <!-- Sidebar -->
+    <body class="bg-gray-100 font-sans">
         <div class="flex h-screen">
-            <aside class="w-64 bg-blue-600 text-white flex-shrink-0">
-                <div class="p-6 text-2xl font-bold">School ERP</div>
-                <nav class="mt-10">
+            <!-- Sidebar -->
+            <aside
+                class="w-64 bg-indigo-700 text-white flex-shrink-0 flex flex-col"
+            >
+                <div class="p-6 text-2xl font-bold flex items-center gap-2">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-8 w-8"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 7h18M3 12h18M3 17h18"
+                        />
+                    </svg>
+                    School ERP
+                </div>
+                <nav class="mt-10 flex-1">
                     <a
                         href="#dashboard"
-                        class="block py-2 px-6 hover:bg-blue-500"
-                        >Dashboard</a
+                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
+                        ><span>🏠</span> Dashboard</a
                     >
                     <a
                         href="#students"
                         hx-get="/students"
                         hx-target="#main-content"
                         hx-swap="innerHTML"
-                        class="block py-2 px-6 hover:bg-blue-500"
-                        >Students</a
+                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
+                        ><span>🎓</span> Students</a
                     >
                     <a
                         href="#teachers"
                         hx-get="/teachers"
                         hx-target="#main-content"
                         hx-swap="innerHTML"
-                        class="block py-2 px-6 hover:bg-blue-500"
-                        >Teachers</a
+                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
+                        ><span>👩‍🏫</span> Teachers</a
                     >
                     <a
                         href="#classes"
                         hx-get="/classes"
                         hx-target="#main-content"
                         hx-swap="innerHTML"
-                        class="block py-2 px-6 hover:bg-blue-500"
-                        >Classes</a
+                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
+                        ><span>📚</span> Classes</a
                     >
                     <a
                         href="#analytics"
                         hx-get="/analytics"
                         hx-target="#main-content"
                         hx-swap="innerHTML"
-                        class="block py-2 px-6 hover:bg-blue-500"
-                        >Analytics</a
+                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
+                        ><span>📊</span> Analytics</a
                     >
-                    <a href="#logout" class="block py-2 px-6 hover:bg-blue-500"
-                        >Logout</a
+                    <a
+                        href="#logout"
+                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
+                        ><span>🚪</span> Logout</a
                     >
                 </nav>
             </aside>
 
-            <!-- Main content -->
+            <!-- Main Content -->
             <main class="flex-1 p-8 overflow-y-auto" id="main-content">
                 <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
 
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div
-                        class="bg-white p-6 rounded shadow hover:shadow-lg transition"
+                        class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col items-center gap-2"
                     >
-                        <h2 class="text-xl font-semibold">Total Students</h2>
+                        <div class="text-indigo-500 text-3xl">🎓</div>
+                        <h2 class="text-lg font-semibold">Total Students</h2>
                         <p
-                            class="mt-2 text-2xl font-bold"
+                            class="text-2xl font-bold"
                             hx-get="/stats/students"
                             hx-trigger="load"
                             hx-swap="innerHTML"
@@ -77,11 +98,12 @@
                         </p>
                     </div>
                     <div
-                        class="bg-white p-6 rounded shadow hover:shadow-lg transition"
+                        class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col items-center gap-2"
                     >
-                        <h2 class="text-xl font-semibold">Total Teachers</h2>
+                        <div class="text-green-500 text-3xl">👩‍🏫</div>
+                        <h2 class="text-lg font-semibold">Total Teachers</h2>
                         <p
-                            class="mt-2 text-2xl font-bold"
+                            class="text-2xl font-bold"
                             hx-get="/stats/teachers"
                             hx-trigger="load"
                             hx-swap="innerHTML"
@@ -90,11 +112,12 @@
                         </p>
                     </div>
                     <div
-                        class="bg-white p-6 rounded shadow hover:shadow-lg transition"
+                        class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col items-center gap-2"
                     >
-                        <h2 class="text-xl font-semibold">Total Classes</h2>
+                        <div class="text-yellow-500 text-3xl">📚</div>
+                        <h2 class="text-lg font-semibold">Total Classes</h2>
                         <p
-                            class="mt-2 text-2xl font-bold"
+                            class="text-2xl font-bold"
                             hx-get="/stats/classes"
                             hx-trigger="load"
                             hx-swap="innerHTML"
@@ -105,24 +128,60 @@
                 </div>
 
                 <!-- Analytics Charts -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded shadow">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow">
                         <h2 class="text-xl font-semibold mb-4">
                             Student Enrollment Over Time
                         </h2>
                         <canvas id="enrollmentChart"></canvas>
                     </div>
-                    <div class="bg-white p-6 rounded shadow">
+                    <div class="bg-white p-6 rounded-xl shadow">
                         <h2 class="text-xl font-semibold mb-4">
                             Teacher Distribution by Department
                         </h2>
                         <canvas id="teacherChart"></canvas>
                     </div>
                 </div>
+
+                <!-- Table Example -->
+                <div class="bg-white p-6 rounded-xl shadow overflow-x-auto">
+                    <h2 class="text-xl font-semibold mb-4">Recent Students</h2>
+                    <table class="min-w-full border-collapse">
+                        <thead class="bg-indigo-100 text-left">
+                            <tr>
+                                <th class="py-2 px-4 font-medium text-gray-700">
+                                    ID
+                                </th>
+                                <th class="py-2 px-4 font-medium text-gray-700">
+                                    Name
+                                </th>
+                                <th class="py-2 px-4 font-medium text-gray-700">
+                                    Class
+                                </th>
+                                <th class="py-2 px-4 font-medium text-gray-700">
+                                    Enrollment Date
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-2 px-4">1</td>
+                                <td class="py-2 px-4">John Doe</td>
+                                <td class="py-2 px-4">Grade 10</td>
+                                <td class="py-2 px-4">2025-11-01</td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-2 px-4">2</td>
+                                <td class="py-2 px-4">Jane Smith</td>
+                                <td class="py-2 px-4">Grade 9</td>
+                                <td class="py-2 px-4">2025-11-03</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </main>
         </div>
 
-        <!-- Chart.js scripts -->
         <script>
             const enrollmentCtx = document
                 .getElementById("enrollmentChart")
