@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -62,4 +63,17 @@ func ToNullUUID(u *uuid.UUID) uuid.NullUUID {
 		UUID:  *u,
 		Valid: true,
 	}
+}
+
+// ToNullTime converts *time.Time or time.Time to sql.NullTime
+func ToNullTime(t *time.Time) sql.NullTime {
+	if t != nil {
+		return sql.NullTime{Time: *t, Valid: true}
+	}
+	return sql.NullTime{Valid: false}
+}
+
+// ToNullBool converts bool to sql.NullBool
+func ToNullBool(b bool) sql.NullBool {
+	return sql.NullBool{Bool: b, Valid: true}
 }

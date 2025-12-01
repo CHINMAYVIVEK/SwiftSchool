@@ -39,6 +39,8 @@ func (r *InstitutesRepository) InstitutesRegistration(ctx context.Context, insti
 		LogoUrl:      sql.NullString{String: helper.ToStr(institute.LogoURL), Valid: institute.LogoURL != nil},
 		Website:      sql.NullString{String: helper.ToStr(institute.Website), Valid: institute.Website != nil},
 		CreatedBy:    helper.ToNullUUID(institute.CreatedBy),
+		CreatedAt:    helper.ToNullTime(&institute.CreatedAt),
+		IsActive:     helper.ToNullBool(institute.IsActive),
 	}
 
 	coreInstitute, err := q.CreateInstitute(ctx, params)
