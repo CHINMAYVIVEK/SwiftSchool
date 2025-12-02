@@ -34,28 +34,72 @@ func NewService(db *helper.PostgresWrapper) *Service {
 
 type RepositoryInterface interface {
 	CreateInstitute(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error)
+	DeleteInstitute()
+	GetInstituteByCode()
+	GetInstituteById()
+	ListInstitutes()
+	UpdateInstitute()
+
 	CreateClass()
 	DeleteClass()
+	UpdateClass()
+
 	CreateAcademicSession()
+	GetActiveSession()
+	UpdateAcademicSession()
+
 	CreateAddress()
+
 	CreateDepartment()
 	DeleteDepartment()
+	UpdateDepartment()
+
 	CreateEmployee()
+	ListEmployees()
+	DeleteEmployee()
+	UpdateEmployee()
+
 	CreateGuardian()
 	CreateStudent()
+	DeleteStudent()
 	LinkStudentGuardian()
+	ListStudentsByClass()
+	SearchStudents()
+	UpdateStudent()
 }
 
 type ServiceInterface interface {
 	CreateInstitute(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error)
+	DeleteInstitute()
+	GetInstituteByCode()
+	GetInstituteById()
+	ListInstitutes()
+	UpdateInstitute()
+
 	CreateClass()
 	DeleteClass()
+	UpdateClass()
+
 	CreateAcademicSession()
+	GetActiveSession()
+	UpdateAcademicSession()
+
 	CreateAddress()
+
 	CreateDepartment()
 	DeleteDepartment()
+	UpdateDepartment()
+
 	CreateEmployee()
+	ListEmployees()
+	DeleteEmployee()
+	UpdateEmployee()
+
 	CreateGuardian()
 	CreateStudent()
+	DeleteStudent()
 	LinkStudentGuardian()
+	ListStudentsByClass()
+	SearchStudents()
+	UpdateStudent()
 }

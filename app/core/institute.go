@@ -65,6 +65,12 @@ func (s *Service) CreateInstitute(ctx context.Context, institute domain.Institut
 	return s.repo.CreateInstitute(ctx, institute)
 }
 
+func (s *Service) DeleteInstitute()    {}
+func (s *Service) GetInstituteByCode() {}
+func (s *Service) GetInstituteById()   {}
+func (s *Service) ListInstitutes()     {}
+func (s *Service) UpdateInstitute()    {}
+
 func (r *Repository) CreateInstitute(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
 	// Apply timeout
 	ctx, cancel := r.db.WithTimeout(ctx)
@@ -98,3 +104,9 @@ func (r *Repository) CreateInstitute(ctx context.Context, institute domain.Insti
 
 	return &base, nil
 }
+
+func (r *Repository) DeleteInstitute()    {}
+func (r *Repository) GetInstituteByCode() {}
+func (r *Repository) GetInstituteById()   {}
+func (r *Repository) ListInstitutes()     {}
+func (r *Repository) UpdateInstitute()    {}
