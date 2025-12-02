@@ -4,39 +4,50 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
+	"slices"
 	"time"
 
 	"github.com/google/uuid"
 )
 
+// JSONMarshal safely marshals a map to JSON with optional unescaped characters
 func JSONMarshal(v map[string]string, safeEncoding bool) ([]byte, error) {
 	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
 
 	if safeEncoding {
-		b = bytes.Replace(b, []byte("\\u003c"), []byte("<"), -1)
-		b = bytes.Replace(b, []byte("\\u003e"), []byte(">"), -1)
-		b = bytes.Replace(b, []byte("\\u0026"), []byte("&"), -1)
-	}
-	return b, err
-}
+		replacements := []struct {
+			old []byte
+			new []byte
+		}{
+			{[]byte("\\u003c"), []byte("<")},
+			{[]byte("\\u003e"), []byte(">")},
+			{[]byte("\\u0026"), []byte("&")},
+		}
 
-func Contains(s []int, e int) bool {
-	for _, a := range s {
-		if a == e {
-			return true
+		for _, r := range replacements {
+			b = bytes.ReplaceAll(b, r.old, r.new)
 		}
 	}
-	return false
+	return b, nil
 }
 
-func CheckString(statuscreatedat sql.NullString) string {
-	statuscreatedat_ := ""
-	if statuscreatedat.Valid {
-		statuscreatedat_ = statuscreatedat.String
+// Contains checks if a slice of any comparable type contains the given item
+func Contains[T comparable](slice []T, item T) bool {
+	return slices.Contains(slice, item)
+}
+
+// CheckString returns the value of sql.NullString or empty string if null
+func CheckString(ns sql.NullString) string {
+	if ns.Valid {
+		return ns.String
 	}
-	return statuscreatedat_
+	return ""
 }
 
+// UUIDToString converts a *uuid.UUID to string safely
 func UUIDToString(id *uuid.UUID) string {
 	if id == nil {
 		return ""
@@ -44,10 +55,12 @@ func UUIDToString(id *uuid.UUID) string {
 	return id.String()
 }
 
+// StringToUUID converts a string to uuid.UUID
 func StringToUUID(s string) (uuid.UUID, error) {
 	return uuid.Parse(s)
 }
 
+// ToStr safely dereferences a string pointer or returns empty string
 func ToStr(s *string) string {
 	if s == nil {
 		return ""
@@ -55,17 +68,15 @@ func ToStr(s *string) string {
 	return *s
 }
 
+// ToNullUUID converts a *uuid.UUID to uuid.NullUUID
 func ToNullUUID(u *uuid.UUID) uuid.NullUUID {
 	if u == nil {
 		return uuid.NullUUID{Valid: false}
 	}
-	return uuid.NullUUID{
-		UUID:  *u,
-		Valid: true,
-	}
+	return uuid.NullUUID{UUID: *u, Valid: true}
 }
 
-// ToNullTime converts *time.Time or time.Time to sql.NullTime
+// ToNullTime converts a *time.Time to sql.NullTime
 func ToNullTime(t *time.Time) sql.NullTime {
 	if t != nil {
 		return sql.NullTime{Time: *t, Valid: true}
@@ -73,7 +84,7 @@ func ToNullTime(t *time.Time) sql.NullTime {
 	return sql.NullTime{Valid: false}
 }
 
-// ToNullBool converts bool to sql.NullBool
+// ToNullBool converts a bool to sql.NullBool
 func ToNullBool(b bool) sql.NullBool {
 	return sql.NullBool{Bool: b, Valid: true}
 }
