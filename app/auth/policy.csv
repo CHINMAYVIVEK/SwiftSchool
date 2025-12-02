@@ -1,0 +1,10 @@
+# role, object, action, institute, class, owner
+
+p, admin, *, *, *, *
+p, teacher, attendance, write, institute1, *, *
+p, teacher, marks, write, institute1, class1, *
+p, student, marks, read, institute1, class1, {studentId}
+p, parent, marks, read, institute1, class1, {childId}
+
+g, user123, teacher
+g, user789, student

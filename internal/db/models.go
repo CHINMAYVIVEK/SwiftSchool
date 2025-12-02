@@ -43,10 +43,10 @@ type AcademicsTimetableEntry struct {
 	InstituteID       uuid.UUID
 	AcademicSessionID uuid.UUID
 	ClassID           uuid.NullUUID
-	DayOfWeek         sql.NullString
 	PeriodID          uuid.NullUUID
 	SubjectID         uuid.NullUUID
 	TeacherID         uuid.NullUUID
+	DayOfWeek         sql.NullString
 	CreatedAt         sql.NullTime
 	UpdatedAt         sql.NullTime
 	DeletedAt         sql.NullTime
@@ -269,6 +269,10 @@ type EnumsAttendanceStatus struct {
 	Code string
 }
 
+type EnumsBillingCycle struct {
+	Code string
+}
+
 type EnumsBloodGroup struct {
 	Code string
 }
@@ -336,7 +340,15 @@ type EnumsRelationshipType struct {
 	Code string
 }
 
+type EnumsSaasInvoiceStatus struct {
+	Code string
+}
+
 type EnumsSocialCategory struct {
+	Code string
+}
+
+type EnumsSubscriptionStatus struct {
 	Code string
 }
 
@@ -821,4 +833,47 @@ type PayrollSalaryComponent struct {
 	DeletedAt   sql.NullTime
 	CreatedBy   uuid.NullUUID
 	UpdatedBy   uuid.NullUUID
+}
+
+type SubscriptionInvoice struct {
+	ID                 uuid.UUID
+	SubscriptionID     uuid.NullUUID
+	Amount             string
+	Status             sql.NullString
+	BillingPeriodStart sql.NullTime
+	BillingPeriodEnd   sql.NullTime
+	IssuedAt           sql.NullTime
+	PaidAt             sql.NullTime
+}
+
+type SubscriptionPlan struct {
+	ID              uuid.UUID
+	Name            string
+	BasePrice       string
+	PricePerStudent string
+	BillingCycle    sql.NullString
+	CurrencyCode    sql.NullString
+	Features        pqtype.NullRawMessage
+	IsActive        sql.NullBool
+	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
+	DeletedAt       sql.NullTime
+	CreatedBy       uuid.NullUUID
+	UpdatedBy       uuid.NullUUID
+}
+
+type SubscriptionSubscription struct {
+	ID                   uuid.UUID
+	InstituteID          uuid.UUID
+	PlanID               uuid.UUID
+	Status               sql.NullString
+	StartDate            time.Time
+	EndDate              time.Time
+	NextBillingDate      sql.NullTime
+	StudentCountSnapshot sql.NullInt32
+	CreatedAt            sql.NullTime
+	UpdatedAt            sql.NullTime
+	DeletedAt            sql.NullTime
+	CreatedBy            uuid.NullUUID
+	UpdatedBy            uuid.NullUUID
 }
