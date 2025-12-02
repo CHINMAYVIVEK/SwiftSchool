@@ -10,9 +10,9 @@ func (s *Server) SetupRoutes() {
 	s.mux.HandleFunc("/api/health", s.handleHealthCheck)
 
 	// Institutes
-	institutesService := core.NewService(s.db)
-	institutesHandler := core.NewHandler(institutesService)
+	coreService := core.NewService(s.db)
+	coreHandler := core.NewHandler(coreService)
 
 	// Register Institute
-	s.mux.HandleFunc("/api/institutes/register", institutesHandler.CreateInstitute)
+	s.mux.HandleFunc("/api/institutes/register", coreHandler.CreateInstitute)
 }

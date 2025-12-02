@@ -88,3 +88,13 @@ func ToNullTime(t *time.Time) sql.NullTime {
 func ToNullBool(b bool) sql.NullBool {
 	return sql.NullBool{Bool: b, Valid: true}
 }
+
+func ToNullString(s *string) sql.NullString {
+	if s == nil {
+		return sql.NullString{Valid: false}
+	}
+	return sql.NullString{
+		String: *s,
+		Valid:  true,
+	}
+}
