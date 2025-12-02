@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (h *CoreHandler) InstitutesRegistration(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) InstitutesRegistration(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -61,7 +61,11 @@ func (h *CoreHandler) InstitutesRegistration(w http.ResponseWriter, r *http.Requ
 	helper.NewSuccessResponse(w, http.StatusOK, "institute created successfully", data)
 }
 
-func (r *CoreRepository) InstitutesRegistration(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
+func (s *Service) InstitutesRegistration(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
+	return s.repo.InstitutesRegistration(ctx, institute)
+}
+
+func (r *Repository) InstitutesRegistration(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
 	// Apply timeout
 	ctx, cancel := r.db.WithTimeout(ctx)
 	defer cancel()
@@ -94,14 +98,4 @@ func (r *CoreRepository) InstitutesRegistration(ctx context.Context, institute d
 	}
 
 	return &base, nil
-}
-
-func (s *CoreService) InstitutesRegistration(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
-	// Business validations or vault logic can be added here
-
-	data, err := s.repo.InstitutesRegistration(ctx, institute)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
 }
