@@ -1,9 +1,5 @@
 package core
 
-func (s *Service) CreateAcademicSession() {
+func (s *Service) CreateAcademicSession() {}
 
-}
-
-func (r *Repository) CreateAcademicSession() {
-
-}
+func (r *Repository) CreateAcademicSession() {}

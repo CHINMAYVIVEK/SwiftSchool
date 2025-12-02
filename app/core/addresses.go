@@ -1,9 +1,5 @@
 package core
 
-func (s *Service) CreateAddress() {
+func (s *Service) CreateAddress() {}
 
-}
-
-func (r *Repository) CreateAddress() {
-
-}
+func (r *Repository) CreateAddress() {}
