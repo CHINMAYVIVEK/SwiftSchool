@@ -1,6 +1,5 @@
 package core
 
-func (s *Service) CreateEmployee() {
+func (s *Service) CreateEmployee() {}
 
-}
 func (r *Repository) CreateEmployee() {}
