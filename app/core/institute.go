@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (h *Handler) InstitutesRegistration(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateInstitute(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -51,7 +51,7 @@ func (h *Handler) InstitutesRegistration(w http.ResponseWriter, r *http.Request)
 	req.IsActive = true
 
 	// Call service
-	data, err := h.service.InstitutesRegistration(r.Context(), req)
+	data, err := h.service.CreateInstitute(r.Context(), req)
 	if err != nil {
 		helper.NewErrorResponse(w, http.StatusInternalServerError, "failed to create institute: "+err.Error())
 		return
@@ -61,11 +61,11 @@ func (h *Handler) InstitutesRegistration(w http.ResponseWriter, r *http.Request)
 	helper.NewSuccessResponse(w, http.StatusOK, "institute created successfully", data)
 }
 
-func (s *Service) InstitutesRegistration(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
-	return s.repo.InstitutesRegistration(ctx, institute)
+func (s *Service) CreateInstitute(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
+	return s.repo.CreateInstitute(ctx, institute)
 }
 
-func (r *Repository) InstitutesRegistration(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
+func (r *Repository) CreateInstitute(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error) {
 	// Apply timeout
 	ctx, cancel := r.db.WithTimeout(ctx)
 	defer cancel()
@@ -84,7 +84,6 @@ func (r *Repository) InstitutesRegistration(ctx context.Context, institute domai
 		LogoUrl:      sql.NullString{String: helper.ToStr(institute.LogoURL), Valid: institute.LogoURL != nil},
 		Website:      sql.NullString{String: helper.ToStr(institute.Website), Valid: institute.Website != nil},
 		CreatedBy:    helper.ToNullUUID(institute.CreatedBy),
-		CreatedAt:    helper.ToNullTime(&institute.CreatedAt),
 		IsActive:     helper.ToNullBool(institute.IsActive),
 	}
 

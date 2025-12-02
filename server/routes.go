@@ -14,5 +14,5 @@ func (s *Server) SetupRoutes() {
 	institutesHandler := core.NewHandler(institutesService)
 
 	// Register Institute
-	s.mux.HandleFunc("/api/institutes/register", institutesHandler.InstitutesRegistration)
+	s.mux.HandleFunc("/api/institutes/register", institutesHandler.CreateInstitute)
 }

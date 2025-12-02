@@ -33,11 +33,29 @@ func NewService(db *helper.PostgresWrapper) *Service {
 }
 
 type RepositoryInterface interface {
-	InstitutesRegistration(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error)
-	CreateClass(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error)
+	CreateInstitute(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error)
+	CreateClass()
+	DeleteClass()
+	CreateAcademicSession()
+	CreateAddress()
+	CreateDepartment()
+	DeleteDepartment()
+	CreateEmployee()
+	CreateGuardian()
+	CreateStudent()
+	LinkStudentGuardian()
 }
 
 type ServiceInterface interface {
-	InstitutesRegistration(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error)
-	CreateClass(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error)
+	CreateInstitute(ctx context.Context, institute domain.Institute) (*domain.BaseUUIDModel, error)
+	CreateClass()
+	DeleteClass()
+	CreateAcademicSession()
+	CreateAddress()
+	CreateDepartment()
+	DeleteDepartment()
+	CreateEmployee()
+	CreateGuardian()
+	CreateStudent()
+	LinkStudentGuardian()
 }
