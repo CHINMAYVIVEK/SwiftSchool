@@ -7,11 +7,11 @@ It helps institutions digitally manage students, teachers, attendance, exams, co
 
 ## 🚀 **Project Goals**
 
-✔ Simplify daily school operations
-✔ Centralize all academic & administrative data
-✔ Improve communication across stakeholders
-✔ Provide actionable insights with reports & analytics
-✔ Deliver a clean, modern, and user-friendly experience
+✔ Simplify daily school operations  
+✔ Centralize all academic & administrative data  
+✔ Improve communication across stakeholders  
+✔ Provide actionable insights with reports & analytics  
+✔ Deliver a clean, modern, and user-friendly experience  
 ✔ Support scalability for institutions of all sizes
 
 ---
