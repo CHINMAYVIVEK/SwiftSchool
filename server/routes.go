@@ -2,6 +2,9 @@ package server
 
 import (
 	"swiftschool/app/academics"
+	"swiftschool/app/admissions"
+	"swiftschool/app/auth"
+	"swiftschool/app/common"
 	"swiftschool/app/core"
 )
 
@@ -69,4 +72,36 @@ func (s *Server) SetupRoutes() {
 	// ================= TIMETABLE =================
 	s.mux.HandleFunc("/api/timetable/register", academicHandler.CreateTimetableEntry)
 	s.mux.HandleFunc("/api/timetable/list", academicHandler.GetClassTimetable)
+
+	// Initialize Admissions Service and Handler
+	admissionService := admissions.NewService(s.db)
+	admissionHandler := admissions.NewHandler(admissionService)
+
+	// ================= ENQUIRIES =================
+	s.mux.HandleFunc("/api/admissions/enquiries/register", admissionHandler.CreateEnquiry)
+	s.mux.HandleFunc("/api/admissions/enquiries/list", admissionHandler.ListEnquiries)
+	s.mux.HandleFunc("/api/admissions/enquiries/update_status", admissionHandler.UpdateEnquiryStatus)
+
+	// Initialize Auth Service and Handler
+	authService := auth.NewService(s.db)
+	authHandler := auth.NewHandler(authService)
+
+	// ================= USERS =================
+	s.mux.HandleFunc("/api/auth/users/register", authHandler.CreateUser)
+	s.mux.HandleFunc("/api/auth/users/get_by_username", authHandler.GetUserByUsername)
+	s.mux.HandleFunc("/api/auth/users/get_by_id", authHandler.GetUserById)
+	s.mux.HandleFunc("/api/auth/users/update_password", authHandler.UpdateUserPassword)
+	s.mux.HandleFunc("/api/auth/users/update_status", authHandler.UpdateUserStatus)
+	s.mux.HandleFunc("/api/auth/users/list_by_role", authHandler.ListUsersByRole)
+
+	// Initialize Common Service and Handler
+	commonService := common.NewService(s.db)
+	commonHandler := common.NewHandler(commonService)
+
+	// ================= DOCUMENTS =================
+	s.mux.HandleFunc("/api/common/documents/create", commonHandler.CreateDocument)
+	s.mux.HandleFunc("/api/common/documents/list", commonHandler.ListDocuments)
+
+	// ================= NOTIFICATIONS =================
+	s.mux.HandleFunc("/api/common/notifications/create", commonHandler.CreateNotification)
 }
