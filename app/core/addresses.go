@@ -2,10 +2,10 @@ package core
 
 import (
 	"context"
-	"swiftschool/internal/db"
+	"swiftschool/domain"
 )
 
-func (s *Service) CreateAddress(ctx context.Context, arg db.CreateAddressParams) (db.CoreAddress, error) {
+func (s *Service) CreateAddress(ctx context.Context, arg domain.Address) (*domain.Address, error) {
 	coreAddress, err := s.repo.CreateAddress(ctx, arg)
 	if err != nil {
 		return coreAddress, err
@@ -13,10 +13,6 @@ func (s *Service) CreateAddress(ctx context.Context, arg db.CreateAddressParams)
 	return coreAddress, nil
 }
 
-func (r *Repository) CreateAddress(ctx context.Context, arg db.CreateAddressParams) (db.CoreAddress, error) {
-	coreAddress, err := r.CreateAddress(ctx, arg)
-	if err != nil {
-		return coreAddress, err
-	}
-	return coreAddress, nil
+func (r *Repository) CreateAddress(ctx context.Context, arg domain.Address) (*domain.Address, error) {
+	return nil, nil
 }
