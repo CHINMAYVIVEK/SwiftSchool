@@ -10,6 +10,11 @@ import (
 	"github.com/google/uuid"
 )
 
+//////////////////////////////////////////////////////
+//                 INSTITUTE METHODS               //
+//////////////////////////////////////////////////////
+
+// ========================= HANDLER =========================
 func (h *Handler) CreateInstitute(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -20,48 +25,9 @@ func (h *Handler) CreateInstitute(w http.ResponseWriter, r *http.Request) {
 	helper.NewSuccessResponse(w, http.StatusOK, "institute created successfully", data)
 }
 
+// ========================= CREATE =========================
 func (s *Service) CreateInstitute(ctx context.Context, arg domain.Institute) (*domain.Institute, error) {
-	coreInstitute, err := s.repo.CreateInstitute(ctx, arg)
-	if err != nil {
-		return nil, err
-	}
-	return coreInstitute, nil
-}
-
-func (s *Service) DeleteInstitute(ctx context.Context, arg db.DeleteInstituteParams) error {
-	err := s.repo.DeleteInstitute(ctx, arg)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func (s *Service) GetInstituteByCode(ctx context.Context, code string) (*domain.Institute, error) {
-	coreInstitute, err := s.repo.GetInstituteByCode(ctx, code)
-	if err != nil {
-		return coreInstitute, err
-	}
-	return coreInstitute, nil
-}
-func (s *Service) GetInstituteById(ctx context.Context, id uuid.UUID) (*domain.Institute, error) {
-	coreInstitute, err := s.repo.GetInstituteById(ctx, id)
-	if err != nil {
-		return coreInstitute, err
-	}
-	return coreInstitute, nil
-}
-func (s *Service) ListInstitutes(ctx context.Context) ([]domain.Institute, error) {
-	coreInstitutes, err := s.repo.ListInstitutes(ctx)
-	if err != nil {
-		return coreInstitutes, err
-	}
-	return coreInstitutes, nil
-}
-func (s *Service) UpdateInstitute(ctx context.Context, arg db.UpdateInstituteParams) (*domain.Institute, error) {
-	coreInstitute, err := s.repo.UpdateInstitute(ctx, arg)
-	if err != nil {
-		return coreInstitute, err
-	}
-	return coreInstitute, nil
+	return s.repo.CreateInstitute(ctx, arg)
 }
 
 func (r *Repository) CreateInstitute(ctx context.Context, arg domain.Institute) (*domain.Institute, error) {
@@ -74,6 +40,7 @@ func (r *Repository) CreateInstitute(ctx context.Context, arg domain.Institute) 
 	if err != nil {
 		return nil, err
 	}
+
 	params := db.CreateInstituteParams{
 		Name:         arg.Name,
 		Code:         arg.Code,
@@ -89,48 +56,44 @@ func (r *Repository) CreateInstitute(ctx context.Context, arg domain.Institute) 
 		return nil, err
 	}
 
-	base := domain.BaseUUIDModel{
-		ID: coreInstitute.ID,
-	}
 	institute := domain.Institute{
-		BaseUUIDModel: base,
+		BaseUUIDModel: domain.BaseUUIDModel{ID: coreInstitute.ID},
 	}
 
 	return &institute, nil
 }
 
-func (r *Repository) DeleteInstitute(ctx context.Context, arg db.DeleteInstituteParams) error {
+// ========================= DELETE =========================
+func (s *Service) DeleteInstitute(ctx context.Context, id uuid.UUID) error {
+	return s.repo.DeleteInstitute(ctx, id)
+}
 
-	// Apply timeout
+func (r *Repository) DeleteInstitute(ctx context.Context, id uuid.UUID) error {
 	ctx, cancel := r.db.WithTimeout(ctx)
 	defer cancel()
 
-	// Get SQLC queries instance
 	q, err := r.db.Queries()
 	if err != nil {
 		return err
 	}
+
+	// Adjust params as needed
 	params := db.DeleteInstituteParams{
-		ID: uuid.Nil,
-		UpdatedBy: uuid.NullUUID{
-			UUID:  uuid.Nil,
-			Valid: false,
-		},
+		ID: id,
 	}
 
-	err = q.DeleteInstitute(ctx, params)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return q.DeleteInstitute(ctx, params)
 }
+
+// ========================= GET BY CODE =========================
+func (s *Service) GetInstituteByCode(ctx context.Context, code string) (*domain.Institute, error) {
+	return s.repo.GetInstituteByCode(ctx, code)
+}
+
 func (r *Repository) GetInstituteByCode(ctx context.Context, code string) (*domain.Institute, error) {
-	// Apply timeout
 	ctx, cancel := r.db.WithTimeout(ctx)
 	defer cancel()
 
-	// Get SQLC queries instance
 	q, err := r.db.Queries()
 	if err != nil {
 		return nil, err
@@ -140,40 +103,93 @@ func (r *Repository) GetInstituteByCode(ctx context.Context, code string) (*doma
 	if err != nil {
 		return nil, err
 	}
-	base := domain.BaseUUIDModel{
-		ID: coreInstitute.ID,
-	}
+
 	institute := domain.Institute{
-		BaseUUIDModel: base,
+		BaseUUIDModel: domain.BaseUUIDModel{ID: coreInstitute.ID},
 	}
 
 	return &institute, nil
 }
+
+// ========================= GET BY ID =========================
+func (s *Service) GetInstituteById(ctx context.Context, id uuid.UUID) (*domain.Institute, error) {
+	return s.repo.GetInstituteById(ctx, id)
+}
+
 func (r *Repository) GetInstituteById(ctx context.Context, id uuid.UUID) (*domain.Institute, error) {
-	coreInstitute, err := r.GetInstituteById(ctx, id)
+	ctx, cancel := r.db.WithTimeout(ctx)
+	defer cancel()
+
+	q, err := r.db.Queries()
 	if err != nil {
 		return nil, err
 	}
-	base := domain.BaseUUIDModel{
-		ID: coreInstitute.ID,
+
+	coreInstitute, err := q.GetInstituteById(ctx, id)
+	if err != nil {
+		return nil, err
 	}
+
 	institute := domain.Institute{
-		BaseUUIDModel: base,
+		BaseUUIDModel: domain.BaseUUIDModel{ID: coreInstitute.ID},
 	}
 
 	return &institute, nil
 }
-func (r *Repository) ListInstitutes(ctx context.Context) ([]domain.Institute, error) {
-	coreInstitutes, err := r.ListInstitutes(ctx)
-	if err != nil {
-		return coreInstitutes, err
-	}
-	return coreInstitutes, nil
+
+// ========================= LIST =========================
+func (s *Service) ListInstitutes(ctx context.Context) ([]*domain.Institute, error) {
+	return s.repo.ListInstitutes(ctx)
 }
-func (r *Repository) UpdateInstitute(ctx context.Context, arg db.UpdateInstituteParams) (*domain.Institute, error) {
-	coreInstitute, err := r.UpdateInstitute(ctx, arg)
+
+func (r *Repository) ListInstitutes(ctx context.Context) ([]*domain.Institute, error) {
+	// Apply timeout
+	ctx, cancel := r.db.WithTimeout(ctx)
+	defer cancel()
+
+	// Get SQLC queries instance
+	q, err := r.db.Queries()
 	if err != nil {
-		return coreInstitute, err
+		return nil, err
 	}
-	return coreInstitute, nil
+
+	coreInstitutes, err := q.ListInstitutes(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	institutes := make([]*domain.Institute, len(coreInstitutes))
+	for i, ci := range coreInstitutes {
+		institutes[i] = &domain.Institute{
+			BaseUUIDModel: domain.BaseUUIDModel{ID: ci.ID},
+		}
+	}
+
+	return institutes, nil
+}
+
+// ========================= UPDATE =========================
+func (s *Service) UpdateInstitute(ctx context.Context, arg domain.Institute) (*domain.Institute, error) {
+	return s.repo.UpdateInstitute(ctx, arg)
+}
+
+func (r *Repository) UpdateInstitute(ctx context.Context, arg domain.Institute) (*domain.Institute, error) {
+	ctx, cancel := r.db.WithTimeout(ctx)
+	defer cancel()
+
+	q, err := r.db.Queries()
+	if err != nil {
+		return nil, err
+	}
+	params := db.UpdateInstituteParams{}
+	coreInstitute, err := q.UpdateInstitute(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	institute := domain.Institute{
+		BaseUUIDModel: domain.BaseUUIDModel{ID: coreInstitute.ID},
+	}
+
+	return &institute, nil
 }
