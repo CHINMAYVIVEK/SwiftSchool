@@ -12,6 +12,8 @@ import (
 
 // ------------------ INSTITUTE ------------------
 
+// MapDBInstituteToDomain converts a DB model (CoreInstitute) to the domain model (Institute).
+// It handles nullable fields (CurrencyCode, LogoURL, Website) and active status.
 func MapDBInstituteToDomain(i db.CoreInstitute) *domain.Institute {
 	return &domain.Institute{
 		BaseUUIDModel: domain.BaseUUIDModel{
@@ -28,6 +30,8 @@ func MapDBInstituteToDomain(i db.CoreInstitute) *domain.Institute {
 	}
 }
 
+// MapDomainInstituteToDBParams converts a domain Institute model into parameters
+// suitable for creating a new DB record (CreateInstituteParams).
 func MapDomainInstituteToDBParams(i domain.Institute) db.CreateInstituteParams {
 	return db.CreateInstituteParams{
 		Name:         i.Name,
@@ -41,11 +45,13 @@ func MapDomainInstituteToDBParams(i domain.Institute) db.CreateInstituteParams {
 
 // ------------------ CLASS ------------------
 
+// MapDBClassToDomain converts a DB CoreClass into a domain Class.
+// Maps nullable UUIDs and handles optional ClassTeacher.
 func MapDBClassToDomain(c db.CoreClass) domain.Class {
 	return domain.Class{
 		TenantUUIDModel: domain.TenantUUIDModel{
 			BaseUUIDModel: domain.BaseUUIDModel{
-				ID:        c.ID, // map ID from NullUUID
+				ID:        c.ID,
 				CreatedAt: c.CreatedAt.Time,
 				UpdatedAt: c.UpdatedAt.Time,
 				CreatedBy: helper.UUIDToPtr(c.CreatedBy.UUID),
@@ -59,6 +65,7 @@ func MapDBClassToDomain(c db.CoreClass) domain.Class {
 	}
 }
 
+// MapDomainClassToDBParams converts a domain Class to DB parameters for insertion.
 func MapDomainClassToDBParams(c domain.Class) db.CreateClassParams {
 	return db.CreateClassParams{
 		InstituteID:       c.InstituteID,
@@ -72,11 +79,13 @@ func MapDomainClassToDBParams(c domain.Class) db.CreateClassParams {
 
 // ------------------ ACADEMIC SESSION ------------------
 
+// MapDBAcademicSessionToDomain converts a DB CoreAcademicSession to a domain AcademicSession.
+// Maps nullable UUIDs and optional CreatedBy.
 func MapDBAcademicSessionToDomain(s db.CoreAcademicSession) domain.AcademicSession {
 	return domain.AcademicSession{
 		TenantUUIDModel: domain.TenantUUIDModel{
 			BaseUUIDModel: domain.BaseUUIDModel{
-				ID:        s.ID, // map ID from NullUUID
+				ID:        s.ID,
 				CreatedAt: s.CreatedAt.Time,
 				UpdatedAt: s.UpdatedAt.Time,
 				CreatedBy: helper.UUIDToPtr(s.CreatedBy.UUID),
@@ -90,6 +99,7 @@ func MapDBAcademicSessionToDomain(s db.CoreAcademicSession) domain.AcademicSessi
 	}
 }
 
+// MapDomainAcademicSessionToDBParams converts a domain AcademicSession to DB creation parameters.
 func MapDomainAcademicSessionToDBParams(s domain.AcademicSession) db.CreateAcademicSessionParams {
 	return db.CreateAcademicSessionParams{
 		InstituteID: s.InstituteID,
@@ -102,11 +112,12 @@ func MapDomainAcademicSessionToDBParams(s domain.AcademicSession) db.CreateAcade
 
 // ------------------ DEPARTMENT ------------------
 
+// MapDBDepartmentToDomain converts a DB CoreDepartment into a domain Department.
 func MapDBDepartmentToDomain(d db.CoreDepartment) domain.Department {
 	return domain.Department{
 		TenantUUIDModel: domain.TenantUUIDModel{
 			BaseUUIDModel: domain.BaseUUIDModel{
-				ID:        d.ID, // map ID from NullUUID
+				ID:        d.ID,
 				CreatedAt: d.CreatedAt.Time,
 				UpdatedAt: d.UpdatedAt.Time,
 				CreatedBy: helper.UUIDToPtr(d.CreatedBy.UUID),
@@ -117,6 +128,7 @@ func MapDBDepartmentToDomain(d db.CoreDepartment) domain.Department {
 	}
 }
 
+// MapDomainDepartmentToDBParams converts a domain Department to DB creation parameters.
 func MapDomainDepartmentToDBParams(d domain.Department) db.CreateDepartmentParams {
 	return db.CreateDepartmentParams{
 		InstituteID: d.InstituteID,
@@ -126,6 +138,8 @@ func MapDomainDepartmentToDBParams(d domain.Department) db.CreateDepartmentParam
 
 // ------------------ EMPLOYEE ------------------
 
+// MapDBEmployeeToDomain converts a DB CoreEmployee into a domain Employee.
+// Handles JSON decoding for LanguageSkills and SocialMediaHandles.
 func MapDBEmployeeToDomain(e db.CoreEmployee) (*domain.Employee, error) {
 	langSkills, _ := helper.DecodeJSONB[domain.LanguageSkill](e.LanguageSkills)
 	var socialHandles domain.SocialMediaHandles
@@ -154,6 +168,7 @@ func MapDBEmployeeToDomain(e db.CoreEmployee) (*domain.Employee, error) {
 	}, nil
 }
 
+// MapDomainEmployeeToDBParams converts a domain Employee to DB parameters.
 func MapDomainEmployeeToDBParams(e domain.Employee) db.CreateEmployeeParams {
 	return db.CreateEmployeeParams{
 		InstituteID:        e.InstituteID,
@@ -174,6 +189,8 @@ func MapDomainEmployeeToDBParams(e domain.Employee) db.CreateEmployeeParams {
 
 // ------------------ STUDENT ------------------
 
+// MapDBStudentToDomain converts a DB CoreStudent to a domain Student.
+// Handles JSON decoding and nullable fields for social and language info.
 func MapDBStudentToDomain(s db.CoreStudent) (*domain.Student, error) {
 	langSkills, _ := helper.DecodeJSONB[domain.LanguageSkill](s.LanguageSkills)
 	var socialHandles domain.SocialMediaHandles
@@ -202,6 +219,7 @@ func MapDBStudentToDomain(s db.CoreStudent) (*domain.Student, error) {
 	}, nil
 }
 
+// MapDomainStudentToDBParams converts a domain Student to DB creation parameters.
 func MapDomainStudentToDBParams(s domain.Student) db.CreateStudentParams {
 	return db.CreateStudentParams{
 		InstituteID:        s.InstituteID,
@@ -222,6 +240,8 @@ func MapDomainStudentToDBParams(s domain.Student) db.CreateStudentParams {
 
 // ------------------ GUARDIAN ------------------
 
+// MapDBGuardianToDomain converts a DB Guardian to a domain Guardian.
+// Handles nullable fields for LastName, Phone, Email.
 func MapDBGuardianToDomain(g db.CoreGuardian) domain.Guardian {
 	return domain.Guardian{
 		TenantUUIDModel: domain.TenantUUIDModel{
@@ -238,6 +258,7 @@ func MapDBGuardianToDomain(g db.CoreGuardian) domain.Guardian {
 	}
 }
 
+// MapDomainGuardianToDBParams converts a domain Guardian to DB creation parameters.
 func MapDomainGuardianToDBParams(g domain.Guardian) db.CreateGuardianParams {
 	return db.CreateGuardianParams{
 		InstituteID: g.InstituteID,
@@ -251,6 +272,8 @@ func MapDomainGuardianToDBParams(g domain.Guardian) db.CreateGuardianParams {
 
 // ------------------ ADDRESS ------------------
 
+// MapDBAddressToDomain converts a DB CoreAddress to a domain Address.
+// Handles nullable strings and UUIDs, and converts enums from string.
 func MapDBAddressToDomain(a db.CoreAddress) domain.Address {
 	return domain.Address{
 		BaseUUIDModel: domain.BaseUUIDModel{
@@ -270,6 +293,7 @@ func MapDBAddressToDomain(a db.CoreAddress) domain.Address {
 	}
 }
 
+// MapDomainAddressToDBParams converts a domain Address to DB creation parameters.
 func MapDomainAddressToDBParams(a domain.Address) db.CreateAddressParams {
 	return db.CreateAddressParams{
 		OwnerID:      a.OwnerID,
@@ -286,6 +310,7 @@ func MapDomainAddressToDBParams(a domain.Address) db.CreateAddressParams {
 
 // ------------------ STUDENT-GUARDIAN LINK ------------------
 
+// MapDomainLinkStudentGuardianToDBParams creates DB parameters for linking a student to a guardian.
 func MapDomainLinkStudentGuardianToDBParams(studentID, guardianID uuid.UUID) db.LinkStudentGuardianParams {
 	return db.LinkStudentGuardianParams{
 		StudentID:  studentID,
