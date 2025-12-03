@@ -5,14 +5,16 @@ import (
 	"swiftschool/domain"
 )
 
+//////////////////////////////////////////////////////
+//                 ADDRESS METHODS                  //
+//////////////////////////////////////////////////////
+
+// ========================= CREATE =========================
 func (s *Service) CreateAddress(ctx context.Context, arg domain.Address) (*domain.Address, error) {
-	coreAddress, err := s.repo.CreateAddress(ctx, arg)
-	if err != nil {
-		return coreAddress, err
-	}
-	return coreAddress, nil
+	return s.repo.CreateAddress(ctx, arg)
 }
 
 func (r *Repository) CreateAddress(ctx context.Context, arg domain.Address) (*domain.Address, error) {
+	// TODO: implement DB logic here
 	return nil, nil
 }
