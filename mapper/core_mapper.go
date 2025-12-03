@@ -75,10 +75,13 @@ func MapDomainClassToDBParams(c domain.Class) db.CreateClassParams {
 func MapDBAcademicSessionToDomain(s db.CoreAcademicSession) domain.AcademicSession {
 	return domain.AcademicSession{
 		TenantUUIDModel: domain.TenantUUIDModel{
-			ID:          s.ID,
+			BaseUUIDModel: domain.BaseUUIDModel{
+				ID:        s.ID, // map ID from NullUUID
+				CreatedAt: s.CreatedAt.Time,
+				UpdatedAt: s.UpdatedAt.Time,
+				CreatedBy: helper.UUIDToPtr(s.CreatedBy.UUID),
+			},
 			InstituteID: s.InstituteID,
-			CreatedAt:   s.CreatedAt.Time,
-			UpdatedAt:   s.UpdatedAt.Time,
 		},
 		Name:      s.Name,
 		StartDate: s.StartDate,
@@ -93,7 +96,7 @@ func MapDomainAcademicSessionToDBParams(s domain.AcademicSession) db.CreateAcade
 		Name:        s.Name,
 		StartDate:   s.StartDate,
 		EndDate:     s.EndDate,
-		IsActive:    helper.ToNullBool(s.IsActive),
+		IsActive:    helper.BoolToNullBool(s.IsActive),
 	}
 }
 
@@ -102,10 +105,13 @@ func MapDomainAcademicSessionToDBParams(s domain.AcademicSession) db.CreateAcade
 func MapDBDepartmentToDomain(d db.CoreDepartment) domain.Department {
 	return domain.Department{
 		TenantUUIDModel: domain.TenantUUIDModel{
-			ID:          d.ID,
-			InstituteID: d.InstituteID.UUID,
-			CreatedAt:   d.CreatedAt.Time,
-			UpdatedAt:   d.UpdatedAt.Time,
+			BaseUUIDModel: domain.BaseUUIDModel{
+				ID:        d.ID, // map ID from NullUUID
+				CreatedAt: d.CreatedAt.Time,
+				UpdatedAt: d.UpdatedAt.Time,
+				CreatedBy: helper.UUIDToPtr(d.CreatedBy.UUID),
+			},
+			InstituteID: helper.NullUUIDToUUID(d.InstituteID),
 		},
 		Name: d.Name,
 	}

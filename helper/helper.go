@@ -120,6 +120,14 @@ func NullUUIDToPtr(u uuid.NullUUID) *uuid.UUID {
 	return &u.UUID
 }
 
+// NullUUIDToUUID converts uuid.NullUUID to uuid.UUID
+func NullUUIDToUUID(u uuid.NullUUID) uuid.UUID {
+	if !u.Valid {
+		return uuid.Nil
+	}
+	return u.UUID
+}
+
 // UUIDToPtr converts a UUID to a pointer
 func UUIDToPtr(u uuid.UUID) *uuid.UUID {
 	return &u
