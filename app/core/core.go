@@ -64,7 +64,6 @@ type RepositoryInterface interface {
 	UpdateClass(ctx context.Context, arg domain.Class) (*domain.Class, error)
 	DeleteClass(ctx context.Context, id uuid.UUID) error
 	ListClasses(ctx context.Context, instituteID uuid.UUID) ([]*domain.Class, error)
-	ListStudentsByClass(ctx context.Context, classID uuid.UUID) ([]*domain.Student, error)
 
 	// ========================= ACADEMIC SESSION =========================
 	CreateAcademicSession(ctx context.Context, arg domain.AcademicSession) (*domain.AcademicSession, error)
@@ -92,6 +91,7 @@ type RepositoryInterface interface {
 	DeleteStudent(ctx context.Context, id uuid.UUID) error
 	GetStudentFullProfile(ctx context.Context, id uuid.UUID) (*domain.Student, error)
 	SearchStudents(ctx context.Context, query string) ([]*domain.Student, error)
+	ListStudentsByClass(ctx context.Context, classID uuid.UUID) ([]*domain.Student, error)
 
 	// ========================= GUARDIAN =========================
 	CreateGuardian(ctx context.Context, arg domain.Guardian) (*domain.Guardian, error)
