@@ -1,72 +1,117 @@
-# Swift School - School Management System
+# 🎓 **Swift School – School Management System**
 
-Swift School is a comprehensive school management system designed to streamline and enhance the administrative and academic processes within an educational institution. This system provides a robust suite of features for efficient management of student data, classroom activities, attendance, grading, communication, and more. Swift School aims to optimize school operations and improve the experience for students, teachers, parents, and administrators.
-
-## Features
-
-| **S.No** | **Feature**                              | **Description**                                                                 |
-|----------|------------------------------------------|---------------------------------------------------------------------------------|
-| 1        | **Student Information Management**       | Manage student profiles, personal details, contact information, and academic history. |
-| 2        | **Class and Section Management**         | Create and manage classes, assign teachers, and manage class timetables.         |
-| 3        | **Attendance Tracking**                  | Track daily student attendance and generate attendance reports.                 |
-| 4        | **Grading and Transcript Management**    | Enter grades, calculate results, and generate transcripts for students.         |
-| 5        | **Teacher Management**                   | Manage teacher profiles, assignments, and class schedules.                      |
-| 6        | **Parent and Guardian Portal**           | Provide parents access to student performance, attendance, and teacher communication. |
-| 7        | **Communication Module**                 | Messaging system for communication between teachers, students, and parents.     |
-| 8        | **Library Management**                   | Manage books, journals, and other resources; track issuance and returns.        |
-| 9        | **Exam and Result Management**           | Create exams, process results, and generate report cards.                       |
-| 10       | **Fee Management**                       | Create and manage fee structures, track payments, and manage overdue fees.     |
-| 11       | **Transportation Management**            | Plan and assign student transport routes, and monitor transportation schedules. |
-| 12       | **Hostel Management**                    | Manage room allocations, student activities, and hostel facilities.             |
-| 13       | **Inventory and Asset Management**       | Track school assets and schedule maintenance for equipment.                     |
-| 14       | **Security and User Access Control**     | Implement role-based access control and protect sensitive data.                |
-| 15       | **Custom Reporting and Analytics**       | Generate custom reports and perform data analysis for informed decision-making. |
-| 16       | **LMS Integration**                      | Integrate with Learning Management Systems for online courses and resources.    |
-| 17       | **Mobile Application**                   | Access school management features on the go via a mobile app.                   |
-| 18       | **Data Backup and Recovery**             | Automated backups and recovery options to protect data.                         |
-| 19       | **Multi-language Support**               | Support multiple languages for a diverse user base.                            |
-| 20       | **User-Friendly Interface**              | Easy-to-use, intuitive interface for all users (teachers, students, parents).    |
-
-This list highlights the primary features Swift School offers to help educational institutions manage their operations more efficiently.
-
-## Installation
-
-### Prerequisites:
-- Go (Golang) 1.23+ installed on your machine
-- PostgreSQL or any other relational database system supported by the system
-- Basic knowledge of Docker (optional, for containerized setup)
-
-### Steps:
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/chinmayvivek/SwiftSchool.git
-   cd SwiftSchool
-   ```
-
-2. Install dependencies:
-   ```bash
-   go mod tidy
-   ```
-
-3. Configure the `.env` file with your database connection and other environment variables.
-
-4. Build and run the application:
-   ```bash
-   go run main.go
-   ```
-
-5. For Docker setup (optional):
-   - Build the Docker image:
-     ```bash
-     docker build -t swift-school .
-     ```
-   - Run the container:
-     ```bash
-     docker run -p 8080:8080 swift-school
-     ```
-
-### [Postman Collection](Swift-School.postman_collection.json)
+Swift School is an all-in-one, modern, and scalable **School Management System** built to streamline academic and administrative workflows.
+It helps institutions digitally manage students, teachers, attendance, exams, communication, finance, and much more—improving efficiency and transparency for **admins, teachers, parents, and students**.
 
 ---
-Swift School is designed to simplify school management and enhance productivity across various functions. With the ability to manage students, teachers, attendance, fees, exams, and more in one platform, it is a powerful tool for modern educational institutions.
 
+## 🚀 **Project Goals**
+
+✔ Simplify daily school operations
+✔ Centralize all academic & administrative data
+✔ Improve communication across stakeholders
+✔ Provide actionable insights with reports & analytics
+✔ Deliver a clean, modern, and user-friendly experience
+✔ Support scalability for institutions of all sizes
+
+---
+
+# 🖼️ **Screenshots**
+
+### Login
+
+![Login](screenshot/login_screen.png)
+
+---
+
+# ✨ **Key Features**
+
+| **#** | **Feature**                         | **Description**                                                                    |
+| ----- | ----------------------------------- | ---------------------------------------------------------------------------------- |
+| 1     | **Student Information Management**  | Store complete student profiles including personal, academic, and contact details. |
+| 2     | **Class & Section Management**      | Create classes, assign teachers, and manage schedules with ease.                   |
+| 3     | **Attendance Tracking**             | Daily attendance with auto-generated reports.                                      |
+| 4     | **Grading & Transcript Management** | Grade entry, automated result calculation, and transcript generation.              |
+| 5     | **Teacher Management**              | Manage teacher profiles, workload, and class assignments.                          |
+| 6     | **Parent Portal**                   | Give parents access to performance, attendance, and communication.                 |
+| 7     | **Communication Module**            | Messaging system for students, teachers, and parents.                              |
+| 8     | **Library Management**              | Track books, journals, issue/return logs, and inventory.                           |
+| 9     | **Exam & Result Management**        | Create exams, record scores, and generate report cards.                            |
+| 10    | **Fee Management**                  | Fee structures, payment tracking, and overdue alerts.                              |
+| 11    | **Transportation Management**       | Plan bus routes, assign students, and monitor schedules.                           |
+| 12    | **Hostel Management**               | Manage rooms, occupants, and hostel operations.                                    |
+| 13    | **Inventory & Asset Control**       | Track school resources and maintenance schedules.                                  |
+| 14    | **Role-Based Access Control**       | Secure user roles with admin, teacher, parent, and student permissions.            |
+| 15    | **Custom Reports & Analytics**      | Insightful dashboards for better decision-making.                                  |
+| 16    | **LMS Integration**                 | Connect with LMS platforms for online learning.                                    |
+| 17    | **Mobile App Support**              | Access features from smartphones on the go.                                        |
+| 18    | **Data Backup & Recovery**          | Automated backups for data safety.                                                 |
+| 19    | **Multi-Language Support**          | Designed for diverse educational environments.                                     |
+| 20    | **User-Friendly Interface**         | Clean and intuitive UI for all users.                                              |
+
+---
+
+# ⚙️ **Installation Guide**
+
+## 📌 **Prerequisites**
+
+- Go **1.23+**
+- PostgreSQL (or any supported relational DB)
+- Docker (optional)
+- Configured `.env` file
+
+---
+
+## 🛠️ **Setup Steps**
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/chinmayvivek/SwiftSchool.git
+cd SwiftSchool
+```
+
+### 2️⃣ Install Dependencies
+
+```bash
+go mod tidy
+```
+
+### 3️⃣ Configure Environment
+
+Create and update your `.env` file with DB credentials and app configs.
+
+### 4️⃣ Run the Application
+
+```bash
+go run main.go
+```
+
+---
+
+# 🐳 **Docker Setup (Optional)**
+
+### Build Image
+
+```bash
+docker build -t swift-school .
+```
+
+### Run Container
+
+```bash
+docker run -p 8080:8080 swift-school
+```
+
+---
+
+# 📬 **API Documentation**
+
+👉 **[Postman Collection](Swift-School.postman_collection.json)**
+
+---
+
+# 🙌 **About Swift School**
+
+Swift School empowers institutions to go digital by consolidating student data, academic operations, finance, and communication into one powerful platform.
+It is designed for **performance, scalability, and ease of use**, making it suitable for institutions of any size.
