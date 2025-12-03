@@ -46,7 +46,7 @@ func NewService(db *helper.PostgresWrapper) *Service {
 type RepositoryInterface interface {
 	CreateInstitute(ctx context.Context, arg domain.Institute) (*domain.Institute, error)
 	CreateClass(ctx context.Context, arg db.CreateClassParams) (db.CoreClass, error)
-	CreateAcademicSession(ctx context.Context, arg db.CreateAcademicSessionParams) (db.CoreAcademicSession, error)
+	CreateAcademicSession(context.Context, domain.AcademicSession) (*domain.AcademicSession, error)
 	CreateAddress(ctx context.Context, arg db.CreateAddressParams) (db.CoreAddress, error)
 	CreateDepartment(ctx context.Context, arg db.CreateDepartmentParams) (db.CoreDepartment, error)
 	CreateEmployee(ctx context.Context, arg db.CreateEmployeeParams) (db.CoreEmployee, error)
@@ -83,19 +83,19 @@ type RepositoryInterface interface {
 
 type ServiceInterface interface {
 	CreateInstitute(ctx context.Context, arg domain.Institute) (*domain.Institute, error)
-	CreateClass(ctx context.Context, arg domain.Class) (domain.Class, error)
-	CreateAcademicSession(ctx context.Context, arg domain.AcademicSession) (domain.AcademicSession, error)
-	CreateAddress(ctx context.Context, arg domain.Address) (domain.Address, error)
-	CreateDepartment(ctx context.Context, arg domain.Department) (domain.Department, error)
+	CreateClass(ctx context.Context, arg domain.Class) (*domain.Class, error)
+	CreateAcademicSession(ctx context.Context, arg domain.AcademicSession) (*domain.AcademicSession, error)
+	CreateAddress(ctx context.Context, arg domain.Address) (*domain.Address, error)
+	CreateDepartment(ctx context.Context, arg domain.Department) (*domain.Department, error)
 	CreateEmployee(ctx context.Context, arg domain.Employee) (*domain.Employee, error)
-	CreateGuardian(ctx context.Context, arg domain.Guardian) (domain.Guardian, error)
+	CreateGuardian(ctx context.Context, arg domain.Guardian) (*domain.Guardian, error)
 	CreateStudent(ctx context.Context, arg domain.Student) (*domain.Student, error)
 	DeleteClass(ctx context.Context, id uuid.UUID) error
 	DeleteDepartment(ctx context.Context, id uuid.UUID) error
 	DeleteEmployee(ctx context.Context, id uuid.UUID) error
 	DeleteInstitute(ctx context.Context, id uuid.UUID) error
 	DeleteStudent(ctx context.Context, id uuid.UUID) error
-	GetActiveSession(ctx context.Context, instituteID uuid.UUID) (domain.AcademicSession, error)
+	GetActiveSession(ctx context.Context, instituteID uuid.UUID) (*domain.AcademicSession, error)
 	GetEmployeeById(ctx context.Context, id uuid.UUID) (*domain.Employee, error)
 	GetEmployeeFullProfile(ctx context.Context, id uuid.UUID) (*domain.Employee, error)
 	GetInstituteByCode(ctx context.Context, code string) (*domain.Institute, error)
@@ -109,9 +109,9 @@ type ServiceInterface interface {
 	ListInstitutes(ctx context.Context) ([]domain.Institute, error)
 	ListStudentsByClass(ctx context.Context, classID uuid.UUID) ([]domain.Student, error)
 	SearchStudents(ctx context.Context, query string) ([]domain.Student, error)
-	UpdateAcademicSession(ctx context.Context, arg domain.AcademicSession) (domain.AcademicSession, error)
-	UpdateClass(ctx context.Context, arg domain.Class) (domain.Class, error)
-	UpdateDepartment(ctx context.Context, arg domain.Department) (domain.Department, error)
+	UpdateAcademicSession(ctx context.Context, arg domain.AcademicSession) (*domain.AcademicSession, error)
+	UpdateClass(ctx context.Context, arg domain.Class) (*domain.Class, error)
+	UpdateDepartment(ctx context.Context, arg domain.Department) (*domain.Department, error)
 	UpdateEmployee(ctx context.Context, arg domain.Employee) (*domain.Employee, error)
 	UpdateInstitute(ctx context.Context, arg domain.Institute) (*domain.Institute, error)
 	UpdateStudent(ctx context.Context, arg domain.Student) (*domain.Student, error)

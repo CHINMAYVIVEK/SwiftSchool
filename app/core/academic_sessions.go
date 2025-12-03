@@ -2,12 +2,13 @@ package core
 
 import (
 	"context"
+	"swiftschool/domain"
 	"swiftschool/internal/db"
 
 	"github.com/google/uuid"
 )
 
-func (s *Service) CreateAcademicSession(ctx context.Context, arg db.CreateAcademicSessionParams) (db.CoreAcademicSession, error) {
+func (s *Service) CreateAcademicSession(ctx context.Context, arg domain.AcademicSession) (*domain.AcademicSession, error) {
 
 	coreAcademicSession, err := s.repo.CreateAcademicSession(ctx, arg)
 	if err != nil {
@@ -38,12 +39,9 @@ func (s *Service) UpdateAcademicSession(ctx context.Context, arg db.UpdateAcadem
 	return coreAcademicSession, nil
 }
 
-func (r *Repository) CreateAcademicSession(ctx context.Context, arg db.CreateAcademicSessionParams) (db.CoreAcademicSession, error) {
-	coreAcademicSession, err := r.CreateAcademicSession(ctx, arg)
-	if err != nil {
-		return coreAcademicSession, err
-	}
-	return coreAcademicSession, nil
+func (r *Repository) CreateAcademicSession(context.Context, domain.AcademicSession) (*domain.AcademicSession, error) {
+
+	return nil, nil
 }
 func (r *Repository) ListAcademicSessions(ctx context.Context, instituteID uuid.UUID) ([]db.CoreAcademicSession, error) {
 	coreAcademicSessions, err := r.ListAcademicSessions(ctx, instituteID)

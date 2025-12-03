@@ -77,11 +77,11 @@ func (r *Repository) CreateInstitute(ctx context.Context, arg domain.Institute) 
 	params := db.CreateInstituteParams{
 		Name:         arg.Name,
 		Code:         arg.Code,
-		CurrencyCode: helper.ToNullString(arg.CurrencyCode),
-		LogoUrl:      helper.ToNullString(arg.LogoURL),
-		Website:      helper.ToNullString(arg.Website),
-		IsActive:     helper.ToNullBool(arg.IsActive),
-		CreatedBy:    helper.ToNullUUID(arg.CreatedBy),
+		CurrencyCode: helper.PtrToNullString(arg.CurrencyCode),
+		LogoUrl:      helper.PtrToNullString(arg.LogoURL),
+		Website:      helper.PtrToNullString(arg.Website),
+		IsActive:     helper.BoolToNullBool(arg.IsActive),
+		CreatedBy:    helper.PtrToNullUUID(arg.CreatedBy),
 	}
 
 	coreInstitute, err := q.CreateInstitute(ctx, params)
