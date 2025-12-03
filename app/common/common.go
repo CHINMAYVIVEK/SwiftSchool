@@ -1,4 +1,4 @@
-package auth
+package common
 
 import (
 	"context"
@@ -51,12 +51,12 @@ func NewService(db *helper.PostgresWrapper) *Service {
 //////////////////////////////////////////////////////
 
 type RepositoryInterface interface {
-	CreateUser(ctx context.Context, arg domain.User) (*domain.User, error)
-	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
-	GetUserById(ctx context.Context, id uuid.UUID) (*domain.User, error)
-	UpdateUserPassword(ctx context.Context, id uuid.UUID, passwordHash string) error
-	UpdateUserStatus(ctx context.Context, id uuid.UUID, isActive bool) error
-	ListUsersByRole(ctx context.Context, instituteID uuid.UUID, roleType domain.UserRole) ([]*domain.User, error)
+	// ========================= DOCS =========================
+	CreateDocument(ctx context.Context, arg domain.Document) (*domain.Document, error)
+	ListDocuments(ctx context.Context, instituteID, ownerID uuid.UUID) ([]*domain.Document, error)
+
+	// ========================= COMMS =========================
+	CreateNotification(ctx context.Context, arg domain.Notification) (*domain.Notification, error)
 }
 
 //////////////////////////////////////////////////////
@@ -64,10 +64,10 @@ type RepositoryInterface interface {
 //////////////////////////////////////////////////////
 
 type ServiceInterface interface {
-	CreateUser(ctx context.Context, arg domain.User) (*domain.User, error)
-	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
-	GetUserById(ctx context.Context, id uuid.UUID) (*domain.User, error)
-	UpdateUserPassword(ctx context.Context, id uuid.UUID, passwordHash string) error
-	UpdateUserStatus(ctx context.Context, id uuid.UUID, isActive bool) error
-	ListUsersByRole(ctx context.Context, instituteID uuid.UUID, roleType domain.UserRole) ([]*domain.User, error)
+	// ========================= DOCS =========================
+	CreateDocument(ctx context.Context, arg domain.Document) (*domain.Document, error)
+	ListDocuments(ctx context.Context, instituteID, ownerID uuid.UUID) ([]*domain.Document, error)
+
+	// ========================= COMMS =========================
+	CreateNotification(ctx context.Context, arg domain.Notification) (*domain.Notification, error)
 }
