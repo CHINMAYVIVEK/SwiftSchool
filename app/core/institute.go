@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"swiftschool/domain"
 	"swiftschool/helper"
@@ -15,14 +16,132 @@ import (
 //////////////////////////////////////////////////////
 
 // ========================= HANDLER =========================
+
+// ---------------- CREATE INSTITUTE ----------------
 func (h *Handler) CreateInstitute(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-	var data interface{}
-	// Success response
-	helper.NewSuccessResponse(w, http.StatusOK, "institute created successfully", data)
+
+	var institute domain.Institute
+	if err := json.NewDecoder(r.Body).Decode(&institute); err != nil {
+		helper.NewErrorResponse(w, http.StatusBadRequest, "invalid request body: "+err.Error())
+		return
+	}
+
+	data, err := h.service.CreateInstitute(r.Context(), institute)
+	if err != nil {
+		helper.NewErrorResponse(w, http.StatusInternalServerError, "institute creation failed: "+err.Error())
+		return
+	}
+
+	helper.NewSuccessResponse(w, http.StatusCreated, "institute created successfully", data)
+}
+
+// ---------------- DELETE INSTITUTE ----------------
+func (h *Handler) DeleteInstitute(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	idStr := r.URL.Query().Get("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		helper.NewErrorResponse(w, http.StatusBadRequest, "invalid institute id")
+		return
+	}
+
+	if err := h.service.DeleteInstitute(r.Context(), id); err != nil {
+		helper.NewErrorResponse(w, http.StatusInternalServerError, "failed to delete institute: "+err.Error())
+		return
+	}
+
+	helper.NewSuccessResponse(w, http.StatusOK, "institute deleted successfully", nil)
+}
+
+// ---------------- GET INSTITUTE BY ID ----------------
+func (h *Handler) GetInstituteById(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	idStr := r.URL.Query().Get("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		helper.NewErrorResponse(w, http.StatusBadRequest, "invalid institute id")
+		return
+	}
+
+	data, err := h.service.GetInstituteById(r.Context(), id)
+	if err != nil {
+		helper.NewErrorResponse(w, http.StatusInternalServerError, "failed to get institute: "+err.Error())
+		return
+	}
+
+	helper.NewSuccessResponse(w, http.StatusOK, "institute retrieved successfully", data)
+}
+
+// ---------------- GET INSTITUTE BY CODE ----------------
+func (h *Handler) GetInstituteByCode(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	code := r.URL.Query().Get("code")
+	if code == "" {
+		helper.NewErrorResponse(w, http.StatusBadRequest, "institute code is required")
+		return
+	}
+
+	data, err := h.service.GetInstituteByCode(r.Context(), code)
+	if err != nil {
+		helper.NewErrorResponse(w, http.StatusInternalServerError, "failed to get institute: "+err.Error())
+		return
+	}
+
+	helper.NewSuccessResponse(w, http.StatusOK, "institute retrieved successfully", data)
+}
+
+// ---------------- LIST INSTITUTES ----------------
+func (h *Handler) ListInstitutes(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	data, err := h.service.ListInstitutes(r.Context())
+	if err != nil {
+		helper.NewErrorResponse(w, http.StatusInternalServerError, "failed to list institutes: "+err.Error())
+		return
+	}
+
+	helper.NewSuccessResponse(w, http.StatusOK, "institutes retrieved successfully", data)
+}
+
+// ---------------- UPDATE INSTITUTE ----------------
+func (h *Handler) UpdateInstitute(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
+		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	var institute domain.Institute
+	if err := json.NewDecoder(r.Body).Decode(&institute); err != nil {
+		helper.NewErrorResponse(w, http.StatusBadRequest, "invalid request body: "+err.Error())
+		return
+	}
+
+	data, err := h.service.UpdateInstitute(r.Context(), institute)
+	if err != nil {
+		helper.NewErrorResponse(w, http.StatusInternalServerError, "institute update failed: "+err.Error())
+		return
+	}
+
+	helper.NewSuccessResponse(w, http.StatusOK, "institute updated successfully", data)
 }
 
 // ========================= CREATE =========================
