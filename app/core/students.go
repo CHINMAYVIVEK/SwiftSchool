@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"swiftschool/domain"
 	"swiftschool/helper"
+	"swiftschool/internal/db"
 
 	"github.com/google/uuid"
 )
@@ -156,8 +157,62 @@ func (s *Service) CreateStudent(ctx context.Context, arg domain.Student) (*domai
 }
 
 func (r *Repository) CreateStudent(ctx context.Context, arg domain.Student) (*domain.Student, error) {
-	// TODO: implement DB logic here
-	return nil, nil
+
+	// Apply timeout
+	ctx, cancel := r.db.WithTimeout(ctx)
+	defer cancel()
+
+	// Get SQLC queries instance
+	q, err := r.db.Queries()
+	if err != nil {
+		return nil, err
+	}
+	params := db.CreateStudentParams{
+		InstituteID:        arg.InstituteID,
+		AdmissionNo:        arg.AdmissionNo,
+		FirstName:          arg.FirstName,
+		LastName:           helper.PtrToNullString(arg.LastName),
+		Dob:                helper.ToNullTime(arg.DOB),
+		Gender:             helper.ToNullString(string(arg.Gender)),
+		BloodGroup:         helper.ToNullString(string(arg.BloodGroup)),
+		SocialCategory:     helper.ToNullString(string(arg.SocialCategory)),
+		CurrentClassID:     helper.ToNullUUID(arg.CurrentClassID),
+		Nationality:        helper.ToNullString(arg.Nationality),
+		PreferredLanguage:  helper.ToNullString(arg.PreferredLanguage),
+		SocialMediaHandles: helper.ToNullJSONB(arg.SocialMediaHandles),
+		LanguageSkills:     helper.ToNullJSONB(arg.LanguageSkills),
+		CreatedBy:          helper.ToNullUUID(arg.CreatedBy),
+	}
+	coreStudent, err := q.CreateStudent(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+	student := domain.Student{
+		TenantUUIDModel: domain.TenantUUIDModel{
+			InstituteID: coreStudent.InstituteID,
+			BaseUUIDModel: domain.BaseUUIDModel{
+				ID:        coreStudent.ID,
+				CreatedAt: coreStudent.CreatedAt,
+				UpdatedAt: coreStudent.UpdatedAt,
+				DeletedAt: coreStudent.DeletedAt,
+				CreatedBy: util.UUIDPtrFromNull(coreStudent.CreatedBy),
+				UpdatedBy: util.UUIDPtrFromNull(coreStudent.UpdatedBy),
+			},
+		},
+		AdmissionNo:        coreStudent.AdmissionNo,
+		FirstName:          coreStudent.FirstName,
+		LastName:           util.StringPtrFromNull(coreStudent.LastName),
+		DOB:                util.TimePtrFromNull(coreStudent.Dob),
+		Gender:             domain.Gender(coreStudent.Gender.String),
+		BloodGroup:         domain.BloodGroup(coreStudent.BloodGroup.String),
+		SocialCategory:     domain.SocialCategory(coreStudent.SocialCategory.String),
+		CurrentClassID:     util.UUIDPtrFromNull(coreStudent.CurrentClassID),
+		Nationality:        util.StringPtrFromNull(coreStudent.Nationality),
+		PreferredLanguage:  util.StringPtrFromNull(coreStudent.PreferredLanguage),
+		SocialMediaHandles: util.JSONBToSocialMedia(coreStudent.SocialMediaHandles),
+		LanguageSkills:     util.JSONBToLanguageSkills(coreStudent.LanguageSkills),
+	}
+	return &student, nil
 }
 
 // ========================= DELETE =========================
