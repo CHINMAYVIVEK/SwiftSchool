@@ -4,228 +4,298 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>School ERP Dashboard</title>
-        <script src="https://unpkg.com/htmx.org@1.9.3"></script>
+
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <style>
+            .fade-in {
+                opacity: 0;
+                animation: fadeIn 0.6s ease-out forwards;
+            }
+            @keyframes fadeIn {
+                to {
+                    opacity: 1;
+                }
+            }
+
+            .slide-up {
+                opacity: 0;
+                transform: translateY(20px);
+                animation: slideUp 0.6s ease-out forwards;
+            }
+            @keyframes slideUp {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .sidebar-hover:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        </style>
     </head>
+
     <body class="bg-gray-100 font-sans">
+        <!-- MAIN LAYOUT -->
         <div class="flex h-screen">
-            <!-- Sidebar -->
+            <!-- ========== SIDEBAR ========== -->
             <aside
-                class="w-64 bg-indigo-700 text-white flex-shrink-0 flex flex-col"
+                class="w-64 bg-indigo-700 text-white p-6 flex flex-col space-y-6"
             >
-                <div class="p-6 text-2xl font-bold flex items-center gap-2">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-8 w-8"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M3 7h18M3 12h18M3 17h18"
-                        />
-                    </svg>
+                <h1 class="text-2xl font-bold tracking-wide mb-4">
                     School ERP
-                </div>
-                <nav class="mt-10 flex-1">
+                </h1>
+
+                <nav class="space-y-3">
                     <a
-                        href="#dashboard"
-                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
-                        ><span>🏠</span> Dashboard</a
+                        href="#"
+                        class="flex items-center gap-3 p-3 rounded-lg sidebar-hover"
                     >
+                        <span>🏠</span> Dashboard
+                    </a>
                     <a
-                        href="#students"
-                        hx-get="/students"
-                        hx-target="#main-content"
-                        hx-swap="innerHTML"
-                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
-                        ><span>🎓</span> Students</a
+                        href="#"
+                        class="flex items-center gap-3 p-3 rounded-lg sidebar-hover"
                     >
+                        <span>👨‍🎓</span> Students
+                    </a>
                     <a
-                        href="#teachers"
-                        hx-get="/teachers"
-                        hx-target="#main-content"
-                        hx-swap="innerHTML"
-                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
-                        ><span>👩‍🏫</span> Teachers</a
+                        href="#"
+                        class="flex items-center gap-3 p-3 rounded-lg sidebar-hover"
                     >
+                        <span>🏫</span> Classes
+                    </a>
                     <a
-                        href="#classes"
-                        hx-get="/classes"
-                        hx-target="#main-content"
-                        hx-swap="innerHTML"
-                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
-                        ><span>📚</span> Classes</a
+                        href="#"
+                        class="flex items-center gap-3 p-3 rounded-lg sidebar-hover"
                     >
+                        <span>📘</span> Subjects
+                    </a>
                     <a
-                        href="#analytics"
-                        hx-get="/analytics"
-                        hx-target="#main-content"
-                        hx-swap="innerHTML"
-                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
-                        ><span>📊</span> Analytics</a
+                        href="#"
+                        class="flex items-center gap-3 p-3 rounded-lg sidebar-hover"
                     >
+                        <span>📝</span> Exams
+                    </a>
                     <a
-                        href="#logout"
-                        class="block py-3 px-6 hover:bg-indigo-600 flex items-center gap-2"
-                        ><span>🚪</span> Logout</a
+                        href="#"
+                        class="flex items-center gap-3 p-3 rounded-lg sidebar-hover"
                     >
+                        <span>💳</span> Fees & Accounts
+                    </a>
+                    <a
+                        href="#"
+                        class="flex items-center gap-3 p-3 rounded-lg sidebar-hover"
+                    >
+                        <span>⚙️</span> Settings
+                    </a>
                 </nav>
             </aside>
 
-            <!-- Main Content -->
-            <main class="flex-1 p-8 overflow-y-auto" id="main-content">
-                <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+            <!-- ========== MAIN CONTENT ========== -->
+            <main class="flex-1 overflow-y-auto">
+                <!-- TOP BAR -->
+                <header
+                    class="h-16 bg-white shadow flex items-center px-6 justify-between"
+                >
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        class="px-4 py-2 w-1/3 rounded-full border focus:outline-none focus:ring focus:ring-indigo-300"
+                    />
 
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div
-                        class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col items-center gap-2"
-                    >
-                        <div class="text-indigo-500 text-3xl">🎓</div>
-                        <h2 class="text-lg font-semibold">Total Students</h2>
-                        <p
-                            class="text-2xl font-bold"
-                            hx-get="/stats/students"
-                            hx-trigger="load"
-                            hx-swap="innerHTML"
-                        >
-                            0
-                        </p>
+                    <div class="flex items-center gap-6">
+                        <button class="relative">
+                            🔔
+                            <span
+                                class="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full"
+                            ></span>
+                        </button>
+                        <img
+                            src="https://i.pravatar.cc/40"
+                            class="rounded-full border shadow cursor-pointer"
+                        />
                     </div>
-                    <div
-                        class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col items-center gap-2"
-                    >
-                        <div class="text-green-500 text-3xl">👩‍🏫</div>
-                        <h2 class="text-lg font-semibold">Total Teachers</h2>
-                        <p
-                            class="text-2xl font-bold"
-                            hx-get="/stats/teachers"
-                            hx-trigger="load"
-                            hx-swap="innerHTML"
-                        >
-                            0
-                        </p>
-                    </div>
-                    <div
-                        class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col items-center gap-2"
-                    >
-                        <div class="text-yellow-500 text-3xl">📚</div>
-                        <h2 class="text-lg font-semibold">Total Classes</h2>
-                        <p
-                            class="text-2xl font-bold"
-                            hx-get="/stats/classes"
-                            hx-trigger="load"
-                            hx-swap="innerHTML"
-                        >
-                            0
-                        </p>
-                    </div>
-                </div>
+                </header>
 
-                <!-- Analytics Charts -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl shadow">
-                        <h2 class="text-xl font-semibold mb-4">
-                            Student Enrollment Over Time
-                        </h2>
-                        <canvas id="enrollmentChart"></canvas>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow">
-                        <h2 class="text-xl font-semibold mb-4">
-                            Teacher Distribution by Department
-                        </h2>
-                        <canvas id="teacherChart"></canvas>
-                    </div>
-                </div>
+                <!-- ========== DASHBOARD CONTENT ========== -->
+                <div class="p-6 space-y-8">
+                    <!-- STATS CARDS -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white shadow rounded-xl p-6 fade-in">
+                            <p class="text-gray-500 text-sm">Total Students</p>
+                            <h3 class="text-3xl font-bold mt-2">1,245</h3>
+                            <p class="text-green-600 mt-1">▲ 5% this month</p>
+                        </div>
 
-                <!-- Table Example -->
-                <div class="bg-white p-6 rounded-xl shadow overflow-x-auto">
-                    <h2 class="text-xl font-semibold mb-4">Recent Students</h2>
-                    <table class="min-w-full border-collapse">
-                        <thead class="bg-indigo-100 text-left">
-                            <tr>
-                                <th class="py-2 px-4 font-medium text-gray-700">
-                                    ID
-                                </th>
-                                <th class="py-2 px-4 font-medium text-gray-700">
-                                    Name
-                                </th>
-                                <th class="py-2 px-4 font-medium text-gray-700">
-                                    Class
-                                </th>
-                                <th class="py-2 px-4 font-medium text-gray-700">
-                                    Enrollment Date
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-2 px-4">1</td>
-                                <td class="py-2 px-4">John Doe</td>
-                                <td class="py-2 px-4">Grade 10</td>
-                                <td class="py-2 px-4">2025-11-01</td>
-                            </tr>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-2 px-4">2</td>
-                                <td class="py-2 px-4">Jane Smith</td>
-                                <td class="py-2 px-4">Grade 9</td>
-                                <td class="py-2 px-4">2025-11-03</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <div
+                            class="bg-white shadow rounded-xl p-6 fade-in delay-75"
+                        >
+                            <p class="text-gray-500 text-sm">Teachers</p>
+                            <h3 class="text-3xl font-bold mt-2">86</h3>
+                            <p class="text-blue-600 mt-1">● Stable</p>
+                        </div>
+
+                        <div
+                            class="bg-white shadow rounded-xl p-6 fade-in delay-150"
+                        >
+                            <p class="text-gray-500 text-sm">Attendance Rate</p>
+                            <h3 class="text-3xl font-bold mt-2">92%</h3>
+                            <p class="text-green-600 mt-1">▲ +2%</p>
+                        </div>
+
+                        <div
+                            class="bg-white shadow rounded-xl p-6 fade-in delay-300"
+                        >
+                            <p class="text-gray-500 text-sm">Fees Collected</p>
+                            <h3 class="text-3xl font-bold mt-2">₹ 18.7 L</h3>
+                            <p class="text-green-600 mt-1">▲ On Track</p>
+                        </div>
+                    </div>
+
+                    <!-- ANALYTICS SECTION -->
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        <!-- Attendance Chart -->
+                        <div
+                            class="bg-white p-6 rounded-xl shadow xl:col-span-2 slide-up"
+                        >
+                            <h3 class="text-xl font-semibold mb-4">
+                                Attendance Trend
+                            </h3>
+                            <canvas id="attendanceChart" height="120"></canvas>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div class="bg-white p-6 rounded-xl shadow slide-up">
+                            <h3 class="text-xl font-semibold mb-4">
+                                Recent Activity
+                            </h3>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-sm font-medium">
+                                        ✔ New student admission
+                                    </p>
+                                    <p class="text-gray-500 text-xs">
+                                        10 min ago
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium">
+                                        📝 Exam schedule updated
+                                    </p>
+                                    <p class="text-gray-500 text-xs">
+                                        30 min ago
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium">
+                                        📩 Notice sent to parents
+                                    </p>
+                                    <p class="text-gray-500 text-xs">
+                                        1 hr ago
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium">
+                                        💳 Fee payment received
+                                    </p>
+                                    <p class="text-gray-500 text-xs">
+                                        2 hrs ago
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STUDENTS TABLE -->
+                    <div class="bg-white shadow rounded-xl p-6 slide-up">
+                        <h3 class="text-xl font-semibold mb-4">
+                            Recently Added Students
+                        </h3>
+
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="text-left bg-gray-50">
+                                    <th class="p-3">Name</th>
+                                    <th class="p-3">Class</th>
+                                    <th class="p-3">Roll</th>
+                                    <th class="p-3">Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3">Aarav Sharma</td>
+                                    <td class="p-3">5A</td>
+                                    <td class="p-3">12</td>
+                                    <td
+                                        class="p-3 text-green-600 font-semibold"
+                                    >
+                                        Active
+                                    </td>
+                                </tr>
+
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3">Saanvi Verma</td>
+                                    <td class="p-3">7B</td>
+                                    <td class="p-3">07</td>
+                                    <td
+                                        class="p-3 text-green-600 font-semibold"
+                                    >
+                                        Active
+                                    </td>
+                                </tr>
+
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3">Rohan Mehta</td>
+                                    <td class="p-3">8C</td>
+                                    <td class="p-3">19</td>
+                                    <td
+                                        class="p-3 text-yellow-600 font-semibold"
+                                    >
+                                        Pending
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </main>
         </div>
 
+        <!-- CHART JS -->
         <script>
-            const enrollmentCtx = document
-                .getElementById("enrollmentChart")
+            const ctx = document
+                .getElementById("attendanceChart")
                 .getContext("2d");
-            new Chart(enrollmentCtx, {
+
+            new Chart(ctx, {
                 type: "line",
                 data: {
-                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
                     datasets: [
                         {
-                            label: "Students",
-                            data: [120, 135, 150, 160, 180, 200],
-                            borderColor: "rgba(59, 130, 246, 1)",
-                            backgroundColor: "rgba(59, 130, 246, 0.2)",
-                            fill: true,
-                            tension: 0.3,
+                            label: "Attendance %",
+                            data: [89, 91, 94, 92, 95, 90],
+                            borderColor: "#4f46e5",
+                            tension: 0.4,
+                            borderWidth: 3,
+                            fill: false,
                         },
                     ],
                 },
-                options: { responsive: true },
-            });
-
-            const teacherCtx = document
-                .getElementById("teacherChart")
-                .getContext("2d");
-            new Chart(teacherCtx, {
-                type: "doughnut",
-                data: {
-                    labels: ["Math", "Science", "English", "Arts", "Sports"],
-                    datasets: [
-                        {
-                            label: "Teachers",
-                            data: [5, 8, 6, 4, 3],
-                            backgroundColor: [
-                                "#3B82F6",
-                                "#10B981",
-                                "#F59E0B",
-                                "#EF4444",
-                                "#8B5CF6",
-                            ],
-                        },
-                    ],
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true },
+                    },
                 },
-                options: { responsive: true },
             });
         </script>
     </body>
