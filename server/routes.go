@@ -1,6 +1,7 @@
 package server
 
 import (
+	"swiftschool/app/academics"
 	"swiftschool/app/core"
 )
 
@@ -52,4 +53,20 @@ func (s *Server) SetupRoutes() {
 
 	// ================= ADDRESS =================
 	s.mux.HandleFunc("/api/addresses/register", coreHandler.CreateAddress)
+
+	// Initialize Academics Service and Handler
+	academicService := academics.NewService(s.db)
+	academicHandler := academics.NewHandler(academicService)
+
+	// ================= SUBJECTS =================
+	s.mux.HandleFunc("/api/subjects/register", academicHandler.CreateSubject)
+	s.mux.HandleFunc("/api/subjects/list", academicHandler.ListSubjects)
+
+	// ================= CLASS PERIODS =================
+	s.mux.HandleFunc("/api/class_periods/register", academicHandler.CreateClassPeriod)
+	s.mux.HandleFunc("/api/class_periods/list", academicHandler.ListClassPeriods)
+
+	// ================= TIMETABLE =================
+	s.mux.HandleFunc("/api/timetable/register", academicHandler.CreateTimetableEntry)
+	s.mux.HandleFunc("/api/timetable/list", academicHandler.GetClassTimetable)
 }
