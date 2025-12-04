@@ -230,31 +230,28 @@ func MapDomainStudentToDBParams(s domain.Student) db.CreateStudentParams {
 
 func MapDBGuardianToDomain(g db.CoreGuardian) domain.Guardian {
 	return domain.Guardian{
-			BaseUUIDModel: domain.BaseUUIDModel{
-				ID:        g.ID,
-				CreatedAt: helper.NullTimeToValue(g.CreatedAt),
-				UpdatedAt: helper.NullTimeToValue(g.UpdatedAt),
-				CreatedBy: helper.NullUUIDToPtr(g.CreatedBy),
-			},
-			InstituteID: g.InstituteID,
+		BaseUUIDModel: domain.BaseUUIDModel{
+			ID:        g.ID,
+			CreatedAt: helper.NullTimeToValue(g.CreatedAt),
+			UpdatedAt: helper.NullTimeToValue(g.UpdatedAt),
+			CreatedBy: helper.NullUUIDToPtr(g.CreatedBy),
 		},
 		FirstName: g.FirstName,
 		LastName:  helper.NullStringToPtr(g.LastName),
 		Phone:     helper.NullStringToPtr(g.Phone),
 		Email:     helper.NullStringToPtr(g.Email),
-		IsActive:  helper.NullBoolToValue(g.IsActive),
-
+		// IsActive:  helper.NullBoolToValue(g.IsActive),
+	}
 }
 
 func MapDomainGuardianToDBParams(g domain.Guardian) db.CreateGuardianParams {
 	return db.CreateGuardianParams{
-		InstituteID: g.InstituteID,
-		FirstName:   g.FirstName,
-		LastName:    helper.ToNullString(helper.StrOrEmpty(g.LastName)),
-		Phone:       helper.ToNullString(helper.StrOrEmpty(g.Phone)),
-		Email:       helper.ToNullString(helper.StrOrEmpty(g.Email)),
-		IsActive:    helper.ToNullBool(g.IsActive),
-		CreatedBy:   helper.ToNullUUID(helper.DerefUUID(g.CreatedBy)),
+		FirstName: g.FirstName,
+		LastName:  helper.ToNullString(helper.StrOrEmpty(g.LastName)),
+		Phone:     helper.ToNullString(helper.StrOrEmpty(g.Phone)),
+		Email:     helper.ToNullString(helper.StrOrEmpty(g.Email)),
+		// IsActive:    helper.ToNullBool(g.IsActive),
+		CreatedBy: helper.ToNullUUID(helper.DerefUUID(g.CreatedBy)),
 	}
 }
 
@@ -286,11 +283,11 @@ func MapDomainAddressToDBParams(a domain.Address) db.CreateAddressParams {
 		OwnerType:    helper.ToNullString(string(a.OwnerType)),
 		AddressType:  helper.ToNullString(string(a.AddressType)),
 		AddressLine1: a.AddressLine1,
-		AddressLine2: helper.ToNullString(helper.StrOrEmpty(a.AddressLine2)),
-		CountryID:    helper.ToNullUUID(helper.DerefUUID(a.CountryID)),
-		StateID:      helper.ToNullUUID(helper.DerefUUID(a.StateID)),
-		DistrictID:   helper.ToNullUUID(helper.DerefUUID(a.DistrictID)),
-		PostalCode:   helper.ToNullString(helper.StrOrEmpty(a.PostalCode)),
+		// AddressLine2: helper.ToNullString(helper.StrOrEmpty(a.AddressLine2)),
+		CountryID:  helper.ToNullUUID(helper.DerefUUID(a.CountryID)),
+		StateID:    helper.ToNullUUID(helper.DerefUUID(a.StateID)),
+		DistrictID: helper.ToNullUUID(helper.DerefUUID(a.DistrictID)),
+		PostalCode: helper.ToNullString(helper.StrOrEmpty(a.PostalCode)),
 	}
 }
 
