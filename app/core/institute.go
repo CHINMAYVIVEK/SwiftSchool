@@ -7,6 +7,7 @@ import (
 	"swiftschool/domain"
 	"swiftschool/helper"
 	"swiftschool/internal/db"
+	"swiftschool/mapper"
 
 	"github.com/google/uuid"
 )
@@ -149,37 +150,32 @@ func (s *Service) CreateInstitute(ctx context.Context, arg domain.Institute) (*d
 	return s.repo.CreateInstitute(ctx, arg)
 }
 
-func (r *Repository) CreateInstitute(ctx context.Context, arg domain.Institute) (*domain.Institute, error) {
-	// Apply timeout
+func (r *Repository) CreateInstitute(
+	ctx context.Context,
+	inst domain.Institute,
+) (*domain.Institute, error) {
+
+	// Validate first
+	if err := inst.Validate(); err != nil {
+		return nil, err
+	}
+
 	ctx, cancel := r.db.WithTimeout(ctx)
 	defer cancel()
 
-	// Get SQLC queries instance
 	q, err := r.db.Queries()
 	if err != nil {
 		return nil, err
 	}
 
-	params := db.CreateInstituteParams{
-		Name:         arg.Name,
-		Code:         arg.Code,
-		CurrencyCode: helper.ToNullString(arg.CurrencyCode),
-		LogoUrl:      helper.ToNullString(arg.LogoURL),
-		Website:      helper.ToNullString(arg.Website),
-		IsActive:     helper.ToNullBool(arg.IsActive),
-		CreatedBy:    helper.ToNullUUID(arg.CreatedBy),
-	}
-
-	coreInstitute, err := q.CreateInstitute(ctx, params)
+	params := mapper.MapInstituteDomainToParams(inst)
+	row, err := q.CreateInstitute(ctx, params)
 	if err != nil {
 		return nil, err
 	}
 
-	institute := domain.Institute{
-		BaseUUIDModel: domain.BaseUUIDModel{ID: coreInstitute.ID},
-	}
-
-	return &institute, nil
+	out := mapper.MapInstituteRowToDomain(row)
+	return &out, nil
 }
 
 // ========================= DELETE =========================

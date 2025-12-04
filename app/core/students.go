@@ -6,8 +6,7 @@ import (
 	"net/http"
 	"swiftschool/domain"
 	"swiftschool/helper"
-	"swiftschool/internal/db"
-	"time"
+	"swiftschool/mapper"
 
 	"github.com/google/uuid"
 )
@@ -163,58 +162,31 @@ func (r *Repository) CreateStudent(ctx context.Context, arg domain.Student) (*do
 	ctx, cancel := r.db.WithTimeout(ctx)
 	defer cancel()
 
-	// Get SQLC queries instance
+	// Queries instance
 	q, err := r.db.Queries()
 	if err != nil {
 		return nil, err
 	}
-	params := db.CreateStudentParams{
-		InstituteID:        arg.InstituteID,
-		AdmissionNo:        arg.AdmissionNo,
-		FirstName:          arg.FirstName,
-		LastName:           helper.ToNullString(arg.LastName),
-		Dob:                helper.ToNullTime(arg.DOB),
-		Gender:             helper.ToNullString(arg.Gender),
-		BloodGroup:         helper.ToNullString(arg.BloodGroup),
-		SocialCategory:     helper.ToNullString(arg.SocialCategory),
-		CurrentClassID:     helper.ToNullUUID(arg.CurrentClassID),
-		Nationality:        helper.ToNullString(arg.Nationality),
-		PreferredLanguage:  helper.ToNullString(arg.PreferredLanguage),
-		SocialMediaHandles: helper.EncodeJSONB(arg.SocialMediaHandles),
-		LanguageSkills:     helper.EncodeJSONB(arg.LanguageSkills),
-		CreatedBy:          helper.ToNullUUID(arg.CreatedBy),
-	}
-	coreStudent, err := q.CreateStudent(ctx, params)
+
+	// ------------------------------------
+	// Build SQLC params (SAFE & CLEAN)
+	// ------------------------------------
+
+	params := mapper.MapStudentDomainToParams(arg)
+	// ------------------------------------
+	// Insert student
+	// ------------------------------------
+	row, err := q.CreateStudent(ctx, params)
 	if err != nil {
 		return nil, err
 	}
-	student := domain.Student{
-		TenantUUIDModel: domain.TenantUUIDModel{
-			InstituteID: coreStudent.InstituteID,
-			BaseUUIDModel: domain.BaseUUIDModel{
-				ID:        coreStudent.ID,
-				CreatedAt: *helper.NullToPointer[time.Time](coreStudent.CreatedAt),
-				UpdatedAt: *helper.NullToPointer[time.Time](coreStudent.UpdatedAt),
-				DeletedAt: helper.NullToPointer[time.Time](coreStudent.DeletedAt),
-				CreatedBy: helper.NullToPointer[uuid.UUID](coreStudent.CreatedBy),
-				UpdatedBy: helper.NullToPointer[uuid.UUID](coreStudent.UpdatedBy),
-			},
-		},
-		AdmissionNo:        coreStudent.AdmissionNo,
-		FirstName:          coreStudent.FirstName,
-		LastName:           helper.NullToPointer[string](coreStudent.LastName),
-		DOB:                helper.NullToPointer[time.Time](coreStudent.Dob),
-		Gender:             helper.NullToValue[domain.Gender](coreStudent.Gender),
-		BloodGroup:         helper.NullToValue[domain.BloodGroup](coreStudent.BloodGroup),
-		SocialCategory:     helper.NullToValue[domain.SocialCategory](coreStudent.SocialCategory),
-		CurrentClassID:     helper.NullToPointer[uuid.UUID](coreStudent.CurrentClassID),
-		Nationality:        helper.NullToPointer[string](coreStudent.Nationality),
-		PreferredLanguage:  helper.NullToPointer[string](coreStudent.PreferredLanguage),
-		SocialMediaHandles: helper.JSONBToValue[domain.SocialMediaHandles](coreStudent.SocialMediaHandles),
-		LanguageSkills:     helper.JSONBToValue[[]domain.LanguageSkill](coreStudent.LanguageSkills),
-	}
 
-	return &student, nil
+	// ------------------------------------
+	// Map SQL → Domain
+	// ------------------------------------
+	out := mapper.MapStudentRowToDomain(row)
+
+	return &out, nil
 }
 
 // ========================= DELETE =========================

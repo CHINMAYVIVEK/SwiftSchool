@@ -1,6 +1,9 @@
 package domain
 
 import (
+	"errors"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -109,4 +112,32 @@ type Address struct {
 	StateID      *uuid.UUID  `json:"state_id,omitempty" db:"state_id"`
 	DistrictID   *uuid.UUID  `json:"district_id,omitempty" db:"district_id"`
 	PostalCode   *string     `json:"postal_code,omitempty" db:"postal_code"`
+}
+
+func (i Institute) Validate() error {
+	if strings.TrimSpace(i.Name) == "" {
+		return errors.New("institute name cannot be empty")
+	}
+
+	if strings.TrimSpace(i.Code) == "" {
+		return errors.New("institute code cannot be empty")
+	}
+
+	if i.CurrencyCode != nil && len(*i.CurrencyCode) != 3 {
+		return errors.New("currency code must be 3 characters")
+	}
+
+	if i.Website != nil {
+		if _, err := url.ParseRequestURI(*i.Website); err != nil {
+			return errors.New("website is not a valid URL")
+		}
+	}
+
+	if i.LogoURL != nil {
+		if _, err := url.ParseRequestURI(*i.LogoURL); err != nil {
+			return errors.New("logo URL is not valid")
+		}
+	}
+
+	return nil
 }
