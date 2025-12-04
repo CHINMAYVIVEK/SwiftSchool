@@ -11,9 +11,9 @@ import (
 	"github.com/sqlc-dev/pqtype"
 )
 
-// ----------------------
+// ----------------------------------------
 // JSON / JSONB Helpers
-// ----------------------
+// ----------------------------------------
 
 // JSONMarshal safely marshals any value to JSON with optional unescaped characters
 func JSONMarshal(v any, safeEncoding bool) ([]byte, error) {
@@ -31,21 +31,11 @@ func JSONMarshal(v any, safeEncoding bool) ([]byte, error) {
 			{[]byte("\\u003e"), []byte(">")},
 			{[]byte("\\u0026"), []byte("&")},
 		}
-
 		for _, r := range replacements {
 			b = bytes.ReplaceAll(b, r.old, r.new)
 		}
 	}
 	return b, nil
-}
-
-// DecodeJSONB decodes a pqtype.NullRawMessage into a slice of T
-func DecodeJSONB[T any](src pqtype.NullRawMessage) ([]T, error) {
-	if !src.Valid {
-		return nil, nil
-	}
-	var out []T
-	return out, json.Unmarshal(src.RawMessage, &out)
 }
 
 // EncodeJSONB encodes any value into pqtype.NullRawMessage
@@ -55,85 +45,184 @@ func EncodeJSONB(v any) pqtype.NullRawMessage {
 	}
 	b, err := json.Marshal(v)
 	if err != nil {
-		return pqtype.NullRawMessage{} // optionally log the error
+		return pqtype.NullRawMessage{}
 	}
-	return pqtype.NullRawMessage{
-		RawMessage: b,
-		Valid:      true,
-	}
+	return pqtype.NullRawMessage{RawMessage: b, Valid: true}
 }
 
-// ----------------------
-// Slice / Utility Helpers
-// ----------------------
+// DecodeJSONB decodes pqtype.NullRawMessage into T (struct or slice)
+func DecodeJSONB[T any](src pqtype.NullRawMessage) (T, error) {
+	var out T
+	if !src.Valid {
+		return out, nil
+	}
+	err := json.Unmarshal(src.RawMessage, &out)
+	return out, err
+}
 
-// Contains checks if a slice of any comparable type contains the given item
+// JSONBToValue decodes pqtype.NullRawMessage into type T.
+// Returns zero value of T if NullRawMessage is invalid.
+func JSONBToValue[T any](src pqtype.NullRawMessage) T {
+	var out T
+	if !src.Valid {
+		return out
+	}
+	_ = json.Unmarshal(src.RawMessage, &out) // optionally log error
+	return out
+}
+
+// ----------------------------------------
+// Slice Helpers
+// ----------------------------------------
+
+// Contains checks if a slice contains a given item
 func Contains[T comparable](slice []T, item T) bool {
 	return slices.Contains(slice, item)
 }
 
-// ----------------------
-// String / NullString Helpers
-// ----------------------
+// ----------------------------------------
+// NullString Helpers
+// ----------------------------------------
 
-// CheckString returns string value of sql.NullString or empty string
-func CheckString(ns sql.NullString) string {
-	if ns.Valid {
-		return ns.String
+// ToNullString converts string, string alias, or *string to sql.NullString
+func ToNullString[T ~string | *string](s T) sql.NullString {
+	switch v := any(s).(type) {
+	case string:
+		if v == "" {
+			return sql.NullString{}
+		}
+		return sql.NullString{String: v, Valid: true}
+	case *string:
+		if v == nil || *v == "" {
+			return sql.NullString{}
+		}
+		return sql.NullString{String: *v, Valid: true}
+	default:
+		return sql.NullString{}
 	}
-	return ""
 }
 
-// NullStringToPtr converts sql.NullString to *string
-func NullStringToPtr(ns sql.NullString) *string {
-	if ns.Valid {
-		return &ns.String
+// NullToValue converts sql.Null* types to their Go value with default zero
+func NullToValue[T any](v any) T {
+	var zero T
+	switch val := v.(type) {
+	case sql.NullString:
+		if !val.Valid {
+			return zero
+		}
+		return any(val.String).(T)
+	case sql.NullBool:
+		if !val.Valid {
+			return zero
+		}
+		return any(val.Bool).(T)
+	case sql.NullInt64:
+		if !val.Valid {
+			return zero
+		}
+		return any(val.Int64).(T)
+	case sql.NullFloat64:
+		if !val.Valid {
+			return zero
+		}
+		return any(val.Float64).(T)
+	case sql.NullTime:
+		if !val.Valid {
+			return zero
+		}
+		return any(val.Time).(T)
+	case uuid.NullUUID:
+		if !val.Valid {
+			return zero
+		}
+		return any(val.UUID).(T)
+	default:
+		return zero
 	}
-	return nil
 }
 
-// PtrToNullString converts *string to sql.NullString
-func PtrToNullString(s *string) sql.NullString {
-	if s == nil {
-		return sql.NullString{Valid: false}
-	}
-	return sql.NullString{String: *s, Valid: true}
-}
-
-// ----------------------
-// UUID / NullUUID Helpers
-// ----------------------
-
-// PtrToNullUUID converts *uuid.UUID to uuid.NullUUID
-func PtrToNullUUID(u *uuid.UUID) uuid.NullUUID {
-	if u == nil {
-		return uuid.NullUUID{Valid: false}
-	}
-	return uuid.NullUUID{UUID: *u, Valid: true}
-}
-
-// NullUUIDToPtr converts uuid.NullUUID to *uuid.UUID
-func NullUUIDToPtr(u uuid.NullUUID) *uuid.UUID {
-	if !u.Valid {
+// NullToPointer converts sql.Null* types to *T safely, using the Valid field
+func NullToPointer[T any](v any) *T {
+	switch val := v.(type) {
+	case sql.NullString:
+		if !val.Valid {
+			return nil
+		}
+		v := any(val.String).(T)
+		return &v
+	case sql.NullBool:
+		if !val.Valid {
+			return nil
+		}
+		v := any(val.Bool).(T)
+		return &v
+	case sql.NullInt64:
+		if !val.Valid {
+			return nil
+		}
+		v := any(val.Int64).(T)
+		return &v
+	case sql.NullFloat64:
+		if !val.Valid {
+			return nil
+		}
+		v := any(val.Float64).(T)
+		return &v
+	case sql.NullTime:
+		if !val.Valid {
+			return nil
+		}
+		v := any(val.Time).(T)
+		return &v
+	case uuid.NullUUID:
+		if !val.Valid {
+			return nil
+		}
+		v := any(val.UUID).(T)
+		return &v
+	default:
 		return nil
 	}
-	return &u.UUID
 }
 
-// NullUUIDToUUID converts uuid.NullUUID to uuid.UUID
-func NullUUIDToUUID(u uuid.NullUUID) uuid.UUID {
-	if !u.Valid {
-		return uuid.Nil
+// ----------------------------------------
+// UUID Helpers
+// ----------------------------------------
+
+// ToNullUUID converts *uuid.UUID or uuid.UUID to uuid.NullUUID
+func ToNullUUID[T *uuid.UUID | uuid.UUID](id T) uuid.NullUUID {
+	switch v := any(id).(type) {
+	case *uuid.UUID:
+		if v == nil {
+			return uuid.NullUUID{}
+		}
+		return uuid.NullUUID{UUID: *v, Valid: true}
+	case uuid.UUID:
+		if v == uuid.Nil {
+			return uuid.NullUUID{}
+		}
+		return uuid.NullUUID{UUID: v, Valid: true}
+	default:
+		return uuid.NullUUID{}
 	}
-	return u.UUID
 }
 
-// UUIDToPtr converts a UUID to a pointer
-func UUIDToPtr(u uuid.UUID) *uuid.UUID {
-	return &u
+// ToUUIDPointer converts uuid.UUID or uuid.NullUUID to *uuid.UUID
+func ToUUIDPointer[T uuid.UUID | uuid.NullUUID](id T) *uuid.UUID {
+	switch v := any(id).(type) {
+	case uuid.UUID:
+		return &v
+	case uuid.NullUUID:
+		if !v.Valid {
+			return nil
+		}
+		return &v.UUID
+	default:
+		return nil
+	}
 }
 
-// UUIDToString converts *uuid.UUID to string safely
+// UUIDToString safely converts *uuid.UUID to string
 func UUIDToString(id *uuid.UUID) string {
 	if id == nil {
 		return ""
@@ -146,61 +235,42 @@ func StringToUUID(s string) (uuid.UUID, error) {
 	return uuid.Parse(s)
 }
 
-// ----------------------
-// Time / NullTime Helpers
-// ----------------------
+// ----------------------------------------
+// NullTime Helpers
+// ----------------------------------------
 
-// PtrToNullTime converts *time.Time to sql.NullTime
-func PtrToNullTime(t *time.Time) sql.NullTime {
-	if t != nil {
-		return sql.NullTime{Time: *t, Valid: true}
+// ToNullTime converts *time.Time to sql.NullTime
+func ToNullTime(t *time.Time) sql.NullTime {
+	if t == nil {
+		return sql.NullTime{}
 	}
-	return sql.NullTime{Valid: false}
+	return sql.NullTime{Time: *t, Valid: true}
 }
 
-// NullTimeToPtr converts sql.NullTime to *time.Time
-func NullTimeToPtr(t sql.NullTime) *time.Time {
-	if !t.Valid {
-		return nil
+// ----------------------------------------
+// NullBool Helpers
+// ----------------------------------------
+
+// ToNullBool converts bool or *bool to sql.NullBool
+func ToNullBool[T bool | *bool](b T) sql.NullBool {
+	switch v := any(b).(type) {
+	case bool:
+		return sql.NullBool{Bool: v, Valid: true}
+	case *bool:
+		if v == nil {
+			return sql.NullBool{}
+		}
+		return sql.NullBool{Bool: *v, Valid: true}
+	default:
+		return sql.NullBool{}
 	}
-	return &t.Time
 }
 
-// ----------------------
-// Bool / NullBool Helpers
-// ----------------------
+// ----------------------------------------
+// Misc Helpers
+// ----------------------------------------
 
-// PtrToNullBool converts *bool to sql.NullBool
-func PtrToNullBool(b *bool) sql.NullBool {
-	if b == nil {
-		return sql.NullBool{Valid: false}
-	}
-	return sql.NullBool{Bool: *b, Valid: true}
-}
-
-// NullBoolToPtr converts sql.NullBool to *bool
-func NullBoolToPtr(nb sql.NullBool) *bool {
-	if !nb.Valid {
-		return nil
-	}
-	return &nb.Bool
-}
-
-// NullBoolToBool converts sql.NullBool to bool with default false
-func NullBoolToBool(nb sql.NullBool) bool {
-	return nb.Valid && nb.Bool
-}
-
-// BoolToNullBool converts bool to sql.NullBool (always valid)
-func BoolToNullBool(b bool) sql.NullBool {
-	return sql.NullBool{Bool: b, Valid: true}
-}
-
-// ----------------------
-// General Helpers
-// ----------------------
-
-// ToStr safely dereferences a string pointer or returns empty string
+// ToStr safely dereferences a *string or returns ""
 func ToStr(s *string) string {
 	if s == nil {
 		return ""
