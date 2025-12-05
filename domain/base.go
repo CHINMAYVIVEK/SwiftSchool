@@ -6,29 +6,41 @@ import (
 	"github.com/google/uuid"
 )
 
+// BaseUUIDModel serves as the foundational struct for all entities.
+// It handles the primary key (UUID) and standard audit trails.
 type BaseUUIDModel struct {
 	ID        uuid.UUID  `json:"id" db:"id"`
 	CreatedAt time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at"`
-	CreatedBy *uuid.UUID `json:"created_by,omitempty" db:"created_by"`
-	UpdatedBy *uuid.UUID `json:"updated_by,omitempty" db:"updated_by"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at"` // Soft Delete support
+	CreatedBy *uuid.UUID `json:"created_by,omitempty" db:"created_by"` // Audit trail
+	UpdatedBy *uuid.UUID `json:"updated_by,omitempty" db:"updated_by"` // Audit trail
 }
 
+// TenantUUIDModel enforces Strict Multi-Tenancy.
+// CRITICAL: Every business entity struct MUST embed this.
+// It ensures that data is always scoped to a specific Institute.
 type TenantUUIDModel struct {
 	BaseUUIDModel
 	InstituteID uuid.UUID `json:"institute_id" db:"institute_id"`
 }
 
+// Currency represents the global currency lookup (enums.currency)
+type Currency struct {
+	ID     int    `json:"id" db:"id"`
+	Code   string `json:"code" db:"code"`
+	Symbol string `json:"symbol" db:"symbol"`
+}
+
 // =========================================================
-// ENUMS & CONSTANTS
+// ENUMS & CONSTANTS (Single Source of Truth)
 // =========================================================
+
+// --- AUTH & ROLES ---
 
 type UserRole string
 
 const (
-	RoleStudent    UserRole = "student"
-	RoleGuardian   UserRole = "guardian"
 	RoleSuperAdmin UserRole = "super_admin"
 	RoleAdmin      UserRole = "admin"
 	RoleTeacher    UserRole = "teacher"
@@ -36,7 +48,12 @@ const (
 	RoleLibrarian  UserRole = "librarian"
 	RoleDriver     UserRole = "driver"
 	RoleEmployee   UserRole = "employee"
+	RoleStudent    UserRole = "student"
+	RoleGuardian   UserRole = "guardian"
+	RoleNurse      UserRole = "nurse"
 )
+
+// --- DEMOGRAPHICS ---
 
 type Gender string
 
@@ -78,13 +95,16 @@ const (
 	CategoryOther   SocialCategory = "other"
 )
 
-type VerificationStatus string
+type LanguageProficiency string
 
 const (
-	VerifyPending  VerificationStatus = "pending"
-	VerifyVerified VerificationStatus = "verified"
-	VerifyRejected VerificationStatus = "rejected"
+	LangNative       LanguageProficiency = "native"
+	LangFluent       LanguageProficiency = "fluent"
+	LangIntermediate LanguageProficiency = "intermediate"
+	LangBeginner     LanguageProficiency = "beginner"
 )
+
+// --- CONTACT & ADDRESS ---
 
 type AddressType string
 
@@ -103,6 +123,19 @@ const (
 	OwnerTypeInstitute OwnerType = "institute"
 )
 
+type RelationshipType string
+
+const (
+	RelFather      RelationshipType = "father"
+	RelMother      RelationshipType = "mother"
+	RelGuardian    RelationshipType = "guardian"
+	RelSpouse      RelationshipType = "spouse"
+	RelSibling     RelationshipType = "sibling"
+	RelGrandparent RelationshipType = "grandparent"
+)
+
+// --- ACADEMIC & ATTENDANCE ---
+
 type AttendanceStatus string
 
 const (
@@ -113,15 +146,6 @@ const (
 	StatusOnLeave AttendanceStatus = "on_leave"
 )
 
-type LeaveStatus string
-
-const (
-	LeaveStatusPending   LeaveStatus = "pending"
-	LeaveStatusApproved  LeaveStatus = "approved"
-	LeaveStatusRejected  LeaveStatus = "rejected"
-	LeaveStatusCancelled LeaveStatus = "cancelled"
-)
-
 type AdmissionStatus string
 
 const (
@@ -130,33 +154,6 @@ const (
 	AdmissionStatusApplied   AdmissionStatus = "applied"
 	AdmissionStatusRejected  AdmissionStatus = "rejected"
 	AdmissionStatusConverted AdmissionStatus = "converted"
-)
-
-type FeeFrequency string
-
-const (
-	FeeOneTime   FeeFrequency = "one_time"
-	FeeMonthly   FeeFrequency = "monthly"
-	FeeQuarterly FeeFrequency = "quarterly"
-	FeeYearly    FeeFrequency = "yearly"
-)
-
-type PaymentMethod string
-
-const (
-	PaymentCash         PaymentMethod = "cash"
-	PaymentCheque       PaymentMethod = "cheque"
-	PaymentOnline       PaymentMethod = "online"
-	PaymentUPI          PaymentMethod = "upi"
-	PaymentBankTransfer PaymentMethod = "bank_transfer"
-)
-
-type FineType string
-
-const (
-	FineFixed      FineType = "fixed"
-	FinePercentage FineType = "percentage"
-	FineDaily      FineType = "daily"
 )
 
 type DayOfWeek string
@@ -171,15 +168,90 @@ const (
 	DaySun DayOfWeek = "sun"
 )
 
-type RelationshipType string
+// --- FINANCE ---
+
+type AccountType string
 
 const (
-	RelFather      RelationshipType = "father"
-	RelMother      RelationshipType = "mother"
-	RelGuardian    RelationshipType = "guardian"
-	RelSpouse      RelationshipType = "spouse"
-	RelSibling     RelationshipType = "sibling"
-	RelGrandparent RelationshipType = "grandparent"
+	AccAsset     AccountType = "asset"     // Cash, Buildings, Inventory
+	AccLiability AccountType = "liability" // Loans, Accounts Payable
+	AccEquity    AccountType = "equity"    // Capital
+	AccIncome    AccountType = "income"    // Fee Collection, Grants
+	AccExpense   AccountType = "expense"   // Salaries, Purchase, Maintenance
+)
+
+type PaymentMode string
+
+const (
+	PaymentCash         PaymentMode = "cash"
+	PaymentCheque       PaymentMode = "cheque"
+	PaymentOnline       PaymentMode = "online"
+	PaymentUPI          PaymentMode = "upi"
+	PaymentBankTransfer PaymentMode = "bank_transfer"
+)
+
+type FeeFrequency string
+
+const (
+	FeeOneTime   FeeFrequency = "one_time"
+	FeeMonthly   FeeFrequency = "monthly"
+	FeeQuarterly FeeFrequency = "quarterly"
+	FeeYearly    FeeFrequency = "yearly"
+)
+
+type FineType string
+
+const (
+	FineFixed      FineType = "fixed"
+	FinePercentage FineType = "percentage"
+	FineDaily      FineType = "daily"
+)
+
+type PurchaseStatus string
+
+const (
+	PurchaseDraft     PurchaseStatus = "draft"
+	PurchaseOrdered   PurchaseStatus = "ordered"
+	PurchaseReceived  PurchaseStatus = "received"
+	PurchaseCancelled PurchaseStatus = "cancelled"
+)
+
+type RefundStatus string
+
+const (
+	RefundRequested RefundStatus = "requested"
+	RefundApproved  RefundStatus = "approved"
+	RefundProcessed RefundStatus = "processed"
+	RefundRejected  RefundStatus = "rejected"
+)
+
+// --- HR & OPERATIONS ---
+
+type LeaveStatus string
+
+const (
+	LeavePending   LeaveStatus = "pending"
+	LeaveApproved  LeaveStatus = "approved"
+	LeaveRejected  LeaveStatus = "rejected"
+	LeaveCancelled LeaveStatus = "cancelled"
+)
+
+type LoanStatus string
+
+const (
+	LoanRequested LoanStatus = "requested"
+	LoanApproved  LoanStatus = "approved"
+	LoanActive    LoanStatus = "active"
+	LoanClosed    LoanStatus = "closed"
+	LoanRejected  LoanStatus = "rejected"
+)
+
+type VerificationStatus string
+
+const (
+	VerifyPending  VerificationStatus = "pending"
+	VerifyVerified VerificationStatus = "verified"
+	VerifyRejected VerificationStatus = "rejected"
 )
 
 type TripType string
@@ -196,6 +268,8 @@ const (
 	InvTypePurchase InventoryTransactionType = "purchase"
 	InvTypeConsume  InventoryTransactionType = "consume"
 	InvTypeDamaged  InventoryTransactionType = "damaged"
+	InvTypeReturn   InventoryTransactionType = "return"
+	InvTypeAdjust   InventoryTransactionType = "adjustment"
 )
 
 type MemberType string
@@ -212,6 +286,54 @@ const (
 	HostelGirls HostelType = "girls"
 	HostelStaff HostelType = "staff"
 )
+
+type MealType string
+
+const (
+	MealBreakfast MealType = "breakfast"
+	MealLunch     MealType = "lunch"
+	MealSnacks    MealType = "snacks"
+	MealDinner    MealType = "dinner"
+)
+
+// --- CRM & SUPPORT ---
+
+type TicketPriority string
+
+const (
+	PriorityLow      TicketPriority = "low"
+	PriorityMedium   TicketPriority = "medium"
+	PriorityHigh     TicketPriority = "high"
+	PriorityCritical TicketPriority = "critical"
+)
+
+type TicketStatus string
+
+const (
+	TicketOpen       TicketStatus = "open"
+	TicketInProgress TicketStatus = "in_progress"
+	TicketResolved   TicketStatus = "resolved"
+	TicketClosed     TicketStatus = "closed"
+)
+
+type IncidentSeverity string
+
+const (
+	SeverityMinor    IncidentSeverity = "minor"
+	SeverityMajor    IncidentSeverity = "major"
+	SeverityCritical IncidentSeverity = "critical"
+)
+
+type VisitorType string
+
+const (
+	VisitorParent   VisitorType = "parent"
+	VisitorVendor   VisitorType = "vendor"
+	VisitorOfficial VisitorType = "official"
+	VisitorOther    VisitorType = "other"
+)
+
+// --- DOCUMENTS ---
 
 type DocumentType string
 
@@ -232,40 +354,6 @@ const (
 	DocSalarySlip       DocumentType = "salary_slip"
 	DocAssignment       DocumentType = "assignment"
 	DocStudyMaterial    DocumentType = "study_material"
+	DocPrescription     DocumentType = "prescription"
+	DocCircular         DocumentType = "circular"
 )
-
-type AccountType string
-
-const (
-	AccountAsset     AccountType = "asset"     // Cash, Buildings, Inventory
-	AccountLiability AccountType = "liability" // Loans, Accounts Payable
-	AccountEquity    AccountType = "equity"    // Capital
-	AccountIncome    AccountType = "income"    // Fee Collection, Grants
-	AccountExpense   AccountType = "expense"   // Salaries, Purchase, Maintenance
-)
-
-type PurchaseStatus string
-
-const (
-	PurchaseDraft     PurchaseStatus = "draft"
-	PurchaseOrdered   PurchaseStatus = "ordered"
-	PurchaseReceived  PurchaseStatus = "received" // Inventory updated
-	PurchaseCancelled PurchaseStatus = "cancelled"
-)
-
-// NEW: Language Proficiency Enum
-type LanguageProficiency string
-
-const (
-	LangNative       LanguageProficiency = "native"
-	LangFluent       LanguageProficiency = "fluent"
-	LangIntermediate LanguageProficiency = "intermediate"
-	LangBeginner     LanguageProficiency = "beginner"
-)
-
-// Currency represents the enums.currency table
-type Currency struct {
-	ID     int    `json:"id" db:"id"`
-	Code   string `json:"code" db:"code"`
-	Symbol string `json:"symbol" db:"symbol"`
-}

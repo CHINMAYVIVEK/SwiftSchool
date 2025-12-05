@@ -2,6 +2,7 @@ package domain
 
 import "github.com/google/uuid"
 
+// Corresponds to schema: geo.countries
 type Country struct {
 	BaseUUIDModel
 	Name                string  `json:"name" db:"name"`
@@ -11,6 +12,7 @@ type Country struct {
 	DefaultCurrencyCode *string `json:"default_currency_code,omitempty" db:"default_currency_code"`
 }
 
+// Corresponds to schema: geo.states
 type State struct {
 	BaseUUIDModel
 	CountryID uuid.UUID `json:"country_id" db:"country_id"`
@@ -18,6 +20,7 @@ type State struct {
 	Code      *string   `json:"code,omitempty" db:"code"`
 }
 
+// Corresponds to schema: geo.districts
 type District struct {
 	BaseUUIDModel
 	StateID uuid.UUID `json:"state_id" db:"state_id"`

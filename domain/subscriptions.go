@@ -34,6 +34,7 @@ const (
 	SaaSInvoiceVoid    SaaSInvoiceStatus = "void"
 )
 
+// Corresponds to schema: subscription.plans
 type Plan struct {
 	BaseUUIDModel
 	Name            string       `json:"name" db:"name"`
@@ -45,8 +46,9 @@ type Plan struct {
 	IsActive        bool         `json:"is_active" db:"is_active"`
 }
 
+// Corresponds to schema: subscription.subscriptions
 type Subscription struct {
-	BaseUUIDModel                           // Not TenantUUIDModel because it links TO a tenant, but belongs to SaaS Admin context mostly
+	BaseUUIDModel
 	InstituteID          uuid.UUID          `json:"institute_id" db:"institute_id"`
 	PlanID               uuid.UUID          `json:"plan_id" db:"plan_id"`
 	Status               SubscriptionStatus `json:"status" db:"status"`
@@ -56,6 +58,7 @@ type Subscription struct {
 	StudentCountSnapshot int                `json:"student_count_snapshot" db:"student_count_snapshot"`
 }
 
+// Corresponds to schema: subscription.invoices
 type SaaSInvoice struct {
 	ID                 uuid.UUID         `json:"id" db:"id"`
 	SubscriptionID     uuid.UUID         `json:"subscription_id" db:"subscription_id"`
@@ -65,4 +68,24 @@ type SaaSInvoice struct {
 	BillingPeriodEnd   *time.Time        `json:"billing_period_end,omitempty" db:"billing_period_end"`
 	IssuedAt           time.Time         `json:"issued_at" db:"issued_at"`
 	PaidAt             *time.Time        `json:"paid_at,omitempty" db:"paid_at"`
+	IsActive           bool              `json:"is_active" db:"is_active"`
+	CreatedAt          time.Time         `json:"created_at" db:"created_at"`
+	UpdatedAt          time.Time         `json:"updated_at" db:"updated_at"`
+	DeletedAt          *time.Time        `json:"deleted_at,omitempty" db:"deleted_at"`
+	CreatedBy          *uuid.UUID        `json:"created_by,omitempty" db:"created_by"`
+	UpdatedBy          *uuid.UUID        `json:"updated_by,omitempty" db:"updated_by"`
+}
+
+// Corresponds to schema: subscription.payments
+type SaaSPayment struct {
+	ID             uuid.UUID  `json:"id" db:"id"`
+	InvoiceID      *uuid.UUID `json:"invoice_id,omitempty" db:"invoice_id"`
+	TransactionRef *string    `json:"transaction_ref,omitempty" db:"transaction_ref"`
+	Amount         *float64   `json:"amount,omitempty" db:"amount"`
+	PaymentDate    *time.Time `json:"payment_date,omitempty" db:"payment_date"`
+	Status         *string    `json:"status,omitempty" db:"status"`
+	IsActive       bool       `json:"is_active" db:"is_active"`
+	CreatedAt      time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at" db:"updated_at"`
+	DeletedAt      *time.Time `json:"deleted_at,omitempty" db:"deleted_at"`
 }
