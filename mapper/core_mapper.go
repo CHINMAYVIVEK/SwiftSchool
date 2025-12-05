@@ -143,7 +143,7 @@ func MapDBEmployeeToDomain(e db.CoreEmployee) (*domain.Employee, error) {
 			InstituteID: e.InstituteID,
 		},
 		EmployeeCode:       e.EmployeeCode,
-		FirstName:          e.FirstName,
+		FirstName:          helper.NullStringToValue(e.FirstName),
 		LastName:           helper.NullStringToPtr(e.LastName),
 		DepartmentID:       helper.NullUUIDToPtr(e.DepartmentID),
 		Gender:             domain.Gender(helper.NullStringToValue(e.Gender)),
@@ -161,7 +161,7 @@ func MapDomainEmployeeToDBParams(e domain.Employee) db.CreateEmployeeParams {
 	return db.CreateEmployeeParams{
 		InstituteID:        e.InstituteID,
 		EmployeeCode:       e.EmployeeCode,
-		FirstName:          e.FirstName,
+		FirstName:          helper.ToNullString(e.FirstName),
 		LastName:           helper.ToNullString(helper.StrOrEmpty(e.LastName)),
 		DepartmentID:       helper.ToNullUUID(helper.DerefUUID(e.DepartmentID)),
 		Gender:             helper.ToNullString(string(e.Gender)),
@@ -193,7 +193,7 @@ func MapDBStudentToDomain(s db.CoreStudent) (*domain.Student, error) {
 			InstituteID: s.InstituteID,
 		},
 		AdmissionNo:        s.AdmissionNo,
-		FirstName:          s.FirstName,
+		FirstName:          helper.NullStringToValue(s.FirstName),
 		LastName:           helper.NullStringToPtr(s.LastName),
 		DOB:                helper.NullTimeToPtr(s.Dob),
 		Gender:             domain.Gender(helper.NullStringToValue(s.Gender)),
@@ -211,7 +211,7 @@ func MapDomainStudentToDBParams(s domain.Student) db.CreateStudentParams {
 	return db.CreateStudentParams{
 		InstituteID:        s.InstituteID,
 		AdmissionNo:        s.AdmissionNo,
-		FirstName:          s.FirstName,
+		FirstName:          helper.ToNullString(s.FirstName),
 		LastName:           helper.ToNullString(helper.StrOrEmpty(s.LastName)),
 		Dob:                helper.ToNullTime(helper.DerefTime(s.DOB)),
 		Gender:             helper.ToNullString(string(s.Gender)),
@@ -236,7 +236,7 @@ func MapDBGuardianToDomain(g db.CoreGuardian) domain.Guardian {
 			UpdatedAt: helper.NullTimeToValue(g.UpdatedAt),
 			CreatedBy: helper.NullUUIDToPtr(g.CreatedBy),
 		},
-		FirstName: g.FirstName,
+		FirstName: helper.NullStringToValue(g.FirstName),
 		LastName:  helper.NullStringToPtr(g.LastName),
 		Phone:     helper.NullStringToPtr(g.Phone),
 		Email:     helper.NullStringToPtr(g.Email),
@@ -246,7 +246,7 @@ func MapDBGuardianToDomain(g db.CoreGuardian) domain.Guardian {
 
 func MapDomainGuardianToDBParams(g domain.Guardian) db.CreateGuardianParams {
 	return db.CreateGuardianParams{
-		FirstName: g.FirstName,
+		FirstName: helper.ToNullString(g.FirstName),
 		LastName:  helper.ToNullString(helper.StrOrEmpty(g.LastName)),
 		Phone:     helper.ToNullString(helper.StrOrEmpty(g.Phone)),
 		Email:     helper.ToNullString(helper.StrOrEmpty(g.Email)),
