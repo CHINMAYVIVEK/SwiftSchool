@@ -22,6 +22,7 @@ type AcademicsAssignment struct {
 	Description sql.NullString
 	DueDate     sql.NullTime
 	MaxMarks    sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -36,6 +37,7 @@ type AcademicsClassPeriod struct {
 	StartTime   time.Time
 	EndTime     time.Time
 	IsBreak     sql.NullBool
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -53,6 +55,7 @@ type AcademicsLessonPlan struct {
 	PlannedDate    sql.NullTime
 	CompletionDate sql.NullTime
 	Status         sql.NullString
+	IsActive       sql.NullBool
 	CreatedAt      sql.NullTime
 	UpdatedAt      sql.NullTime
 	DeletedAt      sql.NullTime
@@ -66,7 +69,10 @@ type AcademicsStudentSubject struct {
 	AcademicSessionID uuid.NullUUID
 	StudentID         uuid.NullUUID
 	SubjectID         uuid.NullUUID
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
+	UpdatedAt         sql.NullTime
+	DeletedAt         sql.NullTime
 }
 
 type AcademicsStudentSubmission struct {
@@ -79,6 +85,10 @@ type AcademicsStudentSubmission struct {
 	MarksObtained sql.NullString
 	Feedback      sql.NullString
 	Status        sql.NullString
+	IsActive      sql.NullBool
+	CreatedAt     sql.NullTime
+	UpdatedAt     sql.NullTime
+	DeletedAt     sql.NullTime
 }
 
 type AcademicsSubject struct {
@@ -88,6 +98,7 @@ type AcademicsSubject struct {
 	Code        sql.NullString
 	Type        sql.NullString
 	Credits     sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -103,7 +114,10 @@ type AcademicsSubstitution struct {
 	SubstituteTeacherID uuid.NullUUID
 	Date                time.Time
 	Reason              sql.NullString
+	IsActive            sql.NullBool
 	CreatedAt           sql.NullTime
+	UpdatedAt           sql.NullTime
+	DeletedAt           sql.NullTime
 }
 
 type AcademicsTimetableEntry struct {
@@ -115,6 +129,7 @@ type AcademicsTimetableEntry struct {
 	SubjectID         uuid.NullUUID
 	TeacherID         uuid.NullUUID
 	DayOfWeek         sql.NullString
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
 	UpdatedAt         sql.NullTime
 	DeletedAt         sql.NullTime
@@ -132,6 +147,7 @@ type AdmissionsEnquiry struct {
 	Status       sql.NullString
 	EnquiryDate  sql.NullTime
 	FollowUpDate sql.NullTime
+	IsActive     sql.NullBool
 	CreatedAt    sql.NullTime
 	UpdatedAt    sql.NullTime
 	DeletedAt    sql.NullTime
@@ -147,7 +163,10 @@ type AlumniDonation struct {
 	DonationDate   sql.NullTime
 	Purpose        sql.NullString
 	TransactionRef sql.NullString
+	IsActive       sql.NullBool
 	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 }
 
 type AlumniProfile struct {
@@ -159,23 +178,30 @@ type AlumniProfile struct {
 	Designation         sql.NullString
 	LinkedinUrl         sql.NullString
 	IsActiveMember      sql.NullBool
+	IsActive            sql.NullBool
 	CreatedAt           sql.NullTime
 	UpdatedAt           sql.NullTime
+	DeletedAt           sql.NullTime
 }
 
 type AuthUser struct {
-	ID             uuid.UUID
-	Username       string
-	PasswordHash   string
-	RoleType       sql.NullString
-	LinkedEntityID uuid.UUID
-	InstituteID    uuid.NullUUID
-	IsActive       sql.NullBool
-	CreatedAt      sql.NullTime
-	UpdatedAt      sql.NullTime
-	DeletedAt      sql.NullTime
-	CreatedBy      uuid.NullUUID
-	UpdatedBy      uuid.NullUUID
+	ID              uuid.UUID
+	Username        sql.NullString
+	Email           sql.NullString
+	PhoneNumber     sql.NullString
+	UsernameHash    string
+	EmailHash       string
+	PhoneNumberHash sql.NullString
+	PasswordHash    string
+	RoleType        sql.NullString
+	LinkedEntityID  uuid.UUID
+	InstituteID     uuid.NullUUID
+	IsActive        sql.NullBool
+	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
+	DeletedAt       sql.NullTime
+	CreatedBy       uuid.NullUUID
+	UpdatedBy       uuid.NullUUID
 }
 
 type CafeteriaDailyMenu struct {
@@ -184,7 +210,10 @@ type CafeteriaDailyMenu struct {
 	Date        sql.NullTime
 	MealType    sql.NullString
 	Items       sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type CafeteriaMealPlan struct {
@@ -192,7 +221,10 @@ type CafeteriaMealPlan struct {
 	InstituteID  uuid.UUID
 	Name         sql.NullString
 	CostPerMonth sql.NullString
+	IsActive     sql.NullBool
 	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+	DeletedAt    sql.NullTime
 }
 
 type CafeteriaStudentSubscription struct {
@@ -203,6 +235,9 @@ type CafeteriaStudentSubscription struct {
 	StartDate   sql.NullTime
 	EndDate     sql.NullTime
 	IsActive    sql.NullBool
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type CommsEmailLog struct {
@@ -212,6 +247,10 @@ type CommsEmailLog struct {
 	Subject        sql.NullString
 	Status         sql.NullString
 	SentAt         sql.NullTime
+	IsActive       sql.NullBool
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 }
 
 type CommsNotification struct {
@@ -221,8 +260,10 @@ type CommsNotification struct {
 	Title       sql.NullString
 	Message     sql.NullString
 	IsRead      sql.NullBool
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 	CreatedBy   uuid.NullUUID
 	UpdatedBy   uuid.NullUUID
 }
@@ -235,6 +276,10 @@ type CommsSmsLog struct {
 	Status         sql.NullString
 	ProviderID     sql.NullString
 	SentAt         sql.NullTime
+	IsActive       sql.NullBool
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 }
 
 type CoreAcademicSession struct {
@@ -262,6 +307,7 @@ type CoreAddress struct {
 	StateID      uuid.NullUUID
 	DistrictID   uuid.NullUUID
 	PostalCode   sql.NullString
+	IsActive     sql.NullBool
 	CreatedAt    sql.NullTime
 	UpdatedAt    sql.NullTime
 	DeletedAt    sql.NullTime
@@ -278,7 +324,10 @@ type CoreApproval struct {
 	Status      sql.NullString
 	Remarks     sql.NullString
 	ApprovedAt  sql.NullTime
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type CoreCalendarEvent struct {
@@ -291,6 +340,7 @@ type CoreCalendarEvent struct {
 	EventType      sql.NullString
 	IsHoliday      sql.NullBool
 	TargetAudience sql.NullString
+	IsActive       sql.NullBool
 	CreatedAt      sql.NullTime
 	UpdatedAt      sql.NullTime
 	DeletedAt      sql.NullTime
@@ -305,6 +355,7 @@ type CoreClass struct {
 	Name              string
 	Section           string
 	ClassTeacherID    uuid.NullUUID
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
 	UpdatedAt         sql.NullTime
 	DeletedAt         sql.NullTime
@@ -316,6 +367,7 @@ type CoreDepartment struct {
 	ID          uuid.UUID
 	InstituteID uuid.NullUUID
 	Name        string
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -327,7 +379,7 @@ type CoreEmployee struct {
 	ID                 uuid.UUID
 	InstituteID        uuid.UUID
 	EmployeeCode       string
-	FirstName          string
+	FirstName          sql.NullString
 	LastName           sql.NullString
 	DepartmentID       uuid.NullUUID
 	Gender             sql.NullString
@@ -347,12 +399,15 @@ type CoreEmployee struct {
 
 type CoreGuardian struct {
 	ID           uuid.UUID
-	FirstName    string
+	FirstName    sql.NullString
 	LastName     sql.NullString
 	Email        sql.NullString
 	Phone        sql.NullString
+	EmailHash    sql.NullString
+	PhoneHash    sql.NullString
 	Profession   sql.NullString
 	AnnualIncome sql.NullString
+	IsActive     sql.NullBool
 	CreatedAt    sql.NullTime
 	UpdatedAt    sql.NullTime
 	DeletedAt    sql.NullTime
@@ -381,7 +436,7 @@ type CoreStudent struct {
 	ID                 uuid.UUID
 	InstituteID        uuid.UUID
 	AdmissionNo        string
-	FirstName          string
+	FirstName          sql.NullString
 	LastName           sql.NullString
 	Dob                sql.NullTime
 	Gender             sql.NullString
@@ -392,6 +447,7 @@ type CoreStudent struct {
 	PreferredLanguage  sql.NullString
 	SocialMediaHandles pqtype.NullRawMessage
 	LanguageSkills     pqtype.NullRawMessage
+	IsActive           sql.NullBool
 	CreatedAt          sql.NullTime
 	UpdatedAt          sql.NullTime
 	DeletedAt          sql.NullTime
@@ -404,7 +460,10 @@ type CoreStudentGuardianMap struct {
 	GuardianID       uuid.UUID
 	Relationship     sql.NullString
 	IsPrimaryContact sql.NullBool
+	IsActive         sql.NullBool
 	CreatedAt        sql.NullTime
+	UpdatedAt        sql.NullTime
+	DeletedAt        sql.NullTime
 }
 
 type CoreStudentSessionHistory struct {
@@ -415,8 +474,12 @@ type CoreStudentSessionHistory struct {
 	ClassID           uuid.UUID
 	RollNumber        sql.NullString
 	Status            sql.NullString
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
+	UpdatedAt         sql.NullTime
+	DeletedAt         sql.NullTime
 	CreatedBy         uuid.NullUUID
+	UpdatedBy         uuid.NullUUID
 }
 
 type DisciplineAction struct {
@@ -427,7 +490,10 @@ type DisciplineAction struct {
 	StartDate   sql.NullTime
 	EndDate     sql.NullTime
 	Remarks     sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type DisciplineIncident struct {
@@ -440,6 +506,7 @@ type DisciplineIncident struct {
 	Severity     sql.NullString
 	ActionTaken  sql.NullString
 	ReportedBy   uuid.NullUUID
+	IsActive     sql.NullBool
 	CreatedAt    sql.NullTime
 	UpdatedAt    sql.NullTime
 	DeletedAt    sql.NullTime
@@ -453,6 +520,7 @@ type DocsDocument struct {
 	DocType     sql.NullString
 	FileName    sql.NullString
 	FileUrl     string
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -643,6 +711,7 @@ type ExamExam struct {
 	StartDate         sql.NullTime
 	EndDate           sql.NullTime
 	IsPublished       sql.NullBool
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
 	UpdatedAt         sql.NullTime
 	DeletedAt         sql.NullTime
@@ -659,7 +728,10 @@ type ExamGradeRule struct {
 	MaxPercentage sql.NullString
 	GradePoint    sql.NullString
 	Description   sql.NullString
+	IsActive      sql.NullBool
 	CreatedAt     sql.NullTime
+	UpdatedAt     sql.NullTime
+	DeletedAt     sql.NullTime
 }
 
 type ExamGradeSystem struct {
@@ -667,6 +739,7 @@ type ExamGradeSystem struct {
 	InstituteID uuid.UUID
 	Name        string
 	Type        sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -682,8 +755,10 @@ type ExamMark struct {
 	MarksObtained sql.NullString
 	IsAbsent      sql.NullBool
 	Remarks       sql.NullString
+	IsActive      sql.NullBool
 	CreatedAt     sql.NullTime
 	UpdatedAt     sql.NullTime
+	DeletedAt     sql.NullTime
 	CreatedBy     uuid.NullUUID
 	UpdatedBy     uuid.NullUUID
 }
@@ -699,6 +774,7 @@ type ExamSchedule struct {
 	MaxMarks        sql.NullString
 	MinPassMarks    sql.NullString
 	ExamType        sql.NullString
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
 	UpdatedAt       sql.NullTime
 	DeletedAt       sql.NullTime
@@ -714,6 +790,7 @@ type FinanceAccount struct {
 	ParentAccountID uuid.NullUUID
 	Type            string
 	IsSystem        sql.NullBool
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
 	UpdatedAt       sql.NullTime
 	DeletedAt       sql.NullTime
@@ -751,7 +828,10 @@ type FinanceBankStatementEntry struct {
 	Balance                 sql.NullString
 	ReconciledTransactionID uuid.NullUUID
 	IsReconciled            sql.NullBool
+	IsActive                sql.NullBool
 	CreatedAt               sql.NullTime
+	UpdatedAt               sql.NullTime
+	DeletedAt               sql.NullTime
 }
 
 type FinanceBudget struct {
@@ -762,7 +842,10 @@ type FinanceBudget struct {
 	ExpenseCategoryID uuid.NullUUID
 	AllocatedAmount   string
 	UtilizedAmount    sql.NullString
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
+	UpdatedAt         sql.NullTime
+	DeletedAt         sql.NullTime
 }
 
 type FinanceConcession struct {
@@ -771,6 +854,7 @@ type FinanceConcession struct {
 	Name        sql.NullString
 	Type        sql.NullString
 	Value       sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -784,6 +868,7 @@ type FinanceFeeHead struct {
 	Name              string
 	IsRefundable      sql.NullBool
 	LinkedGlAccountID uuid.NullUUID
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
 	UpdatedAt         sql.NullTime
 	DeletedAt         sql.NullTime
@@ -799,6 +884,7 @@ type FinanceFeeStructure struct {
 	FeeHeadID         uuid.UUID
 	Amount            string
 	Frequency         sql.NullString
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
 	UpdatedAt         sql.NullTime
 	DeletedAt         sql.NullTime
@@ -833,6 +919,7 @@ type FinanceInvoice struct {
 	PaidAmount        sql.NullString
 	Status            sql.NullString
 	DueDate           sql.NullTime
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
 	UpdatedAt         sql.NullTime
 	DeletedAt         sql.NullTime
@@ -849,7 +936,10 @@ type FinanceInvoiceItem struct {
 	DiscountApplied sql.NullString
 	ConcessionID    uuid.NullUUID
 	Description     sql.NullString
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
+	DeletedAt       sql.NullTime
 	CreatedBy       uuid.NullUUID
 }
 
@@ -861,6 +951,7 @@ type FinanceJournalEntry struct {
 	Description     sql.NullString
 	IsPosted        sql.NullBool
 	PostedAt        sql.NullTime
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
 	UpdatedAt       sql.NullTime
 	DeletedAt       sql.NullTime
@@ -876,7 +967,10 @@ type FinanceJournalItem struct {
 	Debit          sql.NullString
 	Credit         sql.NullString
 	Description    sql.NullString
+	IsActive       sql.NullBool
 	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 	CreatedBy      uuid.NullUUID
 }
 
@@ -887,7 +981,10 @@ type FinancePurchaseItem struct {
 	ItemID          uuid.UUID
 	Quantity        int32
 	UnitPrice       string
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
+	DeletedAt       sql.NullTime
 	CreatedBy       uuid.NullUUID
 }
 
@@ -899,6 +996,7 @@ type FinancePurchaseOrder struct {
 	TotalAmount sql.NullString
 	Status      sql.NullString
 	ReferenceNo sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -916,7 +1014,10 @@ type FinancePurchaseOrderItem struct {
 	TaxID           uuid.NullUUID
 	TaxAmount       sql.NullString
 	TotalAmount     sql.NullString
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
+	DeletedAt       sql.NullTime
 }
 
 type FinanceRefund struct {
@@ -929,8 +1030,10 @@ type FinanceRefund struct {
 	Status      sql.NullString
 	RefundDate  sql.NullTime
 	ProcessedBy uuid.NullUUID
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type FinanceStudentWallet struct {
@@ -938,7 +1041,9 @@ type FinanceStudentWallet struct {
 	InstituteID uuid.UUID
 	StudentID   uuid.UUID
 	Balance     sql.NullString
+	IsActive    sql.NullBool
 	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type FinanceTax struct {
@@ -946,7 +1051,10 @@ type FinanceTax struct {
 	InstituteID uuid.UUID
 	Name        sql.NullString
 	Percentage  string
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type FinanceTransaction struct {
@@ -965,8 +1073,10 @@ type FinanceTransaction struct {
 	PaymentDate      sql.NullTime
 	Status           sql.NullString
 	CollectedBy      uuid.NullUUID
+	IsActive         sql.NullBool
 	CreatedAt        sql.NullTime
 	UpdatedAt        sql.NullTime
+	DeletedAt        sql.NullTime
 	CreatedBy        uuid.NullUUID
 	UpdatedBy        uuid.NullUUID
 }
@@ -980,6 +1090,7 @@ type FinanceVendor struct {
 	Email       sql.NullString
 	Address     sql.NullString
 	GstNumber   sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -994,6 +1105,7 @@ type FleetDriverProfile struct {
 	LicenseNumber      sql.NullString
 	LicenseExpiryDate  sql.NullTime
 	VerificationStatus sql.NullString
+	IsActive           sql.NullBool
 	CreatedAt          sql.NullTime
 	UpdatedAt          sql.NullTime
 	DeletedAt          sql.NullTime
@@ -1009,7 +1121,10 @@ type FleetFuelLog struct {
 	QuantityLitres  sql.NullString
 	Cost            sql.NullString
 	OdometerReading sql.NullString
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
+	DeletedAt       sql.NullTime
 }
 
 type FleetMaintenanceLog struct {
@@ -1021,7 +1136,10 @@ type FleetMaintenanceLog struct {
 	Cost            sql.NullString
 	ServiceDate     sql.NullTime
 	NextServiceDue  sql.NullTime
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
+	DeletedAt       sql.NullTime
 }
 
 type FleetRoute struct {
@@ -1030,6 +1148,7 @@ type FleetRoute struct {
 	Name        string
 	StartPoint  sql.NullString
 	EndPoint    sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -1044,6 +1163,7 @@ type FleetRouteStop struct {
 	StopName      sql.NullString
 	PickupTime    sql.NullTime
 	SequenceOrder sql.NullInt32
+	IsActive      sql.NullBool
 	CreatedAt     sql.NullTime
 	UpdatedAt     sql.NullTime
 	DeletedAt     sql.NullTime
@@ -1061,8 +1181,10 @@ type FleetTripLog struct {
 	TripDate    sql.NullTime
 	StartTime   sql.NullTime
 	EndTime     sql.NullTime
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 	CreatedBy   uuid.NullUUID
 	UpdatedBy   uuid.NullUUID
 }
@@ -1091,6 +1213,10 @@ type FrontOfficePostalRecord struct {
 	ReferenceNo  sql.NullString
 	Date         sql.NullTime
 	CreatedBy    uuid.NullUUID
+	IsActive     sql.NullBool
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+	DeletedAt    sql.NullTime
 }
 
 type FrontOfficeVisitor struct {
@@ -1106,6 +1232,10 @@ type FrontOfficeVisitor struct {
 	GatePassID   sql.NullString
 	VehicleNo    sql.NullString
 	CreatedBy    uuid.NullUUID
+	IsActive     sql.NullBool
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+	DeletedAt    sql.NullTime
 }
 
 type GeoCountry struct {
@@ -1113,6 +1243,7 @@ type GeoCountry struct {
 	Name                string
 	Code                sql.NullString
 	DefaultCurrencyCode sql.NullString
+	IsActive            sql.NullBool
 	CreatedAt           sql.NullTime
 	UpdatedAt           sql.NullTime
 	DeletedAt           sql.NullTime
@@ -1125,6 +1256,7 @@ type GeoDistrict struct {
 	StateID   uuid.NullUUID
 	Name      string
 	Code      sql.NullString
+	IsActive  sql.NullBool
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
 	DeletedAt sql.NullTime
@@ -1137,6 +1269,7 @@ type GeoState struct {
 	CountryID uuid.NullUUID
 	Name      string
 	Code      sql.NullString
+	IsActive  sql.NullBool
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
 	DeletedAt sql.NullTime
@@ -1152,7 +1285,10 @@ type HealthInfirmaryVisit struct {
 	Symptoms       sql.NullString
 	TreatmentGiven sql.NullString
 	AttendedBy     uuid.NullUUID
+	IsActive       sql.NullBool
 	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 }
 
 type HealthMedicalRecord struct {
@@ -1164,6 +1300,7 @@ type HealthMedicalRecord struct {
 	Medications     sql.NullString
 	EmergencyNotes  sql.NullString
 	LastCheckupDate sql.NullTime
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
 	UpdatedAt       sql.NullTime
 	DeletedAt       sql.NullTime
@@ -1177,7 +1314,10 @@ type HealthVaccination struct {
 	DateAdministered sql.NullTime
 	NextDueDate      sql.NullTime
 	Remarks          sql.NullString
+	IsActive         sql.NullBool
 	CreatedAt        sql.NullTime
+	UpdatedAt        sql.NullTime
+	DeletedAt        sql.NullTime
 }
 
 type HostelAllocation struct {
@@ -1201,6 +1341,7 @@ type HostelBuilding struct {
 	InstituteID uuid.UUID
 	Name        sql.NullString
 	Type        sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -1215,6 +1356,7 @@ type HostelRoom struct {
 	RoomNumber  sql.NullString
 	Capacity    sql.NullInt32
 	CostPerYear sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -1230,6 +1372,9 @@ type HrAttendanceDevice struct {
 	Location    sql.NullString
 	ApiKey      sql.NullString
 	IsActive    sql.NullBool
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type HrBiometricLog struct {
@@ -1239,7 +1384,10 @@ type HrBiometricLog struct {
 	UserID      uuid.NullUUID
 	PunchTime   sql.NullTime
 	PunchType   sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type HrLeaveApplication struct {
@@ -1252,6 +1400,7 @@ type HrLeaveApplication struct {
 	Reason      sql.NullString
 	Status      sql.NullString
 	ApprovedBy  uuid.NullUUID
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -1264,6 +1413,7 @@ type HrLeaveType struct {
 	InstituteID        uuid.UUID
 	Name               sql.NullString
 	DaysAllowedPerYear sql.NullInt32
+	IsActive           sql.NullBool
 	CreatedAt          sql.NullTime
 	UpdatedAt          sql.NullTime
 	DeletedAt          sql.NullTime
@@ -1281,6 +1431,7 @@ type InventoryFixedAsset struct {
 	PurchaseDate sql.NullTime
 	PurchaseCost sql.NullString
 	Status       sql.NullString
+	IsActive     sql.NullBool
 	CreatedAt    sql.NullTime
 	UpdatedAt    sql.NullTime
 	DeletedAt    sql.NullTime
@@ -1295,6 +1446,7 @@ type InventoryItem struct {
 	CategoryID   uuid.NullUUID
 	IsFixedAsset sql.NullBool
 	ReorderLevel sql.NullInt32
+	IsActive     sql.NullBool
 	CreatedAt    sql.NullTime
 	UpdatedAt    sql.NullTime
 	DeletedAt    sql.NullTime
@@ -1306,6 +1458,7 @@ type InventoryItemCategory struct {
 	ID          uuid.UUID
 	InstituteID uuid.UUID
 	Name        sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -1318,7 +1471,10 @@ type InventoryLocation struct {
 	InstituteID uuid.UUID
 	Name        sql.NullString
 	InChargeID  uuid.NullUUID
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type InventoryRequisition struct {
@@ -1328,6 +1484,7 @@ type InventoryRequisition struct {
 	DepartmentID uuid.NullUUID
 	Status       sql.NullString
 	RequestDate  sql.NullTime
+	IsActive     sql.NullBool
 	CreatedAt    sql.NullTime
 	UpdatedAt    sql.NullTime
 	DeletedAt    sql.NullTime
@@ -1342,6 +1499,10 @@ type InventoryRequisitionItem struct {
 	ItemName      sql.NullString
 	Quantity      sql.NullInt32
 	Remarks       sql.NullString
+	IsActive      sql.NullBool
+	CreatedAt     sql.NullTime
+	UpdatedAt     sql.NullTime
+	DeletedAt     sql.NullTime
 }
 
 type InventoryStockLevel struct {
@@ -1350,7 +1511,9 @@ type InventoryStockLevel struct {
 	ItemID      uuid.NullUUID
 	LocationID  uuid.NullUUID
 	Quantity    sql.NullInt32
+	IsActive    sql.NullBool
 	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type InventoryStockTransfer struct {
@@ -1361,7 +1524,9 @@ type InventoryStockTransfer struct {
 	ToLocationID   uuid.NullUUID
 	Quantity       sql.NullInt32
 	MovedBy        uuid.NullUUID
+	IsActive       sql.NullBool
 	CreatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 }
 
 type InventoryTransaction struct {
@@ -1373,8 +1538,10 @@ type InventoryTransaction struct {
 	UnitPrice       sql.NullString
 	Remarks         sql.NullString
 	TransactionDate sql.NullTime
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
 	UpdatedAt       sql.NullTime
+	DeletedAt       sql.NullTime
 	CreatedBy       uuid.NullUUID
 	UpdatedBy       uuid.NullUUID
 }
@@ -1388,6 +1555,7 @@ type LibraryBook struct {
 	CategoryID      uuid.NullUUID
 	TotalCopies     sql.NullInt32
 	AvailableCopies sql.NullInt32
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
 	UpdatedAt       sql.NullTime
 	DeletedAt       sql.NullTime
@@ -1406,8 +1574,10 @@ type LibraryBookIssue struct {
 	ReturnDate  sql.NullTime
 	FineAmount  sql.NullString
 	Status      sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 	CreatedBy   uuid.NullUUID
 	UpdatedBy   uuid.NullUUID
 }
@@ -1416,6 +1586,7 @@ type LibraryCategory struct {
 	ID          uuid.UUID
 	InstituteID uuid.UUID
 	Name        sql.NullString
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -1430,7 +1601,10 @@ type LibraryCirculationRule struct {
 	MaxBooksIssued sql.NullInt32
 	IssueDaysLimit sql.NullInt32
 	FinePerDay     sql.NullString
+	IsActive       sql.NullBool
 	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 }
 
 type PayrollEmployeeSalaryConfig struct {
@@ -1438,6 +1612,7 @@ type PayrollEmployeeSalaryConfig struct {
 	EmployeeID  uuid.UUID
 	ComponentID uuid.UUID
 	Amount      string
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -1456,7 +1631,10 @@ type PayrollLoan struct {
 	PaidInstallments  sql.NullInt32
 	Status            sql.NullString
 	ApprovedBy        uuid.NullUUID
+	IsActive          sql.NullBool
 	CreatedAt         sql.NullTime
+	UpdatedAt         sql.NullTime
+	DeletedAt         sql.NullTime
 }
 
 type PayrollPayslip struct {
@@ -1469,6 +1647,7 @@ type PayrollPayslip struct {
 	NetSalary       sql.NullString
 	IsPaid          sql.NullBool
 	PaymentDate     sql.NullTime
+	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
 	UpdatedAt       sql.NullTime
 	DeletedAt       sql.NullTime
@@ -1481,6 +1660,7 @@ type PayrollSalaryComponent struct {
 	InstituteID uuid.UUID
 	Name        string
 	IsDeduction sql.NullBool
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -1497,6 +1677,10 @@ type SubscriptionInvoice struct {
 	BillingPeriodEnd   sql.NullTime
 	IssuedAt           sql.NullTime
 	PaidAt             sql.NullTime
+	IsActive           sql.NullBool
+	CreatedAt          sql.NullTime
+	UpdatedAt          sql.NullTime
+	DeletedAt          sql.NullTime
 }
 
 type SubscriptionPayment struct {
@@ -1506,6 +1690,10 @@ type SubscriptionPayment struct {
 	Amount         sql.NullString
 	PaymentDate    sql.NullTime
 	Status         sql.NullString
+	IsActive       sql.NullBool
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 }
 
 type SubscriptionPlan struct {
@@ -1513,8 +1701,8 @@ type SubscriptionPlan struct {
 	Name            string
 	BasePrice       string
 	PricePerStudent string
-	BillingCycle    sql.NullString
 	CurrencyCode    sql.NullString
+	BillingCycle    sql.NullString
 	Features        pqtype.NullRawMessage
 	IsActive        sql.NullBool
 	CreatedAt       sql.NullTime
@@ -1533,6 +1721,7 @@ type SubscriptionSubscription struct {
 	EndDate              time.Time
 	NextBillingDate      sql.NullTime
 	StudentCountSnapshot sql.NullInt32
+	IsActive             sql.NullBool
 	CreatedAt            sql.NullTime
 	UpdatedAt            sql.NullTime
 	DeletedAt            sql.NullTime
@@ -1550,6 +1739,7 @@ type SupportTicket struct {
 	Subject     sql.NullString
 	Description sql.NullString
 	AssignedTo  uuid.NullUUID
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	DeletedAt   sql.NullTime
@@ -1559,7 +1749,10 @@ type SupportTicketCategory struct {
 	ID          uuid.UUID
 	InstituteID uuid.UUID
 	Name        string
+	IsActive    sql.NullBool
 	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
 }
 
 type SupportTicketComment struct {
@@ -1567,5 +1760,8 @@ type SupportTicketComment struct {
 	TicketID  uuid.NullUUID
 	UserID    uuid.NullUUID
 	Comment   sql.NullString
+	IsActive  sql.NullBool
 	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	DeletedAt sql.NullTime
 }
