@@ -62,7 +62,23 @@ type RepositoryInterface interface {
 	ListRoutes(ctx context.Context, instituteID uuid.UUID) ([]*domain.Route, error)
 
 	CreateRouteStop(ctx context.Context, arg domain.RouteStop) (*domain.RouteStop, error)
+	ListRouteStops(ctx context.Context, instituteID uuid.UUID) ([]*domain.RouteStop, error)
+	UpdateRouteStop(ctx context.Context, arg domain.RouteStop) (*domain.RouteStop, error)
+	DeleteRouteStop(ctx context.Context, id, instituteID uuid.UUID) error
+	ListTripLogs(ctx context.Context, instituteID uuid.UUID) ([]*domain.TripLog, error)
 	CreateTripLog(ctx context.Context, arg domain.TripLog) (*domain.TripLog, error)
+	UpdateTripLog(ctx context.Context, arg domain.TripLog) (*domain.TripLog, error)
+	// DeleteTripLog(ctx context.Context, id, instituteID uuid.UUID) error
+
+	CreateFuelLog(ctx context.Context, arg domain.FuelLog) (*domain.FuelLog, error)
+	ListFuelLogs(ctx context.Context, instituteID uuid.UUID) ([]*domain.FuelLog, error)
+	UpdateFuelLog(ctx context.Context, arg domain.FuelLog) (*domain.FuelLog, error)
+	// DeleteFuelLog(ctx context.Context, id, instituteID uuid.UUID) error
+
+	CreateMaintenanceLog(ctx context.Context, arg domain.MaintenanceLog) (*domain.MaintenanceLog, error)
+	ListMaintenanceLogs(ctx context.Context, instituteID uuid.UUID) ([]*domain.MaintenanceLog, error)
+	UpdateMaintenanceLog(ctx context.Context, arg domain.MaintenanceLog) (*domain.MaintenanceLog, error)
+	// DeleteMaintenanceLog(ctx context.Context, id, instituteID uuid.UUID) error
 }
 
 //////////////////////////////////////////////////////
@@ -81,5 +97,21 @@ type ServiceInterface interface {
 	ListRoutes(ctx context.Context, instituteID uuid.UUID) ([]*domain.Route, error)
 
 	CreateRouteStop(ctx context.Context, arg domain.RouteStop) (*domain.RouteStop, error)
+	ListRouteStops(ctx context.Context, instituteID uuid.UUID) ([]*domain.RouteStop, error)
+	UpdateRouteStop(ctx context.Context, arg domain.RouteStop) (*domain.RouteStop, error)
+	DeleteRouteStop(ctx context.Context, id, instituteID uuid.UUID) error
+	ListTripLogs(ctx context.Context, instituteID uuid.UUID) ([]*domain.TripLog, error)
 	CreateTripLog(ctx context.Context, arg domain.TripLog) (*domain.TripLog, error)
+	UpdateTripLog(ctx context.Context, arg domain.TripLog) (*domain.TripLog, error)
+	// DeleteTripLog(ctx context.Context, id, instituteID uuid.UUID) error
+
+	CreateFuelLog(ctx context.Context, arg domain.FuelLog) (*domain.FuelLog, error)
+	ListFuelLogs(ctx context.Context, instituteID uuid.UUID) ([]*domain.FuelLog, error)
+	UpdateFuelLog(ctx context.Context, arg domain.FuelLog) (*domain.FuelLog, error)
+	// DeleteFuelLog(ctx context.Context, id, instituteID uuid.UUID) error
+
+	CreateMaintenanceLog(ctx context.Context, arg domain.MaintenanceLog) (*domain.MaintenanceLog, error)
+	ListMaintenanceLogs(ctx context.Context, instituteID uuid.UUID) ([]*domain.MaintenanceLog, error)
+	UpdateMaintenanceLog(ctx context.Context, arg domain.MaintenanceLog) (*domain.MaintenanceLog, error)
+	// DeleteMaintenanceLog(ctx context.Context, id, instituteID uuid.UUID) error
 }
