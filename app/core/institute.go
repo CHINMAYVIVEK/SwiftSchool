@@ -150,10 +150,7 @@ func (s *Service) CreateInstitute(ctx context.Context, arg domain.Institute) (*d
 	return s.repo.CreateInstitute(ctx, arg)
 }
 
-func (r *Repository) CreateInstitute(
-	ctx context.Context,
-	inst domain.Institute,
-) (*domain.Institute, error) {
+func (r *Repository) CreateInstitute(ctx context.Context, inst domain.Institute) (*domain.Institute, error) {
 
 	// Validate first
 	if err := inst.Validate(); err != nil {
