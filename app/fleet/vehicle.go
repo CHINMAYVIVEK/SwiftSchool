@@ -88,3 +88,11 @@ func (s *Service) DeleteVehicle(ctx context.Context, id, instituteID uuid.UUID) 
 func (r *Repository) DeleteVehicle(ctx context.Context, id, instituteID uuid.UUID) error {
 	return nil
 }
+
+func (s *Service) CreateFuelLog(ctx context.Context, arg domain.FuelLog) (*domain.FuelLog, error) {
+	return nil, nil
+}
+
+func (r *Repository) CreateFuelLog(ctx context.Context, arg domain.FuelLog) (*domain.FuelLog, error) {
+	return nil, nil
+}
