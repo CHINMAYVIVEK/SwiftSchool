@@ -11,20 +11,49 @@ import (
 	"time"
 
 	"swiftschool/config"
-	"swiftschool/helper"
+	"swiftschool/internal/database"
 )
+
+// @title SwiftSchool API
+// @version 1.0
+// @description Comprehensive School Management System API for managing institutes, students, academics, admissions, and more
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swiftschool.com/support
+// @contact.email support@swiftschool.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /api
+
+// @securityDefinitions.apikey SessionAuth
+// @in cookie
+// @name session_token
+// @description Session-based authentication using HTTP-only cookies
 
 type Server struct {
 	server *http.Server
 	mux    *http.ServeMux
 	config *config.Config
-	db     *helper.PostgresWrapper
+	db     *database.Database
 }
 
 // NewServer creates and configures a new HTTP server instance
 func NewServer(cfg *config.Config) *Server {
 	mux := http.NewServeMux()
-	db := helper.NewPostgresWrapper(cfg.Postgres)
+
+	// Get the SQL connection from config
+	sqlDB, err := cfg.Postgres.GetDB()
+	if err != nil {
+		log.Fatalf("Failed to get database connection: %v", err)
+	}
+
+	// Create database wrapper with query timeout
+	db := database.New(sqlDB, cfg.Postgres.QueryTimeout())
+
 	server := &http.Server{
 		Addr:         cfg.App.ServerPort,
 		Handler:      mux,

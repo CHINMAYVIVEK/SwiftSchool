@@ -15,6 +15,19 @@ import (
 //////////////////////////////////////////////////////
 
 // ========================= CREATE ENQUIRY =========================
+
+// CreateEnquiry godoc
+// @Summary Create a new admission enquiry
+// @Description Register a new admission enquiry
+// @Tags Admissions - Enquiries
+// @Accept json
+// @Produce json
+// @Param enquiry body dto.CreateEnquiryRequest true "Enquiry details"
+// @Success 201 {object} dto.SuccessResponse{data=dto.EnquiryResponse}
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /admissions/enquiries/register [post]
 func (h *Handler) CreateEnquiry(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
@@ -37,6 +50,18 @@ func (h *Handler) CreateEnquiry(w http.ResponseWriter, r *http.Request) {
 }
 
 // ========================= LIST ENQUIRIES =========================
+
+// ListEnquiries godoc
+// @Summary List admission enquiries
+// @Description Retrieve all admission enquiries for an institute
+// @Tags Admissions - Enquiries
+// @Produce json
+// @Param institute_id query string true "Institute ID"
+// @Success 200 {object} dto.SuccessResponse{data=[]dto.EnquiryResponse}
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /admissions/enquiries/list [get]
 func (h *Handler) ListEnquiries(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
@@ -65,6 +90,19 @@ func (h *Handler) ListEnquiries(w http.ResponseWriter, r *http.Request) {
 }
 
 // ========================= UPDATE ENQUIRY STATUS =========================
+
+// UpdateEnquiryStatus godoc
+// @Summary Update enquiry status
+// @Description Update the status of an admission enquiry
+// @Tags Admissions - Enquiries
+// @Accept json
+// @Produce json
+// @Param request body dto.UpdateEnquiryStatusRequest true "Status update details"
+// @Success 200 {object} dto.SuccessResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /admissions/enquiries/update_status [patch]
 func (h *Handler) UpdateEnquiryStatus(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPatch {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")

@@ -3,7 +3,7 @@ package finance
 import (
 	"context"
 	"swiftschool/domain"
-	"swiftschool/helper"
+	"swiftschool/internal/database"
 
 	"github.com/google/uuid"
 )
@@ -25,10 +25,10 @@ func NewHandler(service ServiceInterface) *Handler {
 //////////////////////////////////////////////////////
 
 type Repository struct {
-	db *helper.PostgresWrapper
+	db *database.Database
 }
 
-func NewRepository(db *helper.PostgresWrapper) *Repository {
+func NewRepository(db *database.Database) *Repository {
 	return &Repository{db: db}
 }
 
@@ -40,7 +40,7 @@ type Service struct {
 	repo RepositoryInterface
 }
 
-func NewService(db *helper.PostgresWrapper) *Service {
+func NewService(db *database.Database) *Service {
 	return &Service{
 		repo: NewRepository(db),
 	}

@@ -4,92 +4,134 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"net/http"
+	"os"
 	"sync"
 )
+
+var logger = GetLogger()
 
 type ViewType string
 
 const (
-	StudentView    ViewType = "student"
-	InstructorView ViewType = "instructor"
-	WebsiteView    ViewType = "website"
+	StudentView ViewType = "student"
+	SchoolView  ViewType = "school"
+	WebsiteView ViewType = "website"
 )
 
-var templatePaths = map[ViewType][]string{
-	StudentView: {
-		"template/lms_panel/student/base.html",
-		"template/lms_panel/student/_header.html",
-		"template/lms_panel/student/_sidebar.html",
-		"template/lms_panel/student/_footer.html",
-	},
-	InstructorView: {
-		"template/lms_panel/instructor/base.html",
-		"template/lms_panel/instructor/_header.html",
-		"template/lms_panel/instructor/_sidebar.html",
-		"template/lms_panel/instructor/_footer.html",
-	},
-	WebsiteView: {
-		"template/website/base.html",
-		"template/website/_header.html",
-		"template/website/_footer.html",
-	},
+//////////////////////////////////////////////////////
+//                     Layouts                     //
+//////////////////////////////////////////////////////
+
+var layoutFiles = map[ViewType][]string{
+	StudentView: {"base.html", "_header.html", "_sidebar.html", "_footer.html"},
+	SchoolView:  {"base.html", "_header.html", "_sidebar.html", "_footer.html"},
 }
+
+var viewBasePaths = map[ViewType]string{
+	StudentView: "template/student",
+	SchoolView:  "template/school",
+	WebsiteView: "template",
+}
+
+//////////////////////////////////////////////////////
+//                     Cache                       //
+//////////////////////////////////////////////////////
 
 type TemplateCache struct {
-	cache map[string]*template.Template
 	mu    sync.RWMutex
+	items map[string]*template.Template
 }
 
-var (
-	defaultFuncMap = template.FuncMap{
-		"marshal": func(v interface{}) template.JS {
-			if b, err := json.Marshal(v); err == nil {
-				return template.JS(b)
-			}
-			return template.JS("{}")
-		},
-	}
+var templateCache = &TemplateCache{items: make(map[string]*template.Template)}
 
-	templateStore = &TemplateCache{
-		cache: make(map[string]*template.Template),
-	}
-)
+//////////////////////////////////////////////////////
+//                     Helpers                     //
+//////////////////////////////////////////////////////
 
-func (tc *TemplateCache) get(key string) (*template.Template, bool) {
-	tc.mu.RLock()
-	defer tc.mu.RUnlock()
-	tmpl, exists := tc.cache[key]
-	return tmpl, exists
+var funcMap = template.FuncMap{
+	"marshal": func(v any) template.JS {
+		b, _ := json.Marshal(v)
+		return template.JS(b)
+	},
 }
 
-func (tc *TemplateCache) set(key string, tmpl *template.Template) {
-	tc.mu.Lock()
-	defer tc.mu.Unlock()
-	tc.cache[key] = tmpl
+func cacheKey(view ViewType, page string) string {
+	return string(view) + ":" + page
 }
 
-func LoadTemplate(view ViewType, name string, files ...string) (*template.Template, error) {
-	cacheKey := string(view) + ":" + name
-
-	if tmpl, exists := templateStore.get(cacheKey); exists {
-		return tmpl, nil
-	}
-
-	baseFiles, ok := templatePaths[view]
+// buildTemplateFiles builds absolute paths for templates
+func buildTemplateFiles(view ViewType, page string) ([]string, error) {
+	basePath, ok := viewBasePaths[view]
 	if !ok {
-		return nil, fmt.Errorf("invalid view type: %s", view)
+		return nil, fmt.Errorf("unknown view type: %s", view)
 	}
 
-	allFiles := make([]string, 0, len(baseFiles)+len(files))
-	allFiles = append(allFiles, baseFiles...)
-	allFiles = append(allFiles, files...)
+	files := []string{}
 
-	tmpl := template.New(name).Funcs(defaultFuncMap)
-	parsedTmpl, err := tmpl.ParseFiles(allFiles...)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse template files: %w", err)
+	if layout, ok := layoutFiles[view]; ok {
+		for _, f := range layout {
+			files = append(files, basePath+"/"+f)
+		}
 	}
 
-	templateStore.set(cacheKey, parsedTmpl)
-	return parsedTmpl, nil
+	// Page file must exist
+	pageFile := basePath + "/" + page + ".html"
+	if _, err := os.Stat(pageFile); os.IsNotExist(err) {
+		return nil, fmt.Errorf("page template does not exist: %s", pageFile)
+	}
+	files = append(files, pageFile)
+
+	logger.Info("Template files:", files)
+	return files, nil
+}
+
+//////////////////////////////////////////////////////
+//                     Public API                  //
+//////////////////////////////////////////////////////
+
+func Render(w http.ResponseWriter, view ViewType, page string, data any) error {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	key := cacheKey(view, page)
+
+	// Load from cache
+	templateCache.mu.RLock()
+	tmpl, ok := templateCache.items[key]
+	templateCache.mu.RUnlock()
+
+	if !ok {
+		files, err := buildTemplateFiles(view, page)
+		if err != nil {
+			logger.Error("Build template files error:", err)
+			return err
+		}
+
+		tmpl, err = template.New(page).Funcs(funcMap).ParseFiles(files...)
+		if err != nil {
+			logger.Error("Parse template files error:", err)
+			return fmt.Errorf("template parse error: %w", err)
+		}
+
+		templateCache.mu.Lock()
+		templateCache.items[key] = tmpl
+		templateCache.mu.Unlock()
+	}
+
+	// Execute template
+	if view == WebsiteView {
+		// WebsiteView is standalone
+		if err := tmpl.Execute(w, data); err != nil {
+			logger.Error("Execute WebsiteView template error:", err)
+			return err
+		}
+	} else {
+		// Student/School view uses base.html as root
+		if err := tmpl.ExecuteTemplate(w, "base.html", data); err != nil {
+			logger.Error("Execute Student/School template error:", err)
+			return err
+		}
+	}
+
+	logger.Info("Template rendered successfully:", page)
+	return nil
 }

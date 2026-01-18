@@ -15,6 +15,19 @@ import (
 //////////////////////////////////////////////////////
 
 // ========================= CREATE TIMETABLE ENTRY =========================
+
+// CreateTimetableEntry godoc
+// @Summary Create a new timetable entry
+// @Description Create a new timetable entry for a class
+// @Tags Academics - Timetable
+// @Accept json
+// @Produce json
+// @Param entry body dto.CreateTimetableEntryRequest true "Timetable entry details"
+// @Success 201 {object} dto.SuccessResponse{data=dto.TimetableEntryResponse}
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /timetable/register [post]
 func (h *Handler) CreateTimetableEntry(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
@@ -37,6 +50,18 @@ func (h *Handler) CreateTimetableEntry(w http.ResponseWriter, r *http.Request) {
 }
 
 // ========================= GET CLASS TIMETABLE =========================
+
+// GetClassTimetable godoc
+// @Summary Get class timetable
+// @Description Retrieve the complete timetable for a specific class
+// @Tags Academics - Timetable
+// @Produce json
+// @Param class_id query string true "Class ID"
+// @Success 200 {object} dto.SuccessResponse{data=[]dto.TimetableEntryResponse}
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /timetable/list [get]
 func (h *Handler) GetClassTimetable(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")

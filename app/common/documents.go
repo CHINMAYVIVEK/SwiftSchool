@@ -15,6 +15,19 @@ import (
 //////////////////////////////////////////////////////
 
 // ========================= CREATE DOCUMENT =========================
+
+// CreateDocument godoc
+// @Summary Create a new document
+// @Description Upload and register a new document
+// @Tags Common - Documents
+// @Accept json
+// @Produce json
+// @Param document body dto.CreateDocumentRequest true "Document details"
+// @Success 201 {object} dto.SuccessResponse{data=dto.DocumentResponse}
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /common/documents/create [post]
 func (h *Handler) CreateDocument(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
@@ -37,6 +50,19 @@ func (h *Handler) CreateDocument(w http.ResponseWriter, r *http.Request) {
 }
 
 // ========================= LIST DOCUMENTS =========================
+
+// ListDocuments godoc
+// @Summary List documents
+// @Description Retrieve all documents for a specific owner
+// @Tags Common - Documents
+// @Produce json
+// @Param institute_id query string true "Institute ID"
+// @Param owner_id query string true "Owner ID"
+// @Success 200 {object} dto.SuccessResponse{data=[]dto.DocumentResponse}
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /common/documents/list [get]
 func (h *Handler) ListDocuments(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")

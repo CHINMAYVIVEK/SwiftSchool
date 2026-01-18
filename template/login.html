@@ -1,0 +1,306 @@
+{{ define "login" }}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ .Title }}</title>
+
+    <link rel="shortcut icon" href="/assets/img/favicon.png" />
+    <link rel="stylesheet" href="/assets/plugins/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/plugins/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+    <style>
+        #verifyOtpForm {
+            display: none !important;
+        }
+
+        #sendOtpForm {
+            display: block !important;
+        }
+
+        #verifyOtpForm.show {
+            display: block !important;
+        }
+
+        #sendOtpForm.hide {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper login-body">
+        <div class="login-wrapper">
+            <div class="container">
+                <div class="loginbox">
+                    <div class="login-left">
+                        <img class="img-fluid" src="/assets/img/login.png" alt="Logo" />
+                    </div>
+
+                    <div class="login-right">
+                        <div class="login-right-wrap">
+                            <h1>Welcome to SwiftSchool</h1>
+                            <h2>Sign in</h2>
+
+                            <!-- ================= STEP 1 : SEND OTP ================= -->
+                            <form id="sendOtpForm" hx-post="/api/auth/login" hx-target="this" hx-swap="none"
+                                hx-on::htmx:before-request="validateSendOtpForm(event)"
+                                hx-on::htmx:after-request="handleSendOtpResponse(event)"
+                                hx-on::htmx:response-error="handleSendOtpResponse(event)">
+                                <div class="form-group">
+                                    <label>Username / Email / Phone *</label>
+                                    <input id="usernameInput" class="form-control" name="username" required />
+                                </div>
+
+                                <div class="form-group mt-2">
+                                    <label>User Type</label>
+                                    <select id="roleSelect" class="form-control" name="role" required>
+                                        <option value="student">
+                                            Student
+                                        </option>
+                                        <option value="teacher">
+                                            Teacher
+                                        </option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+
+                                <button class="btn btn-primary btn-block mt-3">
+                                    Send OTP
+                                </button>
+
+                                <div id="sendOtpError" class="alert alert-danger mt-3 d-none"></div>
+                            </form>
+
+                            <!-- ================= STEP 2 : VERIFY OTP ================= -->
+                            <form id="verifyOtpForm" hx-post="/api/auth/verification" hx-target="this" hx-swap="none"
+                                hx-on::htmx:before-request="validateVerifyOtpForm(event)"
+                                hx-on::htmx:after-request="handleVerifyOtpResponse(event)"
+                                hx-on::htmx:response-error="handleVerifyOtpResponse(event)">
+                                <div class="form-group">
+                                    <label>Enter OTP *</label>
+                                    <input id="otpInput" class="form-control" name="otp" maxlength="6"
+                                        autocomplete="one-time-code" required />
+                                </div>
+
+                                <input type="hidden" id="hiddenUsername" name="username" />
+                                <input type="hidden" id="hiddenRole" name="role" />
+
+                                <button class="btn btn-primary btn-block mt-3">
+                                    Verify OTP
+                                </button>
+
+                                <div id="verifyOtpError" class="alert alert-danger mt-3 d-none"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize form visibility on page load
+        document.addEventListener("DOMContentLoaded", function () {
+            const sendForm = document.getElementById("sendOtpForm");
+            const verifyForm = document.getElementById("verifyOtpForm");
+
+            // Ensure correct initial state
+            if (sendForm) {
+                sendForm.style.display = "block";
+                sendForm.classList.remove("hide");
+            }
+            if (verifyForm) {
+                verifyForm.style.display = "none";
+                verifyForm.classList.remove("show");
+            }
+        });
+
+        /* ================= VALIDATION ================= */
+
+        function validateSendOtpForm(event) {
+            const username = document
+                .getElementById("usernameInput")
+                .value.trim();
+            if (!username) {
+                event.preventDefault();
+                showError("sendOtpError", "Username is required");
+                return false;
+            }
+            hideError("sendOtpError");
+            return true;
+        }
+
+        function validateVerifyOtpForm(event) {
+            const otp = document.getElementById("otpInput").value.trim();
+            if (otp.length !== 6) {
+                event.preventDefault();
+                showError("verifyOtpError", "Enter valid 6-digit OTP");
+                return false;
+            }
+            hideError("verifyOtpError");
+            return true;
+        }
+
+        /* ================= STEP TRANSITIONS ================= */
+
+        function handleSendOtpResponse(event) {
+            const xhr = event.detail.xhr;
+            const sendForm = document.getElementById("sendOtpForm");
+            const verifyForm = document.getElementById("verifyOtpForm");
+
+            console.log("Send OTP Response:", xhr.status, xhr.responseText);
+
+            // Hide any previous errors
+            hideError("sendOtpError");
+
+            // Check if request was successful
+            if (xhr.status >= 200 && xhr.status < 300) {
+                let response;
+                try {
+                    response = JSON.parse(xhr.responseText);
+                } catch (e) {
+                    console.error("Failed to parse response:", e);
+                    response = { success: true }; // Assume success if can't parse
+                }
+
+                // Check if response indicates success
+                if (response.success !== false) {
+                    // Success - switch forms
+                    console.log("OTP sent successfully, showing verification form");
+
+                    // Use both style and class for maximum compatibility
+                    sendForm.style.display = "none";
+                    sendForm.classList.add("hide");
+                    sendForm.classList.remove("show");
+
+                    verifyForm.style.display = "block";
+                    verifyForm.classList.add("show");
+                    verifyForm.classList.remove("hide");
+
+                    // Persist values to hidden inputs
+                    const username = document.getElementById("usernameInput").value;
+                    const role = document.getElementById("roleSelect").value;
+                    document.getElementById("hiddenUsername").value = username;
+                    document.getElementById("hiddenRole").value = role;
+
+                    // Clear and focus OTP input
+                    const otpInput = document.getElementById("otpInput");
+                    otpInput.value = "";
+                    setTimeout(() => {
+                        otpInput.focus();
+                        // Double-check form is visible
+                        if (verifyForm.style.display === "none") {
+                            verifyForm.style.display = "block";
+                        }
+                    }, 100);
+
+                    return;
+                } else {
+                    // Response indicates failure despite 200 status
+                    console.error("OTP send failed:", response.message);
+                    showError("sendOtpError", response.message || "Failed to send OTP");
+                    sendForm.style.display = "block";
+                    sendForm.classList.remove("hide");
+                    verifyForm.style.display = "none";
+                    verifyForm.classList.remove("show");
+                    return;
+                }
+            }
+
+            // Handle error response
+            let errorMessage = "Failed to send OTP";
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.message) {
+                    errorMessage = response.message;
+                }
+            } catch (e) {
+                errorMessage = xhr.responseText || errorMessage;
+            }
+
+            showError("sendOtpError", errorMessage);
+            sendForm.style.display = "block";
+            sendForm.classList.remove("hide");
+            verifyForm.style.display = "none";
+            verifyForm.classList.remove("show");
+        }
+
+        function handleVerifyOtpResponse(event) {
+            const xhr = event.detail.xhr;
+            const otpInput = document.getElementById("otpInput");
+
+            console.log("Verify OTP Response:", xhr.status, xhr.responseText);
+
+            // Hide any previous errors
+            hideError("verifyOtpError");
+
+            // Check if request was successful
+            if (xhr.status >= 200 && xhr.status < 300) {
+                let response;
+                try {
+                    response = JSON.parse(xhr.responseText);
+                } catch (e) {
+                    console.error("Failed to parse response:", e);
+                    // Fallback: redirect based on role
+                    const role = document.getElementById("hiddenRole").value;
+                    window.location.href = "/" + role + "/dashboard";
+                    return;
+                }
+
+                // Check if response indicates success
+                if (response.success !== false) {
+                    // Get redirect URL from response
+                    const redirectURL = response.data?.redirect ||
+                        "/" + document.getElementById("hiddenRole").value + "/dashboard";
+                    window.location.href = redirectURL;
+                    return;
+                } else {
+                    // Response indicates failure despite 200 status
+                    showError("verifyOtpError", response.message || "Invalid OTP");
+                    otpInput.value = "";
+                    otpInput.focus();
+                    return;
+                }
+            }
+
+            // Handle error response
+            let errorMessage = "Invalid OTP";
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.message) {
+                    errorMessage = response.message;
+                }
+            } catch (e) {
+                errorMessage = xhr.responseText || errorMessage;
+            }
+
+            showError("verifyOtpError", errorMessage);
+            otpInput.value = "";
+            otpInput.focus();
+        }
+
+        /* ================= HELPERS ================= */
+
+        function showError(id, message) {
+            const el = document.getElementById(id);
+            el.textContent = message;
+            el.classList.remove("d-none");
+        }
+
+        function hideError(id) {
+            const el = document.getElementById(id);
+            el.classList.add("d-none");
+        }
+    </script>
+
+    <script src="/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+{{ end }}

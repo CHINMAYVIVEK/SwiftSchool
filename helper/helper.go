@@ -92,6 +92,10 @@ func ToNullInt(v int64) sql.NullInt64 {
 	return sql.NullInt64{Int64: v, Valid: v != 0}
 }
 
+func ToNullInt32(v int32) sql.NullInt32 {
+	return sql.NullInt32{Int32: v, Valid: v != 0}
+}
+
 func ToNullFloat(v float64) sql.NullFloat64 {
 	return sql.NullFloat64{Float64: v, Valid: v != 0}
 }
@@ -130,11 +134,18 @@ func NullIntToValue(v sql.NullInt64) int64 {
 	return v.Int64
 }
 
-func NullFloatToValue(v sql.NullFloat64) float64 {
+func NullInt32ToValue(v sql.NullInt32) int32 {
 	if !v.Valid {
 		return 0
 	}
-	return v.Float64
+	return v.Int32
+}
+
+func TimeOrZero(t *time.Time) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return *t
 }
 
 func NullTimeToValue(v sql.NullTime) time.Time {

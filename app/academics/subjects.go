@@ -15,6 +15,19 @@ import (
 //////////////////////////////////////////////////////
 
 // ========================= CREATE SUBJECT =========================
+
+// CreateSubject godoc
+// @Summary Create a new subject
+// @Description Create a new subject for an institute
+// @Tags Academics - Subjects
+// @Accept json
+// @Produce json
+// @Param subject body dto.CreateSubjectRequest true "Subject details"
+// @Success 201 {object} dto.SuccessResponse{data=dto.SubjectResponse}
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /subjects/register [post]
 func (h *Handler) CreateSubject(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")
@@ -37,6 +50,18 @@ func (h *Handler) CreateSubject(w http.ResponseWriter, r *http.Request) {
 }
 
 // ========================= LIST SUBJECTS =========================
+
+// ListSubjects godoc
+// @Summary List subjects
+// @Description Retrieve all subjects for an institute
+// @Tags Academics - Subjects
+// @Produce json
+// @Param institute_id query string true "Institute ID"
+// @Success 200 {object} dto.SuccessResponse{data=[]dto.SubjectResponse}
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /subjects/list [get]
 func (h *Handler) ListSubjects(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")

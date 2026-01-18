@@ -6,6 +6,14 @@ import (
 )
 
 // Route handlers
+
+// handleHealthCheck godoc
+// @Summary Health check endpoint
+// @Description Check if the server is running and healthy
+// @Tags Health
+// @Produce json
+// @Success 200 {object} dto.SuccessResponse
+// @Router /health [get]
 func (s *Server) handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "Method not allowed")

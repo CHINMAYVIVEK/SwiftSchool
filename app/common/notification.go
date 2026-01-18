@@ -13,6 +13,19 @@ import (
 //////////////////////////////////////////////////////
 
 // ========================= CREATE NOTIFICATION =========================
+
+// CreateNotification godoc
+// @Summary Create a new notification
+// @Description Create and send a notification to a user
+// @Tags Common - Notifications
+// @Accept json
+// @Produce json
+// @Param notification body dto.CreateNotificationRequest true "Notification details"
+// @Success 201 {object} dto.SuccessResponse{data=dto.NotificationResponse}
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Security SessionAuth
+// @Router /common/notifications/create [post]
 func (h *Handler) CreateNotification(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		helper.NewErrorResponse(w, http.StatusMethodNotAllowed, "method not allowed")

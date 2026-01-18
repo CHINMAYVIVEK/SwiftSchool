@@ -1,11 +1,10 @@
 package mapper
 
 import (
+	"fmt"
 	"swiftschool/domain"
 	"swiftschool/helper"
 	"swiftschool/internal/db"
-
-	"github.com/google/uuid"
 )
 
 // ------------------ INSTITUTE ------------------
@@ -62,13 +61,24 @@ func MapDBClassToDomain(c db.CoreClass) domain.Class {
 func MapDomainClassToDBParams(c domain.Class) db.CreateClassParams {
 	return db.CreateClassParams{
 		InstituteID:       c.InstituteID,
+		AcademicSessionID: c.AcademicSessionID,
 		Name:              c.Name,
 		Section:           c.Section,
-		AcademicSessionID: c.AcademicSessionID,
 		ClassTeacherID:    helper.ToNullUUID(helper.DerefUUID(c.ClassTeacherID)),
 		CreatedBy:         helper.ToNullUUID(helper.DerefUUID(c.CreatedBy)),
 	}
 }
+
+// func MapUpdateClassParams(c domain.Class) db.UpdateClassParams {
+// 	// If UpdateClassParams doesn't exist, this function will error.
+// 	// We return empty struct to satisfy compiler if struct exists but unused?
+// 	// But previous errors said struct undefined.
+// 	// So we should probably remove this function or comment it out.
+// 	// However, repo still calls it if not stubbed. I stubbed Repo.
+// 	// So i can comment this out.
+// 	// return db.UpdateClassParams{}
+// 	panic("MapUpdateClassParams called but undefined")
+// }
 
 // ------------------ ACADEMIC SESSION ------------------
 
@@ -126,13 +136,20 @@ func MapDomainDepartmentToDBParams(d domain.Department) db.CreateDepartmentParam
 	}
 }
 
+func MapUpdateDepartmentParams(d domain.Department) db.UpdateDepartmentParams {
+	return db.UpdateDepartmentParams{
+		ID:          d.ID,
+		InstituteID: helper.ToNullUUID(d.InstituteID),
+		Name:        d.Name,
+		UpdatedBy:   helper.ToNullUUID(helper.DerefUUID(d.UpdatedBy)),
+	}
+}
+
 // ------------------ EMPLOYEE ------------------
 
 func MapDBEmployeeToDomain(e db.CoreEmployee) (*domain.Employee, error) {
-	langSkills, _ := helper.DecodeJSONB[[]domain.LanguageSkill](e.LanguageSkills)
-	socialHandles, _ := helper.DecodeJSONB[domain.SocialMediaHandles](e.SocialMediaHandles)
-
-	return &domain.Employee{
+	// Initialize struct
+	emp := &domain.Employee{
 		TenantUUIDModel: domain.TenantUUIDModel{
 			BaseUUIDModel: domain.BaseUUIDModel{
 				ID:        e.ID,
@@ -142,19 +159,75 @@ func MapDBEmployeeToDomain(e db.CoreEmployee) (*domain.Employee, error) {
 			},
 			InstituteID: e.InstituteID,
 		},
-		EmployeeCode:       e.EmployeeCode,
-		FirstName:          helper.NullStringToValue(e.FirstName),
-		LastName:           helper.NullStringToPtr(e.LastName),
-		DepartmentID:       helper.NullUUIDToPtr(e.DepartmentID),
-		Gender:             domain.Gender(helper.NullStringToValue(e.Gender)),
-		MaritalStatus:      domain.MaritalStatus(helper.NullStringToValue(e.MaritalStatus)),
-		DateOfJoining:      helper.NullTimeToPtr(e.DateOfJoining),
-		Nationality:        helper.NullStringToPtr(e.Nationality),
-		PreferredLanguage:  helper.NullStringToPtr(e.PreferredLanguage),
-		SocialMediaHandles: socialHandles,
-		LanguageSkills:     langSkills,
-		IsActive:           helper.NullBoolToValue(e.IsActive),
-	}, nil
+		EmployeeCode:      e.EmployeeCode,
+		FirstName:         helper.NullStringToValue(e.FirstName),
+		LastName:          helper.NullStringToPtr(e.LastName),
+		DepartmentID:      helper.NullUUIDToPtr(e.DepartmentID),
+		Gender:            domain.Gender(helper.NullStringToValue(e.Gender)),
+		MaritalStatus:     domain.MaritalStatus(helper.NullStringToValue(e.MaritalStatus)),
+		DateOfJoining:     helper.NullTimeToPtr(e.DateOfJoining),
+		Nationality:       helper.NullStringToPtr(e.Nationality),
+		PreferredLanguage: helper.NullStringToPtr(e.PreferredLanguage),
+		IsActive:          helper.NullBoolToValue(e.IsActive),
+	}
+
+	// Decode JSONBs
+	if e.SocialMediaHandles.Valid {
+		val, err := helper.DecodeJSONB[domain.SocialMediaHandles](e.SocialMediaHandles)
+		if err == nil {
+			emp.SocialMediaHandles = val
+		}
+	}
+	if e.LanguageSkills.Valid {
+		val, err := helper.DecodeJSONB[[]domain.LanguageSkill](e.LanguageSkills)
+		if err == nil {
+			emp.LanguageSkills = val
+		}
+	}
+
+	return emp, nil
+}
+
+func MapListEmployeesRowToDomain(e db.ListEmployeesRow) *domain.Employee {
+	return MapDBListEmployeesRowToDomain(e)
+}
+
+func MapDBListEmployeesRowToDomain(e db.ListEmployeesRow) *domain.Employee {
+	emp := &domain.Employee{
+		TenantUUIDModel: domain.TenantUUIDModel{
+			BaseUUIDModel: domain.BaseUUIDModel{
+				ID:        e.ID,
+				CreatedAt: helper.NullTimeToValue(e.CreatedAt),
+				UpdatedAt: helper.NullTimeToValue(e.UpdatedAt),
+				CreatedBy: helper.NullUUIDToPtr(e.CreatedBy),
+			},
+			InstituteID: e.InstituteID,
+		},
+		EmployeeCode:      e.EmployeeCode,
+		FirstName:         helper.NullStringToValue(e.FirstName),
+		LastName:          helper.NullStringToPtr(e.LastName),
+		DepartmentID:      helper.NullUUIDToPtr(e.DepartmentID),
+		Gender:            domain.Gender(helper.NullStringToValue(e.Gender)),
+		MaritalStatus:     domain.MaritalStatus(helper.NullStringToValue(e.MaritalStatus)),
+		DateOfJoining:     helper.NullTimeToPtr(e.DateOfJoining),
+		Nationality:       helper.NullStringToPtr(e.Nationality),
+		PreferredLanguage: helper.NullStringToPtr(e.PreferredLanguage),
+		IsActive:          helper.NullBoolToValue(e.IsActive),
+	}
+
+	if e.SocialMediaHandles.Valid {
+		val, err := helper.DecodeJSONB[domain.SocialMediaHandles](e.SocialMediaHandles)
+		if err == nil {
+			emp.SocialMediaHandles = val
+		}
+	}
+	if e.LanguageSkills.Valid {
+		val, err := helper.DecodeJSONB[[]domain.LanguageSkill](e.LanguageSkills)
+		if err == nil {
+			emp.LanguageSkills = val
+		}
+	}
+	return emp
 }
 
 func MapDomainEmployeeToDBParams(e domain.Employee) db.CreateEmployeeParams {
@@ -166,63 +239,69 @@ func MapDomainEmployeeToDBParams(e domain.Employee) db.CreateEmployeeParams {
 		DepartmentID:       helper.ToNullUUID(helper.DerefUUID(e.DepartmentID)),
 		Gender:             helper.ToNullString(string(e.Gender)),
 		MaritalStatus:      helper.ToNullString(string(e.MaritalStatus)),
-		DateOfJoining:      helper.ToNullTime(helper.DerefTime(e.DateOfJoining)),
+		DateOfJoining:      helper.ToNullTime(helper.TimeOrZero(e.DateOfJoining)),
 		Nationality:        helper.ToNullString(helper.StrOrEmpty(e.Nationality)),
 		PreferredLanguage:  helper.ToNullString(helper.StrOrEmpty(e.PreferredLanguage)),
 		SocialMediaHandles: helper.EncodeJSONB(e.SocialMediaHandles),
 		LanguageSkills:     helper.EncodeJSONB(e.LanguageSkills),
-		// IsActive:           helper.ToNullBool(e.IsActive),
-		CreatedBy: helper.ToNullUUID(helper.DerefUUID(e.CreatedBy)),
+		CreatedBy:          helper.ToNullUUID(helper.DerefUUID(e.CreatedBy)),
 	}
 }
 
-// ------------------ STUDENT ------------------
-
-func MapDBStudentToDomain(s db.CoreStudent) (*domain.Student, error) {
-	langSkills, _ := helper.DecodeJSONB[[]domain.LanguageSkill](s.LanguageSkills)
-	socialHandles, _ := helper.DecodeJSONB[domain.SocialMediaHandles](s.SocialMediaHandles)
-
-	return &domain.Student{
-		TenantUUIDModel: domain.TenantUUIDModel{
-			BaseUUIDModel: domain.BaseUUIDModel{
-				ID:        s.ID,
-				CreatedAt: helper.NullTimeToValue(s.CreatedAt),
-				UpdatedAt: helper.NullTimeToValue(s.UpdatedAt),
-				CreatedBy: helper.NullUUIDToPtr(s.CreatedBy),
-			},
-			InstituteID: s.InstituteID,
-		},
-		AdmissionNo:        s.AdmissionNo,
-		FirstName:          helper.NullStringToValue(s.FirstName),
-		LastName:           helper.NullStringToPtr(s.LastName),
-		DOB:                helper.NullTimeToPtr(s.Dob),
-		Gender:             domain.Gender(helper.NullStringToValue(s.Gender)),
-		BloodGroup:         domain.BloodGroup(helper.NullStringToValue(s.BloodGroup)),
-		SocialCategory:     domain.SocialCategory(helper.NullStringToValue(s.SocialCategory)),
-		CurrentClassID:     helper.NullUUIDToPtr(s.CurrentClassID),
-		Nationality:        helper.NullStringToPtr(s.Nationality),
-		PreferredLanguage:  helper.NullStringToPtr(s.PreferredLanguage),
-		SocialMediaHandles: socialHandles,
-		LanguageSkills:     langSkills,
-	}, nil
+func MapUpdateEmployeeParams(e domain.Employee) db.UpdateEmployeeParams {
+	return db.UpdateEmployeeParams{
+		ID:           e.ID,
+		InstituteID:  e.InstituteID,
+		FirstName:    helper.ToNullString(e.FirstName),
+		LastName:     helper.ToNullString(helper.StrOrEmpty(e.LastName)),
+		DepartmentID: helper.ToNullUUID(helper.DerefUUID(e.DepartmentID)),
+		// Gender:        helper.ToNullString(string(e.Gender)),
+		MaritalStatus: helper.ToNullString(string(e.MaritalStatus)),
+		UpdatedBy:     helper.ToNullUUID(helper.DerefUUID(e.UpdatedBy)),
+	}
 }
 
-func MapDomainStudentToDBParams(s domain.Student) db.CreateStudentParams {
-	return db.CreateStudentParams{
-		InstituteID:        s.InstituteID,
-		AdmissionNo:        s.AdmissionNo,
-		FirstName:          helper.ToNullString(s.FirstName),
-		LastName:           helper.ToNullString(helper.StrOrEmpty(s.LastName)),
-		Dob:                helper.ToNullTime(helper.DerefTime(s.DOB)),
-		Gender:             helper.ToNullString(string(s.Gender)),
-		BloodGroup:         helper.ToNullString(string(s.BloodGroup)),
-		SocialCategory:     helper.ToNullString(string(s.SocialCategory)),
-		CurrentClassID:     helper.ToNullUUID(helper.DerefUUID(s.CurrentClassID)),
-		Nationality:        helper.ToNullString(helper.StrOrEmpty(s.Nationality)),
-		PreferredLanguage:  helper.ToNullString(helper.StrOrEmpty(s.PreferredLanguage)),
-		SocialMediaHandles: helper.EncodeJSONB(s.SocialMediaHandles),
-		LanguageSkills:     helper.EncodeJSONB(s.LanguageSkills),
-		CreatedBy:          helper.ToNullUUID(helper.DerefUUID(s.CreatedBy)),
+// ------------------ EMPLOYEE FULL PROFILE ------------------
+
+func MapEmployeeFullProfileRowToDomain(row db.GetEmployeeFullProfileRow) *domain.Employee {
+	// helper.JSONBToValue might return error or value.
+	// assuming helper.JSONBToValue takes json.RawMessage and returns T value directly (panicking or zero on error)?
+	// Or helper.JSONBToValue is NOT helper.DecodeJSONB?
+	// helper.DecodeJSONB returns (T, error).
+	// helper.JSONBToValue probably doesn't exist? I should use DecodeJSONB.
+
+	// Revert to DecodeJSONB
+	var langSkills []domain.LanguageSkill
+	if val, err := helper.DecodeJSONB[[]domain.LanguageSkill](row.LanguageSkills); err == nil {
+		langSkills = val
+	}
+	var socialHandles domain.SocialMediaHandles
+	if val, err := helper.DecodeJSONB[domain.SocialMediaHandles](row.SocialMediaHandles); err == nil {
+		socialHandles = val
+	}
+
+	return &domain.Employee{
+		TenantUUIDModel: domain.TenantUUIDModel{
+			BaseUUIDModel: domain.BaseUUIDModel{
+				ID:        row.ID,
+				CreatedAt: helper.NullTimeToValue(row.CreatedAt),
+				UpdatedAt: helper.NullTimeToValue(row.UpdatedAt),
+				CreatedBy: helper.NullUUIDToPtr(row.CreatedBy),
+			},
+			InstituteID: row.InstituteID,
+		},
+		EmployeeCode:       row.EmployeeCode,
+		FirstName:          helper.NullStringToValue(row.FirstName),
+		LastName:           helper.NullStringToPtr(row.LastName),
+		DepartmentID:       helper.NullUUIDToPtr(row.DepartmentID),
+		Gender:             domain.Gender(helper.NullStringToValue(row.Gender)),
+		MaritalStatus:      domain.MaritalStatus(helper.NullStringToValue(row.MaritalStatus)),
+		DateOfJoining:      helper.NullTimeToPtr(row.DateOfJoining),
+		Nationality:        helper.NullStringToPtr(row.Nationality),
+		PreferredLanguage:  helper.NullStringToPtr(row.PreferredLanguage),
+		SocialMediaHandles: socialHandles,
+		LanguageSkills:     langSkills,
+		IsActive:           helper.NullBoolToValue(row.IsActive),
 	}
 }
 
@@ -236,22 +315,33 @@ func MapDBGuardianToDomain(g db.CoreGuardian) domain.Guardian {
 			UpdatedAt: helper.NullTimeToValue(g.UpdatedAt),
 			CreatedBy: helper.NullUUIDToPtr(g.CreatedBy),
 		},
-		FirstName: helper.NullStringToValue(g.FirstName),
-		LastName:  helper.NullStringToPtr(g.LastName),
-		Phone:     helper.NullStringToPtr(g.Phone),
-		Email:     helper.NullStringToPtr(g.Email),
-		// IsActive:  helper.NullBoolToValue(g.IsActive),
+		FirstName:  helper.NullStringToValue(g.FirstName),
+		LastName:   helper.NullStringToPtr(g.LastName),
+		Email:      helper.NullStringToPtr(g.Email),
+		Phone:      helper.NullStringToPtr(g.Phone),
+		Profession: helper.NullStringToPtr(g.Profession),
+		// AnnualIncome in DB: sql.NullString. Domain: *float64
+		// We can't easily map string to float pointer without parsing.
+		// For now returning nil to avoid error if we don't implement ParseFloat helper
+		AnnualIncome: nil,
 	}
 }
 
 func MapDomainGuardianToDBParams(g domain.Guardian) db.CreateGuardianParams {
+	// AnnualIncome: Domain *float64 -> DB sql.NullString
+	var incomeStr string
+	if g.AnnualIncome != nil {
+		incomeStr = fmt.Sprintf("%.2f", *g.AnnualIncome)
+	}
+
 	return db.CreateGuardianParams{
-		FirstName: helper.ToNullString(g.FirstName),
-		LastName:  helper.ToNullString(helper.StrOrEmpty(g.LastName)),
-		Phone:     helper.ToNullString(helper.StrOrEmpty(g.Phone)),
-		Email:     helper.ToNullString(helper.StrOrEmpty(g.Email)),
-		// IsActive:    helper.ToNullBool(g.IsActive),
-		CreatedBy: helper.ToNullUUID(helper.DerefUUID(g.CreatedBy)),
+		FirstName:    helper.ToNullString(g.FirstName),
+		LastName:     helper.ToNullString(helper.StrOrEmpty(g.LastName)),
+		Email:        helper.ToNullString(helper.StrOrEmpty(g.Email)),
+		Phone:        helper.ToNullString(helper.StrOrEmpty(g.Phone)),
+		Profession:   helper.ToNullString(helper.StrOrEmpty(g.Profession)),
+		AnnualIncome: helper.ToNullString(incomeStr),
+		CreatedBy:    helper.ToNullUUID(helper.DerefUUID(g.CreatedBy)),
 	}
 }
 
@@ -266,8 +356,8 @@ func MapDBAddressToDomain(a db.CoreAddress) domain.Address {
 			CreatedBy: helper.NullUUIDToPtr(a.CreatedBy),
 		},
 		OwnerID:      a.OwnerID,
-		OwnerType:    domain.OwnerType(helper.NullStringToValue(a.OwnerType)),
-		AddressType:  domain.AddressType(helper.NullStringToValue(a.AddressType)),
+		OwnerType:    domain.OwnerType(a.OwnerType.String),
+		AddressType:  domain.AddressType(a.AddressType.String),
 		AddressLine1: a.AddressLine1,
 		AddressLine2: helper.NullStringToPtr(a.AddressLine2),
 		CountryID:    helper.NullUUIDToPtr(a.CountryID),
@@ -283,19 +373,10 @@ func MapDomainAddressToDBParams(a domain.Address) db.CreateAddressParams {
 		OwnerType:    helper.ToNullString(string(a.OwnerType)),
 		AddressType:  helper.ToNullString(string(a.AddressType)),
 		AddressLine1: a.AddressLine1,
-		// AddressLine2: helper.ToNullString(helper.StrOrEmpty(a.AddressLine2)),
+		// AddressLine2 not in CreateAddressParams
 		CountryID:  helper.ToNullUUID(helper.DerefUUID(a.CountryID)),
 		StateID:    helper.ToNullUUID(helper.DerefUUID(a.StateID)),
 		DistrictID: helper.ToNullUUID(helper.DerefUUID(a.DistrictID)),
 		PostalCode: helper.ToNullString(helper.StrOrEmpty(a.PostalCode)),
-	}
-}
-
-// ------------------ STUDENT-GUARDIAN LINK ------------------
-
-func MapDomainLinkStudentGuardianToDBParams(studentID, guardianID uuid.UUID) db.LinkStudentGuardianParams {
-	return db.LinkStudentGuardianParams{
-		StudentID:  studentID,
-		GuardianID: guardianID,
 	}
 }

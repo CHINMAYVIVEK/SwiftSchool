@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 	"swiftschool/domain"
-	"swiftschool/helper"
+	"swiftschool/internal/database"
 
 	"github.com/google/uuid"
 )
@@ -25,10 +25,10 @@ func NewHandler(service ServiceInterface) *Handler {
 //////////////////////////////////////////////////////
 
 type Repository struct {
-	db *helper.PostgresWrapper
+	db *database.Database
 }
 
-func NewRepository(db *helper.PostgresWrapper) *Repository {
+func NewRepository(db *database.Database) *Repository {
 	return &Repository{db: db}
 }
 
@@ -40,7 +40,7 @@ type Service struct {
 	repo RepositoryInterface
 }
 
-func NewService(db *helper.PostgresWrapper) *Service {
+func NewService(db *database.Database) *Service {
 	return &Service{
 		repo: NewRepository(db),
 	}
@@ -74,28 +74,28 @@ type RepositoryInterface interface {
 	// ========================= DEPARTMENT =========================
 	CreateDepartment(ctx context.Context, arg domain.Department) (*domain.Department, error)
 	UpdateDepartment(ctx context.Context, arg domain.Department) (*domain.Department, error)
-	DeleteDepartment(ctx context.Context, id uuid.UUID) error
+	DeleteDepartment(ctx context.Context, instituteID, id uuid.UUID) error
 	ListDepartments(ctx context.Context, instituteID uuid.UUID) ([]*domain.Department, error)
 
 	// ========================= EMPLOYEE =========================
 	CreateEmployee(ctx context.Context, arg domain.Employee) (*domain.Employee, error)
 	UpdateEmployee(ctx context.Context, arg domain.Employee) (*domain.Employee, error)
-	DeleteEmployee(ctx context.Context, id uuid.UUID) error
-	GetEmployeeById(ctx context.Context, id uuid.UUID) (*domain.Employee, error)
-	GetEmployeeFullProfile(ctx context.Context, id uuid.UUID) (*domain.Employee, error)
+	DeleteEmployee(ctx context.Context, instituteID, id uuid.UUID) error
+	GetEmployeeById(ctx context.Context, instituteID, id uuid.UUID) (*domain.Employee, error)
+	GetEmployeeFullProfile(ctx context.Context, instituteID, id uuid.UUID) (*domain.Employee, error)
 	ListEmployees(ctx context.Context, instituteID uuid.UUID) ([]*domain.Employee, error)
 
 	// ========================= STUDENT =========================
 	CreateStudent(ctx context.Context, arg domain.Student) (*domain.Student, error)
 	UpdateStudent(ctx context.Context, arg domain.Student) (*domain.Student, error)
-	DeleteStudent(ctx context.Context, id uuid.UUID) error
-	GetStudentFullProfile(ctx context.Context, id uuid.UUID) (*domain.Student, error)
-	SearchStudents(ctx context.Context, query string) ([]*domain.Student, error)
-	ListStudentsByClass(ctx context.Context, classID uuid.UUID) ([]*domain.Student, error)
+	DeleteStudent(ctx context.Context, instituteID, id uuid.UUID) error
+	GetStudentFullProfile(ctx context.Context, instituteID, id uuid.UUID) (*domain.Student, error)
+	SearchStudents(ctx context.Context, instituteID uuid.UUID, query string) ([]*domain.Student, error)
+	ListStudentsByClass(ctx context.Context, instituteID, classID uuid.UUID) ([]*domain.Student, error)
 
-	// ========================= GUARDIAN =========================
+	// ========================= GUARDIAN =========================	// Guardians
 	CreateGuardian(ctx context.Context, arg domain.Guardian) (*domain.Guardian, error)
-	LinkStudentGuardian(ctx context.Context, studentID, guardianID uuid.UUID) error
+	LinkStudentGuardian(ctx context.Context, studentID, guardianID uuid.UUID, relationship string, isPrimary bool) error
 
 	// ========================= ADDRESS =========================
 	CreateAddress(ctx context.Context, arg domain.Address) (*domain.Address, error)
@@ -119,7 +119,7 @@ type ServiceInterface interface {
 	UpdateClass(ctx context.Context, arg domain.Class) (*domain.Class, error)
 	DeleteClass(ctx context.Context, id uuid.UUID) error
 	ListClasses(ctx context.Context, instituteID uuid.UUID) ([]*domain.Class, error)
-	ListStudentsByClass(ctx context.Context, classID uuid.UUID) ([]*domain.Student, error)
+	ListStudentsByClass(ctx context.Context, instituteID, classID uuid.UUID) ([]*domain.Student, error)
 
 	// ========================= ACADEMIC SESSION =========================
 	CreateAcademicSession(ctx context.Context, arg domain.AcademicSession) (*domain.AcademicSession, error)
@@ -130,27 +130,27 @@ type ServiceInterface interface {
 	// ========================= DEPARTMENT =========================
 	CreateDepartment(ctx context.Context, arg domain.Department) (*domain.Department, error)
 	UpdateDepartment(ctx context.Context, arg domain.Department) (*domain.Department, error)
-	DeleteDepartment(ctx context.Context, id uuid.UUID) error
+	DeleteDepartment(ctx context.Context, instituteID, id uuid.UUID) error
 	ListDepartments(ctx context.Context, instituteID uuid.UUID) ([]*domain.Department, error)
 
 	// ========================= EMPLOYEE =========================
 	CreateEmployee(ctx context.Context, arg domain.Employee) (*domain.Employee, error)
 	UpdateEmployee(ctx context.Context, arg domain.Employee) (*domain.Employee, error)
-	DeleteEmployee(ctx context.Context, id uuid.UUID) error
-	GetEmployeeById(ctx context.Context, id uuid.UUID) (*domain.Employee, error)
-	GetEmployeeFullProfile(ctx context.Context, id uuid.UUID) (*domain.Employee, error)
+	DeleteEmployee(ctx context.Context, instituteID, id uuid.UUID) error
+	GetEmployeeById(ctx context.Context, instituteID, id uuid.UUID) (*domain.Employee, error)
+	GetEmployeeFullProfile(ctx context.Context, instituteID, id uuid.UUID) (*domain.Employee, error)
 	ListEmployees(ctx context.Context, instituteID uuid.UUID) ([]*domain.Employee, error)
 
 	// ========================= STUDENT =========================
 	CreateStudent(ctx context.Context, arg domain.Student) (*domain.Student, error)
 	UpdateStudent(ctx context.Context, arg domain.Student) (*domain.Student, error)
-	DeleteStudent(ctx context.Context, id uuid.UUID) error
-	GetStudentFullProfile(ctx context.Context, id uuid.UUID) (*domain.Student, error)
-	SearchStudents(ctx context.Context, query string) ([]*domain.Student, error)
+	DeleteStudent(ctx context.Context, instituteID, id uuid.UUID) error
+	GetStudentFullProfile(ctx context.Context, instituteID, id uuid.UUID) (*domain.Student, error)
+	SearchStudents(ctx context.Context, instituteID uuid.UUID, query string) ([]*domain.Student, error)
 
 	// ========================= GUARDIAN =========================
 	CreateGuardian(ctx context.Context, arg domain.Guardian) (*domain.Guardian, error)
-	LinkStudentGuardian(ctx context.Context, studentID, guardianID uuid.UUID) error
+	LinkStudentGuardian(ctx context.Context, studentID, guardianID uuid.UUID, relationship string, isPrimary bool) error
 
 	// ========================= ADDRESS =========================
 	CreateAddress(ctx context.Context, arg domain.Address) (*domain.Address, error)

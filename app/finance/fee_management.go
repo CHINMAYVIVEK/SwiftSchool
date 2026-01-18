@@ -3,9 +3,11 @@ package finance
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"swiftschool/domain"
 	"swiftschool/helper"
+	"swiftschool/mapper"
 
 	"github.com/google/uuid"
 )
@@ -148,8 +150,22 @@ func (s *Service) CreateFeeHead(ctx context.Context, arg domain.FeeHead) (*domai
 
 // REPOSITORY
 func (r *Repository) CreateFeeHead(ctx context.Context, arg domain.FeeHead) (*domain.FeeHead, error) {
+	ctx, cancel := r.db.WithTimeout(ctx)
+	defer cancel()
 
-	return &arg, nil
+	q, err := r.db.Queries()
+	if err != nil {
+		return nil, err
+	}
+
+	params := mapper.MapFeeHeadDomainToParams(arg)
+	row, err := q.CreateFeeHead(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create fee head: %w", err)
+	}
+
+	result := mapper.MapFeeHeadRowToDomain(row)
+	return &result, nil
 }
 
 // ========================= LIST FEE HEADS =========================
@@ -161,8 +177,26 @@ func (s *Service) ListFeeHeads(ctx context.Context, instituteID uuid.UUID) ([]*d
 
 // REPOSITORY
 func (r *Repository) ListFeeHeads(ctx context.Context, instituteID uuid.UUID) ([]*domain.FeeHead, error) {
+	ctx, cancel := r.db.WithTimeout(ctx)
+	defer cancel()
 
-	return nil, nil
+	q, err := r.db.Queries()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := q.ListFeeHeads(ctx, instituteID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list fee heads: %w", err)
+	}
+
+	var feeHeads []*domain.FeeHead
+	for _, row := range rows {
+		fh := mapper.MapFeeHeadRowToDomain(row)
+		feeHeads = append(feeHeads, &fh)
+	}
+
+	return feeHeads, nil
 }
 
 // ========================= CREATE FEE STRUCTURE =========================
@@ -174,8 +208,22 @@ func (s *Service) CreateFeeStructure(ctx context.Context, arg domain.FeeStructur
 
 // REPOSITORY
 func (r *Repository) CreateFeeStructure(ctx context.Context, arg domain.FeeStructure) (*domain.FeeStructure, error) {
+	ctx, cancel := r.db.WithTimeout(ctx)
+	defer cancel()
 
-	return &arg, nil
+	q, err := r.db.Queries()
+	if err != nil {
+		return nil, err
+	}
+
+	params := mapper.MapFeeStructureDomainToParams(arg)
+	row, err := q.CreateFeeStructure(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create fee structure: %w", err)
+	}
+
+	result := mapper.MapFeeStructureRowToDomain(row)
+	return &result, nil
 }
 
 // ========================= LIST FEE STRUCTURES =========================
@@ -187,8 +235,26 @@ func (s *Service) ListFeeStructures(ctx context.Context, instituteID, sessionID 
 
 // REPOSITORY
 func (r *Repository) ListFeeStructures(ctx context.Context, instituteID, sessionID uuid.UUID) ([]*domain.FeeStructure, error) {
+	ctx, cancel := r.db.WithTimeout(ctx)
+	defer cancel()
 
-	return nil, nil
+	q, err := r.db.Queries()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := q.ListFeeStructures(ctx, instituteID, sessionID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list fee structures: %w", err)
+	}
+
+	var structures []*domain.FeeStructure
+	for _, row := range rows {
+		fs := mapper.MapFeeStructureRowToDomain(row)
+		structures = append(structures, &fs)
+	}
+
+	return structures, nil
 }
 
 // ========================= CREATE FINE RULE =========================
@@ -200,6 +266,20 @@ func (s *Service) CreateFineRule(ctx context.Context, arg domain.FineRule) (*dom
 
 // REPOSITORY
 func (r *Repository) CreateFineRule(ctx context.Context, arg domain.FineRule) (*domain.FineRule, error) {
+	ctx, cancel := r.db.WithTimeout(ctx)
+	defer cancel()
 
-	return &arg, nil
+	q, err := r.db.Queries()
+	if err != nil {
+		return nil, err
+	}
+
+	params := mapper.MapFineRuleDomainToParams(arg)
+	row, err := q.CreateFineRule(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create fine rule: %w", err)
+	}
+
+	result := mapper.MapFineRuleRowToDomain(row)
+	return &result, nil
 }
