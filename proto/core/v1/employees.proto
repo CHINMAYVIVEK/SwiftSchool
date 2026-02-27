@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package swiftschool.core.v1;
+
+option go_package = "swiftschool/app/core/v1;corev1";
+
+// EmployeeService is a stub for future employee management.
+// TODO: Implement employee CRUD RPCs when employee module is built out.
+service EmployeeService {
+}

@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package swiftschool.core.v1;
+
+option go_package = "swiftschool/app/core/v1;corev1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "proto/common/v1/common.proto";
+
+// AcademicSessionService manages academic session lifecycle.
+service AcademicSessionService {
+  rpc CreateAcademicSession(CreateAcademicSessionRequest) returns (AcademicSessionResponse) {
+    option (google.api.http) = { post: "/api/academic_sessions/register" body: "*" };
+  }
+  rpc ListAcademicSessions(swiftschool.common.v1.TenantListRequest) returns (ListAcademicSessionsResponse) {
+    option (google.api.http) = { get: "/api/academic_sessions/list" };
+  }
+  rpc GetActiveSession(swiftschool.common.v1.TenantListRequest) returns (AcademicSessionResponse) {
+    option (google.api.http) = { get: "/api/academic_sessions/active" };
+  }
+  rpc UpdateAcademicSession(UpdateAcademicSessionRequest) returns (AcademicSessionResponse) {
+    option (google.api.http) = { put: "/api/academic_sessions/update" body: "*" };
+  }
+}
+
+message CreateAcademicSessionRequest {
+  string institute_id = 1;
+  string name = 2;
+  google.protobuf.Timestamp start_date = 3;
+  google.protobuf.Timestamp end_date = 4;
+  bool is_active = 5;
+}
+
+message UpdateAcademicSessionRequest {
+  string id = 1;
+  string institute_id = 2;
+  string name = 3;
+  google.protobuf.Timestamp start_date = 4;
+  google.protobuf.Timestamp end_date = 5;
+  bool is_active = 6;
+}
+
+message AcademicSessionResponse {
+  string id = 1;
+  string institute_id = 2;
+  string name = 3;
+  google.protobuf.Timestamp start_date = 4;
+  google.protobuf.Timestamp end_date = 5;
+  bool is_active = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message ListAcademicSessionsResponse {
+  repeated AcademicSessionResponse sessions = 1;
+}

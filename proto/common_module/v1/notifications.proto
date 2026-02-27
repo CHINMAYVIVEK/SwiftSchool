@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package swiftschool.common_module.v1;
+
+option go_package = "swiftschool/app/common/v1;commonv1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "proto/common/v1/common.proto";
+
+// NotificationService manages in-app notifications.
+service NotificationService {
+  rpc CreateNotification(CreateNotificationRequest) returns (NotificationResponse) {
+    option (google.api.http) = { post: "/api/common/notifications/create" body: "*" };
+  }
+}
+
+message CreateNotificationRequest {
+  string institute_id = 1;
+  google.protobuf.StringValue user_id = 2;
+  google.protobuf.StringValue title = 3;
+  google.protobuf.StringValue message = 4;
+  bool is_read = 5;
+}
+
+message NotificationResponse {
+  string id = 1;
+  string institute_id = 2;
+  google.protobuf.StringValue user_id = 3;
+  google.protobuf.StringValue title = 4;
+  google.protobuf.StringValue message = 5;
+  bool is_read = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}

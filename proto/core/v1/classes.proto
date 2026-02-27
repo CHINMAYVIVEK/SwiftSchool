@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package swiftschool.core.v1;
+
+option go_package = "swiftschool/app/core/v1;corev1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "proto/common/v1/common.proto";
+
+// ClassService manages classes.
+service ClassService {
+  rpc CreateClass(CreateClassRequest) returns (ClassResponse) {
+    option (google.api.http) = { post: "/api/classes/register" body: "*" };
+  }
+  rpc ListClasses(swiftschool.common.v1.TenantListRequest) returns (ListClassesResponse) {
+    option (google.api.http) = { get: "/api/classes/list" };
+  }
+  rpc UpdateClass(UpdateClassRequest) returns (ClassResponse) {
+    option (google.api.http) = { put: "/api/classes/update" body: "*" };
+  }
+  rpc DeleteClass(swiftschool.common.v1.DeleteRequest) returns (swiftschool.common.v1.Empty) {
+    option (google.api.http) = { delete: "/api/classes/delete" };
+  }
+}
+
+message CreateClassRequest {
+  string institute_id = 1;
+  string academic_session_id = 2;
+  string name = 3;
+  string section = 4;
+  google.protobuf.StringValue class_teacher_id = 5;
+}
+
+message UpdateClassRequest {
+  string id = 1;
+  string institute_id = 2;
+  string academic_session_id = 3;
+  string name = 4;
+  string section = 5;
+  google.protobuf.StringValue class_teacher_id = 6;
+}
+
+message ClassResponse {
+  string id = 1;
+  string institute_id = 2;
+  string academic_session_id = 3;
+  string name = 4;
+  string section = 5;
+  google.protobuf.StringValue class_teacher_id = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message ListClassesResponse {
+  repeated ClassResponse classes = 1;
+}

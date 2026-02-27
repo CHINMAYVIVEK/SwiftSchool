@@ -70,6 +70,27 @@ deps:
 	@$(GO) mod vendor
 
 # -------------------------------
+# Proto code generation (buf)
+# -------------------------------
+.PHONY: proto-gen
+proto-gen:
+	@echo "==> Generating proto code..."
+	@buf dep update
+	@buf generate
+	@echo "==> Proto code generated."
+
+.PHONY: proto-lint
+proto-lint:
+	@echo "==> Linting proto files..."
+	@buf lint
+
+.PHONY: proto-clean
+proto-clean:
+	@echo "==> Cleaning generated proto code..."
+	@rm -f proto/*.pb.go proto/*_grpc.pb.go proto/*.pb.gw.go
+	@echo "==> Proto code cleaned."
+
+# -------------------------------
 # Run all checks
 # -------------------------------
 .PHONY: check

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package swiftschool.core.v1;
+
+option go_package = "swiftschool/app/core/v1;corev1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "proto/common/v1/common.proto";
+
+// DepartmentService manages departments.
+service DepartmentService {
+  rpc CreateDepartment(CreateDepartmentRequest) returns (DepartmentResponse) {
+    option (google.api.http) = { post: "/api/departments/register" body: "*" };
+  }
+  rpc ListDepartments(swiftschool.common.v1.TenantListRequest) returns (ListDepartmentsResponse) {
+    option (google.api.http) = { get: "/api/departments/list" };
+  }
+  rpc UpdateDepartment(UpdateDepartmentRequest) returns (DepartmentResponse) {
+    option (google.api.http) = { put: "/api/departments/update" body: "*" };
+  }
+  rpc DeleteDepartment(swiftschool.common.v1.TenantDeleteRequest) returns (swiftschool.common.v1.Empty) {
+    option (google.api.http) = { delete: "/api/departments/delete" };
+  }
+}
+
+message CreateDepartmentRequest {
+  string institute_id = 1;
+  string name = 2;
+}
+
+message UpdateDepartmentRequest {
+  string id = 1;
+  string institute_id = 2;
+  string name = 3;
+}
+
+message DepartmentResponse {
+  string id = 1;
+  string institute_id = 2;
+  string name = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+}
+
+message ListDepartmentsResponse {
+  repeated DepartmentResponse departments = 1;
+}

@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package swiftschool.admissions.v1;
+
+option go_package = "swiftschool/app/admissions/v1;admissionsv1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "proto/common/v1/common.proto";
+
+// EnquiryService manages admission enquiries.
+service EnquiryService {
+  rpc CreateEnquiry(CreateEnquiryRequest) returns (EnquiryResponse) {
+    option (google.api.http) = { post: "/api/admissions/enquiries/register" body: "*" };
+  }
+  rpc ListEnquiries(swiftschool.common.v1.TenantListRequest) returns (ListEnquiriesResponse) {
+    option (google.api.http) = { get: "/api/admissions/enquiries/list" };
+  }
+  rpc UpdateEnquiryStatus(UpdateEnquiryStatusRequest) returns (swiftschool.common.v1.Empty) {
+    option (google.api.http) = { put: "/api/admissions/enquiries/update_status" body: "*" };
+  }
+}
+
+message CreateEnquiryRequest {
+  string institute_id = 1;
+  google.protobuf.StringValue student_name = 2;
+  google.protobuf.StringValue guardian_name = 3;
+  google.protobuf.StringValue phone = 4;
+  google.protobuf.StringValue email = 5;
+  google.protobuf.StringValue class_applying_for = 6;
+  google.protobuf.StringValue previous_school = 7;
+  string status = 8;
+  google.protobuf.Timestamp enquiry_date = 9;
+  google.protobuf.Timestamp follow_up_date = 10;
+}
+
+message EnquiryResponse {
+  string id = 1;
+  string institute_id = 2;
+  google.protobuf.StringValue student_name = 3;
+  google.protobuf.StringValue guardian_name = 4;
+  google.protobuf.StringValue phone = 5;
+  google.protobuf.StringValue email = 6;
+  google.protobuf.StringValue class_applying_for = 7;
+  google.protobuf.StringValue previous_school = 8;
+  string status = 9;
+  google.protobuf.Timestamp enquiry_date = 10;
+  google.protobuf.Timestamp follow_up_date = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+}
+
+message ListEnquiriesResponse {
+  repeated EnquiryResponse enquiries = 1;
+}
+
+message UpdateEnquiryStatusRequest {
+  string id = 1;
+  string institute_id = 2;
+  string status = 3;
+}
